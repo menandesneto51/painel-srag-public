@@ -2,9 +2,3 @@ streamlit
 pandas
 numpy
 plotly
-geopandas
-python-docx
-pyogrio
-shapely
-fiona
-openpyxl

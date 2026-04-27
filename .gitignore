@@ -1,13 +1,18 @@
+# Dados sensíveis / internos
 *.dbf
-*.csv
 *.xlsx
 *.parquet
 *.feather
 *.sqlite
 *.db
+base_consolidada_sivep_srag.csv
 dbf_extraidos/
 logs/
-Downloads/
 SIVEP_COMPILADO/
 .streamlit/secrets.toml
 .env
+
+# manter só os agregados públicos
+!data_public/
+!data_public/*.json
+!data_public/*.csv
