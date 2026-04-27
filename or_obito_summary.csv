@@ -1,0 +1,14 @@
+﻿Variável,Expostos,OR,IC95% inferior,IC95% superior
+Doença hepática,11,29.373,9.221,93.57
+Doença renal,47,14.799,7.767,28.195
+Imunodepressão,28,10.501,4.566,24.152
+Doença neurológica,55,9.527,4.997,18.165
+Idade >= 60 anos,317,9.153,5.772,14.513
+Pneumopatia,83,6.772,3.746,12.241
+Obesidade,28,4.402,1.571,12.338
+Diabetes,107,4.109,2.246,7.519
+Asma,32,3.776,1.362,10.471
+Cardiopatia,141,3.526,1.995,6.231
+Puerpério,6,1.77,0.099,31.693
+Sexo masculino,1012,1.307,0.835,2.045
+Gestação,25,0.447,0.027,7.402

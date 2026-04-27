@@ -1,0 +1,143 @@
+﻿NM_MUN,NM_RGI,notificacoes,casos_recentes,incidencia_100k,incidencia_recente_100k,tx_uti_percent,letalidade_percent,score_risco_srag,classe_risco_srag
+Porto Esperidião,Mirassol D'oeste,4.0,1.0,190.65776930409913,47.66444232602478,75.0,0.0,69.08,Alto
+Apiacás,Alta Floresta,3.0,3.0,34.51052571034165,34.51052571034165,100.0,0.0,67.39,Alto
+Santo Afonso,Diamantino,1.0,1.0,41.390728476821195,41.390728476821195,100.0,0.0,65.31,Alto
+Chapada dos Guimarães,Cuiabá,48.0,11.0,246.68516805427072,56.53201767910371,32.0,20.0,63.62,Alto
+Campos de Júlio,Pontes e Lacerda - Comodoro,7.0,3.0,70.38005228232456,30.162879549567666,100.0,0.0,63.5,Alto
+União do Sul,Sinop,1.0,1.0,23.596035865974518,23.596035865974518,100.0,0.0,62.29,Alto
+Nossa Senhora do Livramento,Cuiabá,4.0,2.0,67.91171477079797,33.955857385398986,50.0,0.0,61.89,Alto
+Cuiabá,Cuiabá,537.0,65.0,5353.938185443669,648.0558325024925,32.43847874720358,7.829977628635347,61.44,Alto
+Nova Lacerda,Pontes e Lacerda - Comodoro,2.0,2.0,43.99472063352398,43.99472063352398,0.0,0.0,57.37,Alto
+Vera,Sorriso,3.0,1.0,27.886224205242613,9.295408068414202,66.66666666666666,0.0,54.67,Alto
+Tabaporã,Juara,1.0,0.0,0.8021497613604459,0.0,100.0,100.0,54.3,Alto
+Novo Horizonte do Norte,Juara,22.0,6.0,488.6717014660151,133.27410039982232,0.0,0.0,52.6,Alto
+Nova Santa Helena,Sinop,7.0,2.0,98.98190045248869,28.280542986425342,50.0,16.666666666666664,52.1,Alto
+Torixoréu,Barra do Garças,1.0,1.0,34.07155025553663,34.07155025553663,0.0,0.0,52.05,Alto
+Várzea Grande,Cuiabá,343.0,64.0,11860.30428769018,2213.001383125865,25.161290322580644,4.516129032258064,51.3,Alto
+Vila Rica,Confresa - Vila Rica,1.0,0.0,5.079752108097125,0.0,100.0,100.0,49.4,Moderado
+Pontes e Lacerda,Pontes e Lacerda - Comodoro,56.0,6.0,1682.6923076923076,180.28846153846155,11.11111111111111,3.7037037037037033,49.07,Moderado
+Sinop,Sinop,220.0,38.0,11334.363730036064,1957.7537351880476,28.333333333333332,6.666666666666667,48.97,Moderado
+Lambari D'Oeste,Cáceres,5.0,0.0,49.716615292830866,0.0,80.0,20.0,48.84,Moderado
+Alto Garças,Rondonópolis,3.0,1.0,21.496130696474633,7.165376898824879,66.66666666666666,0.0,48.36,Moderado
+Barra do Bugres,Tangará da Serra,5.0,1.0,17.003332653200026,3.400666530640005,80.0,20.0,48.34,Moderado
+Nova Marilândia,Diamantino,1.0,1.0,26.80246582685607,26.80246582685607,0.0,0.0,47.93,Moderado
+Confresa,Confresa - Vila Rica,2.0,0.0,5.200208008320333,0.0,100.0,100.0,46.86,Moderado
+Peixoto de Azevedo,Peixoto de Azevedo - Guarantã do Norte,11.0,2.0,151.95468987429203,27.628125431689462,40.0,10.0,46.74,Moderado
+Santo Antônio de Leverger,Cuiabá,6.0,0.0,35.631569570639584,0.0,60.0,20.0,46.56,Moderado
+Primavera do Leste,Primavera do Leste,123.0,17.0,489.9812771381906,67.72098952316456,11.214953271028037,1.8691588785046727,46.52,Moderado
+Poconé,Cuiabá,5.0,1.0,17.319016279875303,3.4638032559750607,60.0,20.0,46.12,Moderado
+Jaciara,Jaciara,8.0,0.0,63.55763883371733,0.0,100.0,14.285714285714285,46.1,Moderado
+Brasnorte,Tangará da Serra,3.0,1.0,17.00198356474922,5.667327854916407,66.66666666666666,0.0,45.79,Moderado
+Canarana,Água Boa,4.0,1.0,14.122299110295156,3.530574777573789,50.0,50.0,45.21,Moderado
+Colíder,Sinop,47.0,14.0,146.6275659824047,43.67629625007799,6.382978723404255,4.25531914893617,45.06,Moderado
+Guarantã do Norte,Peixoto de Azevedo - Guarantã do Norte,13.0,5.0,451.70257123002085,173.73175816539265,10.0,0.0,44.84,Moderado
+Nova Mutum,Sorriso,3.0,0.0,80.4073974805682,0.0,100.0,100.0,42.52,Moderado
+Ipiranga do Norte,Sorriso,2.0,1.0,92.08103130755065,46.04051565377532,0.0,0.0,42.24,Moderado
+Itaúba,Sinop,2.0,0.0,24.221872350732713,0.0,100.0,0.0,41.46,Moderado
+Aripuanã,Juína,3.0,1.0,11.296031327660216,3.7653437758867385,50.0,0.0,40.94,Moderado
+Indiavaí,Mirassol D'oeste,1.0,1.0,9.754194303550527,9.754194303550527,0.0,0.0,40.86,Moderado
+Alta Floresta,Alta Floresta,5.0,3.0,8.044016860259338,4.8264101161556034,80.0,0.0,40.46,Moderado
+Sapezal,Tangará da Serra,10.0,1.0,235.2941176470588,23.529411764705884,10.0,10.0,39.94,Moderado
+Nova Olímpia,Tangará da Serra,3.0,1.0,52.58545135845749,17.5284837861525,66.66666666666666,0.0,39.75,Moderado
+Araputanga,Mirassol D'oeste,12.0,3.0,81.05369807497466,20.263424518743665,33.33333333333333,0.0,39.66,Moderado
+Matupá,Peixoto de Azevedo - Guarantã do Norte,1.0,1.0,4.553941436313129,4.553941436313129,0.0,0.0,39.42,Moderado
+Alto Taquari,Rondonópolis,2.0,0.0,16.839269175717774,0.0,100.0,0.0,38.87,Moderado
+Vila Bela da Santíssima Trindade,Pontes e Lacerda - Comodoro,2.0,1.0,2.0878570235510274,1.0439285117755137,0.0,0.0,38.02,Moderado
+Gaúcha do Norte,Água Boa,10.0,1.0,327.22513089005236,32.72251308900524,22.22222222222222,0.0,37.97,Moderado
+Nova Ubiratã,Sorriso,2.0,0.0,23.61275088547816,0.0,100.0,0.0,37.63,Moderado
+Guiratinga,Rondonópolis,1.0,0.0,3.2042039155371844,0.0,100.0,0.0,37.01,Moderado
+Tesouro,Rondonópolis,1.0,0.0,9.441979038806533,0.0,100.0,0.0,36.96,Moderado
+Vale de São Domingos,Pontes e Lacerda - Comodoro,1.0,0.0,25.614754098360656,0.0,100.0,0.0,36.88,Moderado
+Novo Mundo,Peixoto de Azevedo - Guarantã do Norte,1.0,0.0,6.171315724512466,0.0,100.0,0.0,36.75,Moderado
+Paranaíta,Alta Floresta,2.0,0.0,7.717538105344395,0.0,100.0,0.0,36.72,Moderado
+Denise,Tangará da Serra,1.0,0.0,20.120724346076457,0.0,100.0,0.0,36.28,Moderado
+Lucas do Rio Verde,Sorriso,2.0,0.0,17.208742040956807,0.0,100.0,0.0,35.95,Moderado
+Pontal do Araguaia,Barra do Garças,1.0,0.0,5.278158978148422,0.0,100.0,0.0,35.58,Moderado
+Marcelândia,Sinop,10.0,0.0,382.262996941896,0.0,60.0,10.0,35.5,Moderado
+Campo Novo do Parecis,Tangará da Serra,3.0,0.0,5.800239743242721,0.0,100.0,0.0,34.97,Moderado
+Rosário Oeste,Cuiabá,2.0,0.0,13.296988232165415,0.0,100.0,0.0,33.97,Moderado
+Curvelândia,Cáceres,7.0,2.0,1.011743450767841,0.28906955736224027,85.71428571428571,0.0,33.8,Moderado
+Cáceres,Cáceres,54.0,12.0,58.84468272908562,13.076596162019026,40.38461538461539,0.0,33.65,Moderado
+Rio Branco,Cáceres,3.0,0.0,67.56756756756756,0.0,66.66666666666666,0.0,32.59,Moderado
+São José do Rio Claro,Diamantino,4.0,0.0,27.67208578346593,0.0,100.0,0.0,31.94,Moderado
+Diamantino,Diamantino,3.0,0.0,44.943820224719104,0.0,100.0,0.0,30.53,Moderado
+Santa Carmem,Sinop,3.0,0.0,51.76876617773944,0.0,0.0,100.0,30.22,Moderado
+São José dos Quatro Marcos,Mirassol D'oeste,5.0,0.0,16.077170418006432,0.0,60.0,0.0,30.19,Moderado
+Tapurah,Sorriso,5.0,0.0,4.362887533485162,0.0,75.0,0.0,30.18,Moderado
+Rondonópolis,Rondonópolis,43.0,7.0,16.305914117129554,2.654451135346671,47.5,2.5,30.0,Moderado
+Cocalinho,Água Boa,2.0,0.0,30.792917628945343,0.0,50.0,0.0,29.85,Moderado
+Nobres,Cuiabá,5.0,0.0,31.653583185616608,0.0,60.0,0.0,29.77,Moderado
+Glória D'Oeste,Mirassol D'oeste,4.0,0.0,63.30115524608325,0.0,50.0,0.0,29.75,Moderado
+Mirassol d'Oeste,Mirassol D'oeste,4.0,0.0,18.215765745252515,0.0,50.0,0.0,29.28,Moderado
+Arenápolis,Diamantino,2.0,0.0,18.571826539140122,0.0,100.0,0.0,28.96,Moderado
+Porto Estrela,Tangará da Serra,2.0,0.0,63.673989175421845,0.0,100.0,0.0,28.71,Moderado
+Jauru,Mirassol D'oeste,2.0,0.0,26.97963037906381,0.0,50.0,0.0,28.61,Moderado
+Campo Verde,Cuiabá,4.0,0.0,8.154445191935254,0.0,50.0,0.0,28.48,Moderado
+Juara,Juara,12.0,1.0,152.26494099733537,12.688745083111279,22.22222222222222,0.0,27.92,Moderado
+Tangará da Serra,Tangará da Serra,3.0,0.0,30.31834259727135,0.0,66.66666666666666,0.0,27.83,Moderado
+Porto dos Gaúchos,Juara,5.0,1.0,67.1952694530305,13.439053890606102,0.0,0.0,27.35,Moderado
+Sorriso,Sorriso,43.0,2.0,19.215300741799982,0.8937349182232549,17.94871794871795,0.0,26.4,Moderado
+Nova Canaã do Norte,Sinop,4.0,0.0,34.088972217487644,0.0,25.0,0.0,26.36,Moderado
+Juína,Juína,5.0,0.0,13.85463714705312,0.0,50.0,0.0,25.92,Moderado
+Campinápolis,Água Boa,20.0,2.0,126.51821862348179,12.651821862348179,0.0,0.0,25.84,Moderado
+Água Boa,Água Boa,2.0,0.0,6.230723698557587,0.0,50.0,0.0,25.76,Moderado
+Nova Brasilândia,Cuiabá,1.0,0.0,26.37826431020839,0.0,0.0,0.0,24.35,Baixo
+Colniza,Juína,12.0,0.0,46.107738415430724,0.0,36.36363636363637,0.0,24.19,Baixo
+Comodoro,Pontes e Lacerda - Comodoro,4.0,0.0,21.657913260057395,0.0,25.0,0.0,24.02,Baixo
+Nova Guarita,Sinop,1.0,0.0,21.99736031676199,0.0,0.0,0.0,22.81,Baixo
+Nova Monte Verde,Alta Floresta,1.0,0.0,11.80637544273908,0.0,0.0,0.0,22.74,Baixo
+Barra do Garças,Barra do Garças,28.0,4.0,37.9003221527383,5.4143317361054715,3.7037037037037033,0.0,22.74,Baixo
+Reserva do Cabaçal,Mirassol D'oeste,2.0,0.0,99.00990099009901,0.0,0.0,0.0,21.35,Baixo
+Cotriguaçu,Juína,1.0,0.0,25.588536335721596,0.0,0.0,0.0,20.55,Baixo
+Pedra Preta,Rondonópolis,4.0,0.0,195.98236158745712,0.0,0.0,0.0,20.31,Baixo
+Querência,Água Boa,36.0,0.0,37.49765639647522,0.0,0.0,3.225806451612903,20.1,Baixo
+Barão de Melgaço,Cuiabá,2.0,0.0,28.022978842650975,0.0,0.0,0.0,19.96,Baixo
+Cláudia,Sinop,2.0,0.0,21.503064186646597,0.0,0.0,0.0,18.64,Baixo
+Nortelândia,Diamantino,1.0,0.0,6.330716637123322,0.0,0.0,0.0,17.86,Baixo
+Salto do Céu,Cáceres,2.0,0.0,54.68963631391851,0.0,0.0,0.0,17.48,Baixo
+Figueirópolis D'Oeste,Mirassol D'oeste,5.0,0.0,47.51496721467262,0.0,0.0,0.0,17.11,Baixo
+Feliz Natal,Sinop,5.0,0.0,63.371356147021544,0.0,0.0,0.0,16.57,Baixo
+Conquista D'Oeste,Pontes e Lacerda - Comodoro,1.0,0.0,25.588536335721596,0.0,0.0,0.0,16.44,Baixo
+Terra Nova do Norte,Sinop,2.0,1.0,12.78935925310142,6.39467962655071,0.0,0.0,15.91,Baixo
+Boa Esperança do Norte,Sorriso,1.0,0.0,,,0.0,0.0,15.0,Baixo
+Acorizal,Cuiabá,0.0,0.0,0.0,0.0,,,11.38,Baixo
+Jangada,Cuiabá,0.0,0.0,0.0,0.0,,,10.91,Baixo
+Araguaiana,Barra do Garças,1.0,0.0,24.968789013732835,0.0,,,10.72,Baixo
+São José do Xingu,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,10.06,Baixo
+Ribeirão Cascalheira,Água Boa,2.0,0.0,18.97353192296746,0.0,,,9.45,Baixo
+Nova Bandeirantes,Alta Floresta,1.0,0.0,8.577800651912849,0.0,,,9.43,Baixo
+Juscimeira,Jaciara,0.0,0.0,0.0,0.0,,,8.99,Baixo
+Juruena,Juína,0.0,0.0,0.0,0.0,,,8.85,Baixo
+Porto Alegre do Norte,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,8.83,Baixo
+Alto Paraguai,Diamantino,0.0,0.0,0.0,0.0,,,8.8,Baixo
+Poxoréu,Primavera do Leste,0.0,0.0,0.0,0.0,,,8.62,Baixo
+Ponte Branca,Barra do Garças,0.0,0.0,0.0,0.0,,,8.44,Baixo
+Carlinda,Alta Floresta,0.0,0.0,0.0,0.0,,,8.43,Baixo
+Nova Nazaré,Água Boa,0.0,0.0,0.0,0.0,,,8.29,Baixo
+General Carneiro,Barra do Garças,0.0,0.0,0.0,0.0,,,7.73,Baixo
+Novo Santo Antônio,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,7.61,Baixo
+Nova Maringá,Diamantino,0.0,0.0,0.0,0.0,,,6.96,Baixo
+Paranatinga,Primavera do Leste,0.0,0.0,0.0,0.0,,,6.95,Baixo
+Luciara,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,6.85,Baixo
+Planalto da Serra,Cuiabá,0.0,0.0,0.0,0.0,,,6.84,Baixo
+Itiquira,Rondonópolis,0.0,0.0,0.0,0.0,,,6.63,Baixo
+Castanheira,Juína,0.0,0.0,0.0,0.0,,,6.54,Baixo
+São Pedro da Cipa,Jaciara,0.0,0.0,0.0,0.0,,,6.39,Baixo
+Novo São Joaquim,Barra do Garças,0.0,0.0,0.0,0.0,,,6.29,Baixo
+Dom Aquino,Jaciara,0.0,0.0,0.0,0.0,,,6.08,Baixo
+Araguainha,Rondonópolis,0.0,0.0,0.0,0.0,,,5.83,Baixo
+São Félix do Araguaia,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,5.75,Baixo
+Ribeirãozinho,Barra do Garças,0.0,0.0,0.0,0.0,,,5.74,Baixo
+São José do Povo,Rondonópolis,0.0,0.0,0.0,0.0,,,5.72,Baixo
+Santo Antônio do Leste,Primavera do Leste,0.0,0.0,0.0,0.0,,,5.64,Baixo
+Alto Boa Vista,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,5.5,Baixo
+Alto Araguaia,Rondonópolis,0.0,0.0,0.0,0.0,,,5.46,Baixo
+Santa Terezinha,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,5.39,Baixo
+Itanhangá,Sorriso,0.0,0.0,0.0,0.0,,,5.38,Baixo
+Santa Rita do Trivelato,Sorriso,0.0,0.0,0.0,0.0,,,5.31,Baixo
+Santa Cruz do Xingu,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,5.28,Baixo
+Nova Xavantina,Barra do Garças,0.0,0.0,0.0,0.0,,,5.06,Baixo
+Rondolândia,Juína,1.0,0.0,28.425241614553723,0.0,,,4.95,Baixo
+Bom Jesus do Araguaia,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,4.92,Baixo
+Serra Nova Dourada,Confresa - Vila Rica,0.0,0.0,0.0,0.0,,,4.82,Baixo
+Canabrava do Norte,Confresa - Vila Rica,1.0,0.0,22.46686137946529,0.0,,,4.82,Baixo

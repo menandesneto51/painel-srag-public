@@ -1,0 +1,13 @@
+*.dbf
+*.csv
+*.xlsx
+*.parquet
+*.feather
+*.sqlite
+*.db
+dbf_extraidos/
+logs/
+Downloads/
+SIVEP_COMPILADO/
+.streamlit/secrets.toml
+.env
