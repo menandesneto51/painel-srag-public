@@ -23,34 +23,48 @@ BLACK_LAYOUT = dict(
     plot_bgcolor="white",
 )
 
-REQUIRED_FILES = {
-    "kpis": DATA_DIR / "kpis.json",
-    "weekly": DATA_DIR / "weekly_summary.csv",
-    "risk": DATA_DIR / "risk_summary.csv",
-    "silent": DATA_DIR / "silent_summary.csv",
-    "virology": DATA_DIR / "virology_summary.csv",
-    "forecast": DATA_DIR / "forecast_summary.csv",
-    "or_obito": DATA_DIR / "or_obito_summary.csv",
-    "or_uti": DATA_DIR / "or_uti_summary.csv",
-    "metadata": DATA_DIR / "metadata_public.json",
+FILE_NAMES = {
+    "kpis": "kpis.json",
+    "weekly": "weekly_summary.csv",
+    "risk": "risk_summary.csv",
+    "silent": "silent_summary.csv",
+    "virology": "virology_summary.csv",
+    "forecast": "forecast_summary.csv",
+    "or_obito": "or_obito_summary.csv",
+    "or_uti": "or_uti_summary.csv",
+    "metadata": "metadata_public.json",
 }
 
-def check_files():
-    return [str(p.name) for p in REQUIRED_FILES.values() if not p.exists()]
+def resolve_path(filename: str) -> Path:
+    p1 = DATA_DIR / filename
+    p2 = APP_DIR / filename
+    if p1.exists():
+        return p1
+    if p2.exists():
+        return p2
+    return p1
+
+def build_required_files():
+    return {key: resolve_path(name) for key, name in FILE_NAMES.items()}
+
+def check_files(required_files):
+    return [str(p.name) for p in required_files.values() if not p.exists()]
 
 @st.cache_data(show_spinner=False)
 def load_public_data():
-    kpis = json.loads(REQUIRED_FILES["kpis"].read_text(encoding="utf-8"))
-    metadata = json.loads(REQUIRED_FILES["metadata"].read_text(encoding="utf-8"))
+    required_files = build_required_files()
 
-    weekly = pd.read_csv(REQUIRED_FILES["weekly"])
-    risk = pd.read_csv(REQUIRED_FILES["risk"])
-    silent = pd.read_csv(REQUIRED_FILES["silent"])
-    virology = pd.read_csv(REQUIRED_FILES["virology"])
-    forecast = pd.read_csv(REQUIRED_FILES["forecast"])
-    or_obito = pd.read_csv(REQUIRED_FILES["or_obito"])
-    or_uti = pd.read_csv(REQUIRED_FILES["or_uti"])
-    return kpis, metadata, weekly, risk, silent, virology, forecast, or_obito, or_uti
+    kpis = json.loads(required_files["kpis"].read_text(encoding="utf-8"))
+    metadata = json.loads(required_files["metadata"].read_text(encoding="utf-8"))
+
+    weekly = pd.read_csv(required_files["weekly"])
+    risk = pd.read_csv(required_files["risk"])
+    silent = pd.read_csv(required_files["silent"])
+    virology = pd.read_csv(required_files["virology"])
+    forecast = pd.read_csv(required_files["forecast"])
+    or_obito = pd.read_csv(required_files["or_obito"])
+    or_uti = pd.read_csv(required_files["or_uti"])
+    return required_files, kpis, metadata, weekly, risk, silent, virology, forecast, or_obito, or_uti
 
 def fmt_value(val, is_percent=False):
     if pd.isna(val):
@@ -77,15 +91,18 @@ def bar_chart(df, x, y, title, color=None, orientation="v"):
     st.plotly_chart(fig, use_container_width=True)
 
 def main():
-    missing = check_files()
+    required_files = build_required_files()
+    missing = check_files(required_files)
     if missing:
-        st.error("Arquivos públicos ausentes em data_public/: " + ", ".join(missing))
+        st.error("Arquivos públicos ausentes: " + ", ".join(missing))
+        st.info("O app procura primeiro em data_public/ e depois na raiz do repositório.")
         st.stop()
 
-    kpis, metadata, weekly, risk, silent, virology, forecast, or_obito, or_uti = load_public_data()
+    required_files, kpis, metadata, weekly, risk, silent, virology, forecast, or_obito, or_uti = load_public_data()
 
     st.title("Painel SRAG Público")
     st.caption("Versão publicável do painel: lê apenas agregados públicos, sem base bruta do SIVEP.")
+    st.caption("Arquivos detectados automaticamente em data_public/ ou na raiz do repositório.")
 
     c1, c2, c3 = st.columns(3)
     c1.write(f"**Ano de referência:** {metadata.get('year', 'NA')}")
@@ -140,7 +157,7 @@ def main():
         "Virologia",
         "Nowcasting e Forecast",
         "Odds Ratio",
-        "Tabelas"
+        "Arquivos"
     ])
 
     with tabs[0]:
@@ -163,7 +180,6 @@ def main():
             st.dataframe(risk_view.head(30), use_container_width=True)
         else:
             st.info("Sem dados de risco.")
-
         st.markdown("**Municípios silenciosos prioritários**")
         if not silent.empty:
             st.dataframe(silent.head(30), use_container_width=True)
@@ -200,9 +216,9 @@ def main():
             st.dataframe(or_uti, use_container_width=True)
 
     with tabs[5]:
-        st.subheader("Arquivos públicos carregados")
-        for key, p in REQUIRED_FILES.items():
-            st.write(f"- {key}: {p.name}")
+        st.subheader("Arquivos públicos localizados")
+        for key, p in required_files.items():
+            st.write(f"- {key}: {p}")
 
 if __name__ == "__main__":
     main()
