@@ -3,7 +3,15 @@
   "version": "2.0.0-experimental",
   "status": "under_calibration",
   "target_year": 2026,
-  "history_years": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
+  "history_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
   "minimum_historical_years": 3,
   "seasonal_week_window": 2,
   "primary_metric": "hospitalizacao_100k",
@@ -16,8 +24,12 @@
   "baseline": {
     "center": "median",
     "dispersion": "MAD",
-    "quantiles": [0.25, 0.75],
-    "requires_complete_zero_weeks": true
+    "quantiles": [
+      0.25,
+      0.75
+    ],
+    "requires_complete_zero_weeks": true,
+    "rationale": "Baseline principal inicia com 2023-2025; demais anos ficam para análise de sensibilidade até backtesting."
   },
   "anomaly": {
     "robust_z_threshold": 3.5,
@@ -33,5 +45,41 @@
   "silence": {
     "enabled": false,
     "reason": "Aguardar calibração histórica e validação de completude/oportunidade."
-  }
+  },
+  "baseline_years_default": [
+    2023,
+    2024,
+    2025
+  ],
+  "sensitivity_year_sets": [
+    {
+      "name": "post_pandemic_recent",
+      "years": [
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "name": "extended_recent",
+      "years": [
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "name": "all_available",
+      "years": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    }
+  ]
 }
