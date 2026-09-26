@@ -16,7 +16,7 @@ O backtesting utiliza anos históricos em ordem temporal. Para cada ano holdout:
 
 O alvo inicial é:
 
-`máximo observado nas próximas N semanas >= quantil histórico municipal`
+`máximo observado nas N semanas subsequentes completas >= quantil histórico municipal`
 
 Configuração inicial:
 
