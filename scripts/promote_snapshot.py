@@ -95,6 +95,24 @@ def main() -> int:
         raise FileNotFoundError(f"Diretório candidato não encontrado: {args.candidate_dir}")
 
     approval = validate_approval(args.approval_file)
+
+    metadata_path = args.candidate_dir / "metadata_public.json"
+    if not metadata_path.exists():
+        raise FileNotFoundError(f"metadata_public.json ausente em {args.candidate_dir}")
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if str(metadata.get("publication_status", "")).strip().lower() != "validated":
+        raise ValueError(
+            "Snapshot candidato ainda não está validated. "
+            "Execute scripts/approve_candidate_snapshot.py antes da promoção."
+        )
+
+    embedded = metadata.get("approval") or {}
+    for key in ("snapshot_id", "approver", "approved_at"):
+        if str(embedded.get(key, "")) != str(approval.get(key, "")):
+            raise ValueError(
+                f"Aprovação embutida no metadata diverge do approval-file em {key}."
+            )
+
     issues = validate_candidate_set(args.candidate_dir)
 
     print(f"snapshot_id={approval['snapshot_id']}")
