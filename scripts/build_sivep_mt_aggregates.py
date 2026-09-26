@@ -43,17 +43,19 @@ def main() -> int:
             "Baixe a fonte pinada com scripts/download_official_sources.py."
         )
 
-    weekly, municipal, metadata = build_mt_aggregates(
+    weekly, municipal, municipal_weekly, metadata = build_mt_aggregates(
         args.sivep, args.population, args.config
     )
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     weekly_path = args.out_dir / "weekly_srag_mt_2026.csv"
     municipal_path = args.out_dir / "municipal_srag_mt_2026.csv"
+    municipal_weekly_path = args.out_dir / "municipal_weekly_srag_mt_2026.csv"
     metadata_path = args.out_dir / "sivep_mt_2026_metadata.json"
 
     weekly.to_csv(weekly_path, index=False, encoding="utf-8")
     municipal.to_csv(municipal_path, index=False, encoding="utf-8")
+    municipal_weekly.to_csv(municipal_weekly_path, index=False, encoding="utf-8")
     metadata_path.write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2),
         encoding="utf-8",
@@ -62,6 +64,7 @@ def main() -> int:
     print(json.dumps(metadata, ensure_ascii=False, indent=2))
     print(f"weekly={weekly_path}")
     print(f"municipal={municipal_path}")
+    print(f"municipal_weekly={municipal_weekly_path}")
     print(f"metadata={metadata_path}")
     return 0
 
