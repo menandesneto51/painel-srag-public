@@ -23,15 +23,15 @@ A v2 utiliza:
 
 ## Regras
 
-### Resultado molecular interpretável
+### Resultado molecular disponível e conclusivo
 
-`PCR_RESUL` em:
+A v2 separa:
 
-- 1 — detectável;
-- 2 — não detectável;
-- 3 — inconclusivo.
+- **resultado disponível:** `PCR_RESUL` em 1, 2 ou 3;
+- **resultado conclusivo:** `PCR_RESUL` em 1 ou 2;
+- **resultado inconclusivo:** `PCR_RESUL = 3`.
 
-A cobertura de resultado molecular é apresentada como indicador operacional. Para análises de positividade estrita, o denominador deverá ser redefinido conforme a pergunta analítica.
+Assim, um resultado inconclusivo permanece visível, mas não é tratado como conclusivo. Para análises de positividade estrita, o denominador deverá ser validado conforme a pergunta analítica.
 
 ### Detecções
 
@@ -65,7 +65,9 @@ A v2 não calcula "positividade específica por vírus" usando todos os testes m
 
 - detecções por vírus e SE;
 - participação entre detecções;
-- cobertura de resultado molecular;
+- cobertura de resultado molecular disponível;
+- cobertura de resultado molecular conclusivo;
+- resultados inconclusivos;
 - número de resultados detectáveis;
 - coinfecções;
 - detectáveis sem agente codificado.
