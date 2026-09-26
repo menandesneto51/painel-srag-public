@@ -118,6 +118,16 @@ def build_confidence_profile(
         list(config["required_dimensions"]),
     )
 
+    reporting_required = [
+        "outcome_completeness",
+        "timeliness",
+        "temporal_consistency",
+    ]
+    reporting_quality = overall_confidence(
+        components,
+        reporting_required,
+    )
+
     limiting = [
         name
         for name in config["required_dimensions"]
@@ -126,6 +136,7 @@ def build_confidence_profile(
 
     return {
         "confidence_class": overall,
+        "reporting_quality_class": reporting_quality,
         "limiting_dimensions": limiting,
         "components": components,
         "model_id": config["model_id"],
