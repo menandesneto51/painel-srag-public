@@ -11,7 +11,10 @@
       "landing_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026",
       "local_filename": "sivep_gripe_2026_2026-09-14.csv",
       "sensitivity": "public_source_microdata",
-      "publish_raw_in_repo": false
+      "publish_raw_in_repo": false,
+      "package_id": "39a4995f-4a6e-440f-8c8f-b00c81fae0d0",
+      "resource_id": "74091efc-3f75-42e8-a6fa-6b79a8d30582",
+      "ckan_api": "https://dadosabertos.saude.gov.br/api/3/action/package_show?id=39a4995f-4a6e-440f-8c8f-b00c81fae0d0"
     },
     "ibge_population_2026": {
       "publisher": "IBGE",
