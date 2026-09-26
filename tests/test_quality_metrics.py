@@ -15,9 +15,9 @@ class QualityMetricsTests(unittest.TestCase):
             {"codigo_ibge": "5103403", "municipio": "Cuiabá", "populacao": 700000},
         ]
         used = {"510340"}
-        candidate = 10000
+        candidate = 1
         while len(rows) < 142:
-            prefix = f"51{candidate:04d}"
+            prefix = f"510{candidate:03d}"
             candidate += 1
             if prefix in used:
                 continue
