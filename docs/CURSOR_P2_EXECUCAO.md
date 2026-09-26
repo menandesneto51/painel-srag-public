@@ -86,7 +86,37 @@ O script lê a `stable_week_provisional` do metadata P1 e gera:
 - `silence_signals.csv`;
 - `p2_manifest.json`.
 
-## 8. Regras de interpretação
+## 8. Backtesting retrospectivo
+
+Depois de construir o painel histórico:
+
+```bash
+python scripts/backtest_p2_signals.py
+```
+
+Saídas:
+
+- `data_candidate/backtest/anomaly_threshold_backtest.csv`;
+- `data_candidate/backtest/anomaly_backtest_predictions.csv`;
+- `data_candidate/backtest/backtest_manifest.json`.
+
+O backtesting trata cada ano elegível como holdout e usa somente anos anteriores no treinamento.
+
+Avaliar pelo menos:
+
+- sensibilidade;
+- especificidade;
+- PPV;
+- NPV;
+- taxa de sinal;
+- taxa de evento;
+- falsos positivos por município/porte;
+- falsos negativos;
+- estabilidade dos resultados entre anos.
+
+Não escolher limiar exclusivamente pelo melhor desempenho agregado.
+
+## 9. Regras de interpretação
 
 Não tratar como alerta operacional nenhum registro que contenha:
 
@@ -98,7 +128,7 @@ O baseline principal usa inicialmente **hospitalizações em contagem por munic�
 
 Métricas históricas por 100 mil permanecem bloqueadas enquanto não houver denominador populacional do próprio ano.
 
-## 9. Agentes no Cursor
+## 10. Agentes no Cursor
 
 Executar a revisão na ordem:
 
@@ -111,7 +141,7 @@ Executar a revisão na ordem:
 
 Gerar relatório de bloqueios antes de qualquer tentativa de promoção.
 
-## 10. Não promover ainda
+## 11. Não promover ainda
 
 O P2 não altera automaticamente:
 
