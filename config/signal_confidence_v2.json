@@ -1,0 +1,21 @@
+{
+  "model_id": "srag_mt_signal_confidence_v2",
+  "version": "2.0.0-experimental",
+  "status": "under_calibration",
+  "quality_thresholds": {
+    "notification_delay_high_max_days": 7,
+    "notification_delay_moderate_max_days": 14,
+    "outcome_complete_high_min_percent": 90,
+    "outcome_complete_moderate_min_percent": 75,
+    "temporal_inconsistency_high_max_percent": 1,
+    "temporal_inconsistency_moderate_max_percent": 5
+  },
+  "confidence_classes": [
+    "high_experimental",
+    "moderate_experimental",
+    "low_experimental",
+    "insufficient"
+  ],
+  "numeric_score_enabled": false,
+  "risk_separation": true
+}
