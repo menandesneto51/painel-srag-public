@@ -44,6 +44,7 @@ def validate_loaded_data(
     forecast: pd.DataFrame,
     or_obito: pd.DataFrame,
     or_uti: pd.DataFrame,
+    risk_candidate: pd.DataFrame | None = None,
 ) -> list[dict[str, str]]:
     issues: list[dict[str, str]] = []
 
@@ -153,6 +154,87 @@ def validate_loaded_data(
                 if ((vals < 0) | (vals > 100)).any():
                     issues.append(issue("error", "risk", "PERCENT_RANGE", f"{col} possui valor fora de 0..100."))
 
+    # --- Audited v2 territorial candidate ---
+    if risk_candidate is not None:
+        required_candidate = {
+            "codigo_ibge",
+            "NM_MUN",
+            "populacao",
+            "notificacoes",
+            "casos_recentes",
+            "incidencia_100k",
+            "incidencia_recente_100k",
+            "score_v2_status",
+        }
+        missing_candidate = required_candidate.difference(risk_candidate.columns)
+        if missing_candidate:
+            issues.append(issue(
+                "error",
+                "risk_candidate",
+                "SCHEMA_MISSING",
+                "Artefato territorial v2 sem colunas obrigatórias: " + ", ".join(sorted(missing_candidate)),
+            ))
+        else:
+            rc = risk_candidate.copy()
+            if len(rc) != 142:
+                issues.append(issue(
+                    "error",
+                    "risk_candidate",
+                    "MUNICIPAL_COUNT",
+                    f"Artefato territorial v2 deve conter 142 municípios; encontrados {len(rc)}.",
+                ))
+
+            codes = rc["codigo_ibge"].astype("string").str.replace(r"\\.0$", "", regex=True).str.zfill(7)
+            if codes.duplicated().any():
+                issues.append(issue("error", "risk_candidate", "DUPLICATE_IBGE", "Há códigos IBGE duplicados."))
+            if not codes.str.match(r"^51\\d{5}$", na=False).all():
+                issues.append(issue("error", "risk_candidate", "INVALID_IBGE", "Há código IBGE inválido ou fora de Mato Grosso."))
+
+            population = _numeric(rc["populacao"])
+            if population.isna().any() or (population <= 0).any():
+                issues.append(issue("error", "risk_candidate", "INVALID_POPULATION", "Há população municipal ausente ou não positiva."))
+            elif int(round(population.sum())) != 3_950_330:
+                issues.append(issue(
+                    "error",
+                    "risk_candidate",
+                    "STATE_POPULATION_MISMATCH",
+                    f"Soma populacional={int(round(population.sum()))}; esperado=3.950.330 para a referência IBGE 2026 versionada.",
+                ))
+
+            notifications = _numeric(rc["notificacoes"])
+            recent = _numeric(rc["casos_recentes"])
+            incidence = _numeric(rc["incidencia_100k"])
+            recent_incidence = _numeric(rc["incidencia_recente_100k"])
+
+            expected_incidence = notifications / population * 100000.0
+            expected_recent = recent / population * 100000.0
+
+            mismatch = (incidence - expected_incidence).abs() > 1e-4
+            recent_mismatch = (recent_incidence - expected_recent).abs() > 1e-4
+            if mismatch.fillna(True).any():
+                issues.append(issue(
+                    "error",
+                    "risk_candidate",
+                    "INCIDENCE_NOT_REPRODUCIBLE",
+                    "incidencia_100k não é reproduzível a partir de notificacoes/populacao em todas as linhas.",
+                ))
+            if recent_mismatch.fillna(True).any():
+                issues.append(issue(
+                    "error",
+                    "risk_candidate",
+                    "RECENT_INCIDENCE_NOT_REPRODUCIBLE",
+                    "incidencia_recente_100k não é reproduzível a partir de casos_recentes/populacao em todas as linhas.",
+                ))
+
+            statuses = set(rc["score_v2_status"].astype("string").str.lower().dropna().tolist())
+            if not statuses.issubset({"blocked", "under_calibration", "experimental"}):
+                issues.append(issue(
+                    "error",
+                    "risk_candidate",
+                    "UNAPPROVED_SCORE_STATUS",
+                    "score_v2_status contém estado não autorizado antes da calibração/backtesting.",
+                ))
+
     # --- Forecast ---
     if not forecast.empty:
         required = {"valor_esperado", "ic95_inf", "ic95_sup"}
@@ -220,6 +302,11 @@ def load_snapshot(root: Path) -> dict[str, Any]:
         "forecast": read_csv("forecast_summary.csv"),
         "or_obito": read_csv("or_obito_summary.csv"),
         "or_uti": read_csv("or_uti_summary.csv"),
+        "risk_candidate": (
+            read_csv("risk_summary_v2_candidate.csv")
+            if find_public_file(root, "risk_summary_v2_candidate.csv").exists()
+            else None
+        ),
     }
 
 
