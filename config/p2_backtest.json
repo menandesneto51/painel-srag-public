@@ -1,0 +1,17 @@
+{
+  "model_id": "srag_mt_p2_backtest",
+  "version": "2.0.0-experimental",
+  "status": "under_calibration",
+  "metric": "hospitalizacoes",
+  "minimum_training_years": 3,
+  "seasonal_week_window": 2,
+  "robust_z_thresholds": [2.5, 3.0, 3.5, 4.0],
+  "future_window_weeks": 2,
+  "event_quantile": 0.9,
+  "event_definition": "future max activity in the evaluation window >= municipality-specific training quantile",
+  "limitations": [
+    "The event label is an internal calibration target, not a clinical or epidemiological gold standard.",
+    "Pandemic-era years must be examined in sensitivity analyses.",
+    "Zero-MAD signals are reported separately from robust-z threshold calibration."
+  ]
+}
