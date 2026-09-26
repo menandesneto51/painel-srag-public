@@ -49,6 +49,7 @@ jobs:
             scripts/build_baseline_signals.py \
             scripts/build_confidence_silence.py \
             scripts/run_p2_pipeline.py \
+            scripts/backtest_p2_signals.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -63,6 +64,7 @@ jobs:
             src/baseline_signals.py \
             src/epi_calendar.py \
             src/quality_metrics.py \
+            src/p2_backtest.py \
             src/risk_model.py \
             src/signal_confidence.py \
             src/silence_signals.py \
@@ -75,6 +77,7 @@ jobs:
             tests/test_confidence_silence.py \
             tests/test_epi_calendar.py \
             tests/test_historical_panel.py \
+            tests/test_p2_backtest.py \
             tests/test_public_data_validation.py \
             tests/test_public_snapshot_builder.py \
             tests/test_quality_metrics.py \
