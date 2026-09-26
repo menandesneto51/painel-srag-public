@@ -42,7 +42,8 @@ def load_config(path: Path) -> SivepConfig:
 
 
 def detect_text_format(path: Path) -> tuple[str, str]:
-    sample = path.read_bytes()[:65536]
+    with path.open("rb") as handle:
+        sample = handle.read(65536)
     encoding = "utf-8-sig"
     try:
         text = sample.decode(encoding)
