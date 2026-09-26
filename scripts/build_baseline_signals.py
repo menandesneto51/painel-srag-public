@@ -27,12 +27,13 @@ def main() -> int:
     parser.add_argument("--history", type=Path, required=True)
     parser.add_argument("--current", type=Path, required=True)
     parser.add_argument("--stable-week", type=int, required=True)
-    parser.add_argument("--metric", default="hospitalizacao_100k")
+    parser.add_argument("--metric", default=None)
     parser.add_argument("--config", type=Path, default=ROOT / "config" / "baseline_v2.json")
     parser.add_argument("--out-dir", type=Path, default=ROOT / "data_candidate" / "signals")
     args = parser.parse_args()
 
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
+    metric = args.metric or cfg["primary_metric"]
     history = pd.read_csv(args.history, dtype={"codigo_ibge": "string"})
     current = pd.read_csv(args.current, dtype={"codigo_ibge": "string"})
     if "ANO" not in current.columns:
@@ -40,7 +41,7 @@ def main() -> int:
 
     baseline = build_seasonal_baseline(
         history,
-        metric=args.metric,
+        metric=metric,
         target_year=int(cfg["target_year"]),
         min_years=int(cfg["minimum_historical_years"]),
         week_window=int(cfg["seasonal_week_window"]),
@@ -49,13 +50,13 @@ def main() -> int:
     anomalies = add_anomaly_signal(
         current,
         baseline,
-        metric=args.metric,
+        metric=metric,
         stable_week=args.stable_week,
         robust_z_threshold=float(cfg["anomaly"]["robust_z_threshold"]),
     )
     trends = build_trend_signals(
         current,
-        metric=args.metric,
+        metric=metric,
         stable_week=args.stable_week,
         recent_weeks=int(cfg["trend"]["recent_weeks"]),
         previous_weeks=int(cfg["trend"]["previous_weeks"]),
