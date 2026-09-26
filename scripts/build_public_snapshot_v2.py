@@ -3,18 +3,18 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in __import__("sys").path:
+    __import__("sys").path.insert(0, str(ROOT))
+
+from src.epi_calendar import epidemiological_week_start
 DEFAULT_CANDIDATE = ROOT / "data_candidate"
 DEFAULT_OUTPUT = DEFAULT_CANDIDATE / "public_snapshot"
-
-
-def iso_week_start(year: int, week: int) -> str:
-    return date.fromisocalendar(int(year), int(week), 1).isoformat()
 
 
 def safe_percent(numerator: float, denominator: float) -> float | None:
@@ -55,7 +55,7 @@ def build_weekly(
     weekly["ANO_NOTIF"] = year
     weekly["SE_NOTIF"] = weekly["SE"]
     weekly["SEMANA_NOTIF_INICIO"] = weekly["SE"].map(
-        lambda week: iso_week_start(year, int(week))
+        lambda week: epidemiological_week_start(year, int(week)).isoformat()
     )
     weekly["notificacoes"] = weekly["casos"]
     weekly["cura"] = weekly["curas"]
