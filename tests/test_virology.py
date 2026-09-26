@@ -38,7 +38,8 @@ class VirologyTests(unittest.TestCase):
             "time":{"symptom_week_field":"SEM_PRI"},
             "virology":{
                 "molecular_result_field":"PCR_RESUL",
-                "molecular_interpretable_values":["1","2","3"],
+                "molecular_result_available_values":["1","2","3"],
+                "molecular_conclusive_values":["1","2"],
                 "molecular_detectable_value":"1",
                 "influenza_positive_field":"POS_PCRFLU",
                 "influenza_positive_value":"1",
@@ -97,7 +98,9 @@ class VirologyTests(unittest.TestCase):
             self.assertEqual(counts["VSR"],1)
             self.assertEqual(counts["Detectável sem agente codificado"],1)
             self.assertEqual(int(weekly["registros_srag"].max()),4)
-            self.assertEqual(int(weekly["pcr_interpretavel"].max()),4)
+            self.assertEqual(int(weekly["pcr_resultado_disponivel"].max()),4)
+            self.assertEqual(int(weekly["pcr_conclusivo"].max()),4)
+            self.assertEqual(int(weekly["pcr_inconclusivo"].max()),0)
 
 
 if __name__=="__main__":
