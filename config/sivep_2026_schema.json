@@ -105,5 +105,149 @@
       "1",
       "2"
     ]
+  },
+  "associations": {
+    "model": "crude_2x2",
+    "outcomes": {
+      "obito": {
+        "field": "EVOLUCAO",
+        "case_values": [
+          "2"
+        ],
+        "control_values": [
+          "1"
+        ]
+      },
+      "uti": {
+        "field": "UTI",
+        "case_values": [
+          "1"
+        ],
+        "control_values": [
+          "2"
+        ]
+      }
+    },
+    "exposures": {
+      "Doença hepática": {
+        "field": "HEPATICA",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Doença renal": {
+        "field": "RENAL",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Imunodepressão": {
+        "field": "IMUNODEPRE",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Doença neurológica": {
+        "field": "NEUROLOGIC",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Pneumopatia": {
+        "field": "PNEUMOPATI",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Obesidade": {
+        "field": "OBESIDADE",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Diabetes": {
+        "field": "DIABETES",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Asma": {
+        "field": "ASMA",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Cardiopatia": {
+        "field": "CARDIOPATI",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Puerpério": {
+        "field": "PUERPERA",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Sexo masculino": {
+        "field": "CS_SEXO",
+        "yes": [
+          "M"
+        ],
+        "no": [
+          "F"
+        ]
+      },
+      "Gestação": {
+        "field": "CS_GESTANT",
+        "yes": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "no": [
+          "5"
+        ]
+      },
+      "Idade >= 60 anos": {
+        "derived": "age_ge_60",
+        "age_field": "NU_IDADE_N",
+        "age_type_field": "TP_IDADE"
+      }
+    },
+    "missing_policy": "pairwise_exclusion",
+    "zero_cell_policy": "haldane_anscombe_0_5",
+    "adjusted_model_enabled": false
   }
 }
