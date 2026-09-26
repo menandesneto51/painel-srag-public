@@ -48,6 +48,7 @@ jobs:
             scripts/build_historical_panel.py \
             scripts/build_baseline_signals.py \
             scripts/build_confidence_silence.py \
+            scripts/run_p2_pipeline.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
