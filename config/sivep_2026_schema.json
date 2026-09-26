@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "source": "SIVEP-Gripe",
+  "reference_year": 2026,
+  "territorial_scope": {
+    "residence_uf_field": "SG_UF",
+    "residence_uf_value": "MT",
+    "municipality_code_candidates": ["CO_MUN_RES"],
+    "municipality_name_candidates": ["ID_MN_RESI"]
+  },
+  "time": {
+    "symptom_week_field": "SEM_PRI",
+    "symptom_date_field": "DT_SIN_PRI",
+    "stable_week_policy": {
+      "mode": "lag_from_latest_observed",
+      "lag_weeks": 2,
+      "status": "provisional",
+      "requires_backtesting": true
+    }
+  },
+  "severity": {
+    "hospital_field": "HOSPITAL",
+    "hospital_yes": ["1"],
+    "icu_field": "UTI",
+    "icu_yes": ["1"],
+    "outcome_field": "EVOLUCAO",
+    "cure": ["1"],
+    "death": ["2"],
+    "death_other_causes": ["3"],
+    "ignored": ["9"]
+  },
+  "publication": {
+    "raw_source_in_repository": false,
+    "aggregate_by_residence": true,
+    "municipality_key": "codigo_ibge",
+    "municipality_name_is_not_key": true
+  }
+}
