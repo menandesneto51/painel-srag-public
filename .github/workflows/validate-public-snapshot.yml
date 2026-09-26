@@ -31,10 +31,20 @@ jobs:
 
       - name: Compile Python
         run: |
-          python -m py_compile             app_publico_streamlit.py             public_data_validation.py             scripts/validate_public_data.py             tests/test_public_data_validation.py
+          python -m py_compile \
+            app_publico_streamlit.py \
+            public_data_validation.py \
+            scripts/validate_public_data.py \
+            scripts/enforce_publication_policy.py \
+            scripts/download_official_sources.py \
+            scripts/build_population_reference.py \
+            tests/test_public_data_validation.py
 
       - name: Run regression tests
         run: python -m unittest discover -s tests -v
 
-      - name: Validate public snapshot
-        run: python scripts/validate_public_data.py
+      - name: Print epidemiological validation report
+        run: python scripts/validate_public_data.py || true
+
+      - name: Enforce publication policy
+        run: python scripts/enforce_publication_policy.py
