@@ -35,6 +35,8 @@ class HistoricalPanelTests(unittest.TestCase):
         self.assertEqual(len(panel), 142 * weeks)
         self.assertFalse(panel.duplicated(["ANO", "SE", "codigo_ibge"]).any())
         self.assertEqual(int(panel["casos"].sum()), 2)
+        self.assertTrue((panel["ano_populacao"] == 2026).all())
+        self.assertTrue((panel["population_denominator_status"] == "current_reference_not_annual").all())
 
         zero_row = panel.loc[
             (panel["codigo_ibge"] == population.iloc[0]["codigo_ibge"])
