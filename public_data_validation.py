@@ -184,10 +184,10 @@ def validate_loaded_data(
                     f"Artefato territorial v2 deve conter 142 municípios; encontrados {len(rc)}.",
                 ))
 
-            codes = rc["codigo_ibge"].astype("string").str.replace(r"\\.0$", "", regex=True).str.zfill(7)
+            codes = rc["codigo_ibge"].astype("string").str.replace(r"\.0$", "", regex=True).str.zfill(7)
             if codes.duplicated().any():
                 issues.append(issue("error", "risk_candidate", "DUPLICATE_IBGE", "Há códigos IBGE duplicados."))
-            if not codes.str.match(r"^51\\d{5}$", na=False).all():
+            if not codes.str.match(r"^51\d{5}$", na=False).all():
                 issues.append(issue("error", "risk_candidate", "INVALID_IBGE", "Há código IBGE inválido ou fora de Mato Grosso."))
 
             population = _numeric(rc["populacao"])
