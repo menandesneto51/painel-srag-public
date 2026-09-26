@@ -47,6 +47,7 @@ jobs:
             scripts/download_sivep_history.py \
             scripts/build_historical_panel.py \
             scripts/build_baseline_signals.py \
+            scripts/build_confidence_silence.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -62,12 +63,15 @@ jobs:
             src/epi_calendar.py \
             src/quality_metrics.py \
             src/risk_model.py \
+            src/signal_confidence.py \
+            src/silence_signals.py \
             src/stability.py \
             src/vintage_backtest.py \
             src/virology.py \
             src/sivep_pipeline.py \
             tests/test_associations.py \
             tests/test_baseline_signals.py \
+            tests/test_confidence_silence.py \
             tests/test_epi_calendar.py \
             tests/test_historical_panel.py \
             tests/test_public_data_validation.py \
