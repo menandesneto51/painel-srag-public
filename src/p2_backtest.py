@@ -25,9 +25,12 @@ def _future_max(values: pd.Series, window: int) -> pd.Series:
     arr = pd.to_numeric(values, errors="coerce").to_numpy(dtype=float)
     result = np.full(len(arr), np.nan)
     for i in range(len(arr)):
-        end = min(len(arr), i + window)
-        segment = arr[i:end]
-        if len(segment):
+        start = i + 1
+        end = start + window
+        if end > len(arr):
+            continue
+        segment = arr[start:end]
+        if len(segment) == window:
             result[i] = np.nanmax(segment)
     return pd.Series(result, index=values.index)
 
