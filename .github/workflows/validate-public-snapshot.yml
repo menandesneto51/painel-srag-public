@@ -39,9 +39,12 @@ jobs:
             scripts/download_official_sources.py \
             scripts/build_population_reference.py \
             scripts/rebuild_risk_incidence.py \
+            scripts/build_sivep_mt_aggregates.py \
             src/risk_model.py \
+            src/sivep_pipeline.py \
             tests/test_public_data_validation.py \
-            tests/test_risk_model.py
+            tests/test_risk_model.py \
+            tests/test_sivep_pipeline.py
 
       - name: Run regression tests
         run: python -m unittest discover -s tests -v
