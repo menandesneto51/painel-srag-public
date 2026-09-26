@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 from datetime import date
+
+from src.epi_calendar import epidemiological_week_start
 from pathlib import Path
 
 import pandas as pd
@@ -29,10 +31,6 @@ def load_vintages(root: Path) -> list[tuple[date, pd.DataFrame, dict]]:
         vintages.append((vintage_date, weekly, metadata))
 
     return sorted(vintages, key=lambda item: item[0])
-
-
-def _week_start(year: int, week: int) -> date:
-    return date.fromisocalendar(year, week, 1)
 
 
 def backtest_metric(
@@ -73,7 +71,7 @@ def backtest_metric(
                 continue
             value = float(getattr(row, metric))
             final = float(reference[week])
-            week_start = _week_start(year, week)
+            week_start = epidemiological_week_start(year, week)
             age_days = (vintage_date - week_start).days
             if age_days < 0:
                 continue
