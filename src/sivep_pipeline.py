@@ -144,13 +144,14 @@ def build_mt_aggregates(
     sivep_path: Path,
     population_path: Path,
     config_path: Path,
-) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict]:
     config = load_config(config_path)
     ref = municipality_reference(population_path)
     ref6 = ref.set_index("codigo_sivep_6")[["codigo_ibge", "municipio", "populacao"]]
 
     weekly_parts: list[pd.DataFrame] = []
     municipal_counts: dict[str, dict[str, int]] = {}
+    municipal_weekly_counts: dict[tuple[str, int], dict[str, int]] = {}
     total_rows = 0
     mt_rows = 0
     invalid_municipality = 0
@@ -205,6 +206,26 @@ def build_mt_aggregates(
                 curas=("cura", "sum"),
             )
         )
+
+        mw = (
+            chunk.dropna(subset=["SE"])
+            .groupby(["codigo_sivep_6", "SE"], as_index=False)
+            .agg(
+                casos=("codigo_sivep_6", "size"),
+                hospitalizacoes=("hospitalizado", "sum"),
+                uti=("uti", "sum"),
+                obitos=("obito", "sum"),
+                curas=("cura", "sum"),
+            )
+        )
+        for row in mw.itertuples(index=False):
+            key = (row.codigo_sivep_6, int(row.SE))
+            acc = municipal_weekly_counts.setdefault(
+                key,
+                {"casos": 0, "hospitalizacoes": 0, "uti": 0, "obitos": 0, "curas": 0},
+            )
+            for field in ("casos", "hospitalizacoes", "uti", "obitos", "curas"):
+                acc[field] += int(getattr(row, field))
         for row in m.itertuples(index=False):
             acc = municipal_counts.setdefault(
                 row.codigo_sivep_6,
@@ -242,6 +263,33 @@ def build_mt_aggregates(
     if len(municipal) != 142 or municipal["codigo_ibge"].duplicated().any():
         raise ValueError("Agregado municipal final não preservou os 142 códigos IBGE únicos.")
 
+    ref_lookup = ref.set_index("codigo_sivep_6")
+    municipal_weekly_rows = []
+    for (code, week), values in sorted(
+        municipal_weekly_counts.items(),
+        key=lambda item: (item[0][1], item[0][0]),
+    ):
+        ref_row = ref_lookup.loc[code]
+        population = int(ref_row["populacao"])
+        row = {
+            "codigo_ibge": ref_row["codigo_ibge"],
+            "codigo_sivep_6": code,
+            "municipio": ref_row["municipio"],
+            "populacao": population,
+            "SE": int(week),
+            **values,
+        }
+        row["incidencia_srag_100k"] = values["casos"] / population * 100000.0
+        row["hospitalizacao_100k"] = values["hospitalizacoes"] / population * 100000.0
+        row["uti_100k"] = values["uti"] / population * 100000.0
+        row["obito_100k"] = values["obitos"] / population * 100000.0
+        municipal_weekly_rows.append(row)
+
+    municipal_weekly = pd.DataFrame(municipal_weekly_rows)
+    if not municipal_weekly.empty:
+        if municipal_weekly.duplicated(["codigo_ibge", "SE"]).any():
+            raise ValueError("Agregado municipal semanal contém chave codigo_ibge+SE duplicada.")
+
     max_week = int(weekly["SE"].max()) if not weekly.empty else None
     stable_week = None
     if max_week is not None:
@@ -258,8 +306,9 @@ def build_mt_aggregates(
         "stable_week_lag": config.stable_lag_weeks,
         "stable_week_status": "provisional_requires_backtesting",
         "municipality_count": 142,
+        "municipal_weekly_rows": int(len(municipal_weekly)),
         "population_total": int(municipal["populacao"].sum()),
         "territorial_basis": "residence",
     }
 
-    return weekly, municipal, metadata
+    return weekly, municipal, municipal_weekly, metadata
