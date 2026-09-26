@@ -15,6 +15,12 @@ from src.sivep_pipeline import (
 )
 
 
+def _text(value: object) -> str:
+    if value is None or pd.isna(value):
+        return ""
+    return str(value).strip()
+
+
 def build_virology_metrics(
     sivep_path: Path,
     population_path: Path,
@@ -79,7 +85,7 @@ def build_virology_metrics(
     other_positive_value = str(virology["other_virus_positive_value"])
     flu_types = {str(k): v for k, v in virology["influenza_types"].items()}
 
-    for chunk in pd.read_csv(
+    reader = pd.read_csv(
         sivep_path,
         sep=sep,
         encoding=encoding,
@@ -87,78 +93,83 @@ def build_virology_metrics(
         usecols=required,
         chunksize=chunksize,
         low_memory=False,
-    ):
-        uf = chunk[uf_field].astype("string").str.strip().str.upper()
-        chunk = chunk.loc[uf == territory["residence_uf_value"]].copy()
-        mt_rows += len(chunk)
-        if chunk.empty:
-            continue
+    )
+    try:
+        chunks = reader
+        for chunk in chunks:
+            uf = chunk[uf_field].astype("string").str.strip().str.upper()
+            chunk = chunk.loc[uf == territory["residence_uf_value"]].copy()
+            mt_rows += len(chunk)
+            if chunk.empty:
+                continue
 
-        chunk["codigo_sivep_6"] = chunk[mun_field].map(digits).str[:6]
-        valid_mun = chunk["codigo_sivep_6"].isin(valid_codes)
-        invalid_municipality += int((~valid_mun).sum())
-        chunk = chunk.loc[valid_mun].copy()
-        if chunk.empty:
-            continue
+            chunk["codigo_sivep_6"] = chunk[mun_field].map(digits).str[:6]
+            valid_mun = chunk["codigo_sivep_6"].isin(valid_codes)
+            invalid_municipality += int((~valid_mun).sum())
+            chunk = chunk.loc[valid_mun].copy()
+            if chunk.empty:
+                continue
 
-        chunk["SE"] = chunk[week_field].map(lambda x: normalize_week(x, year))
-        invalid_week += int(chunk["SE"].isna().sum())
-        chunk = chunk.dropna(subset=["SE"]).copy()
-        if chunk.empty:
-            continue
+            chunk["SE"] = chunk[week_field].map(lambda x: normalize_week(x, year))
+            invalid_week += int(chunk["SE"].isna().sum())
+            chunk = chunk.dropna(subset=["SE"]).copy()
+            if chunk.empty:
+                continue
 
-        chunk["SE"] = chunk["SE"].astype(int)
+            chunk["SE"] = chunk["SE"].astype(int)
 
-        for row in chunk.itertuples(index=False):
-            data = row._asdict()
-            code = str(data["codigo_sivep_6"])
-            week = int(data["SE"])
-            pcr_result = str(data.get(molecular_field) or "").strip()
+            for row in chunk.itertuples(index=False):
+                data = row._asdict()
+                code = str(data["codigo_sivep_6"])
+                week = int(data["SE"])
+                pcr_result = _text(data.get(molecular_field))
 
-            weekly_totals[week]["registros"] += 1
-            municipal_totals[(code, week)]["registros"] += 1
+                weekly_totals[week]["registros"] += 1
+                municipal_totals[(code, week)]["registros"] += 1
 
-            if pcr_result in available_values:
-                weekly_totals[week]["pcr_resultado_disponivel"] += 1
-                municipal_totals[(code, week)]["pcr_resultado_disponivel"] += 1
+                if pcr_result in available_values:
+                    weekly_totals[week]["pcr_resultado_disponivel"] += 1
+                    municipal_totals[(code, week)]["pcr_resultado_disponivel"] += 1
 
-            if pcr_result in conclusive_values:
-                weekly_totals[week]["pcr_conclusivo"] += 1
-                municipal_totals[(code, week)]["pcr_conclusivo"] += 1
+                if pcr_result in conclusive_values:
+                    weekly_totals[week]["pcr_conclusivo"] += 1
+                    municipal_totals[(code, week)]["pcr_conclusivo"] += 1
 
-            if pcr_result == "3":
-                weekly_totals[week]["pcr_inconclusivo"] += 1
-                municipal_totals[(code, week)]["pcr_inconclusivo"] += 1
+                if pcr_result == "3":
+                    weekly_totals[week]["pcr_inconclusivo"] += 1
+                    municipal_totals[(code, week)]["pcr_inconclusivo"] += 1
 
-            if pcr_result == detectable_value:
-                weekly_totals[week]["pcr_detectavel"] += 1
-                municipal_totals[(code, week)]["pcr_detectavel"] += 1
+                if pcr_result == detectable_value:
+                    weekly_totals[week]["pcr_detectavel"] += 1
+                    municipal_totals[(code, week)]["pcr_detectavel"] += 1
 
-            agents: set[str] = set()
+                agents: set[str] = set()
 
-            flu_pos = str(data.get(influenza_positive_field) or "").strip()
-            flu_type = str(data.get(influenza_type_field) or "").strip()
-            if flu_pos == flu_positive_value and flu_type in flu_types:
-                agents.add(flu_types[flu_type])
+                flu_pos = _text(data.get(influenza_positive_field))
+                flu_type = _text(data.get(influenza_type_field))
+                if flu_pos == flu_positive_value and flu_type in flu_types:
+                    agents.add(flu_types[flu_type])
 
-            other_pos = str(data.get(other_positive_field) or "").strip()
-            if other_pos == other_positive_value:
-                for virus, field in marker_fields.items():
-                    if str(data.get(field) or "").strip() == marker_value:
-                        agents.add(virus)
+                other_pos = _text(data.get(other_positive_field))
+                if other_pos == other_positive_value:
+                    for virus, field in marker_fields.items():
+                        if _text(data.get(field)) == marker_value:
+                            agents.add(virus)
 
-            if pcr_result == detectable_value and not agents:
-                agents.add("Detectável sem agente codificado")
-                detectable_without_agent += 1
+                if pcr_result == detectable_value and not agents:
+                    agents.add("Detectável sem agente codificado")
+                    detectable_without_agent += 1
 
-            if len(agents) > 1:
-                records_with_multiple_agents += 1
+                if len(agents) > 1:
+                    records_with_multiple_agents += 1
 
-            for agent in agents:
-                weekly_detections[(week, agent)] += 1
-                municipal_detections[(code, week, agent)] += 1
-                total_agent_detections += 1
+                for agent in agents:
+                    weekly_detections[(week, agent)] += 1
+                    municipal_detections[(code, week, agent)] += 1
+                    total_agent_detections += 1
 
+    finally:
+        reader.close()
     weekly_rows = []
     all_weeks = sorted(weekly_totals)
     all_agents = sorted({agent for _, agent in weekly_detections})
