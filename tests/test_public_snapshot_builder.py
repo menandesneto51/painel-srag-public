@@ -27,7 +27,7 @@ class PublicSnapshotBuilderTests(unittest.TestCase):
             municipalities = []
             weekly_mun = []
             for i in range(142):
-                code = f"510{i:04d}" + "0"
+                code = f"510{i:03d}0"
                 pop = 1000
                 cases = 0
                 if i == 0:
