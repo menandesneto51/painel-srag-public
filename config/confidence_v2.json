@@ -1,0 +1,68 @@
+{
+  "model_id": "srag_mt_signal_confidence_v2",
+  "version": "2.0.0-experimental",
+  "status": "experimental",
+  "numeric_score_enabled": false,
+  "overall_rule": "worst_required_dimension",
+  "required_dimensions": [
+    "stability",
+    "volume",
+    "outcome_completeness",
+    "timeliness",
+    "temporal_consistency"
+  ],
+  "optional_dimensions": [
+    "laboratory_coverage",
+    "vintage_depth",
+    "baseline_depth"
+  ],
+  "thresholds": {
+    "volume": {
+      "direction": "higher_better",
+      "high": 20,
+      "moderate": 5,
+      "low": 1
+    },
+    "outcome_completeness": {
+      "direction": "higher_better",
+      "high": 90,
+      "moderate": 75,
+      "low": 50
+    },
+    "timeliness": {
+      "direction": "lower_better",
+      "high": 2,
+      "moderate": 7,
+      "low": 14
+    },
+    "temporal_consistency": {
+      "direction": "lower_better",
+      "high": 1,
+      "moderate": 5,
+      "low": 10
+    },
+    "laboratory_coverage": {
+      "direction": "higher_better",
+      "high": 80,
+      "moderate": 60,
+      "low": 40
+    },
+    "vintage_depth": {
+      "direction": "higher_better",
+      "high": 3,
+      "moderate": 2,
+      "low": 1
+    },
+    "baseline_depth": {
+      "direction": "higher_better",
+      "high": 5,
+      "moderate": 4,
+      "low": 3
+    }
+  },
+  "notes": [
+    "Limiar inicial experimental; requer calibração institucional.",
+    "Confidence não compõe automaticamente risco epidemiológico.",
+    "Uma dimensão essencial insuficiente limita a confiança geral."
+  ]
+}
