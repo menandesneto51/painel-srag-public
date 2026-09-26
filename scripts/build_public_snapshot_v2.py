@@ -200,12 +200,20 @@ def weekly_record(row: pd.Series | None) -> dict:
     for key, value in row.to_dict().items():
         if pd.isna(value):
             result[key] = None
-        elif isinstance(value, (int, float)) and float(value).is_integer():
-            result[key] = int(value)
-        elif isinstance(value, (int, float)):
-            result[key] = float(value)
-        else:
+            continue
+        if hasattr(value, "item"):
+            try:
+                value = value.item()
+            except ValueError:
+                pass
+        if isinstance(value, bool):
             result[key] = value
+        elif isinstance(value, int):
+            result[key] = value
+        elif isinstance(value, float):
+            result[key] = int(value) if value.is_integer() else value
+        else:
+            result[key] = str(value)
     return result
 
 
