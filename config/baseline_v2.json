@@ -1,0 +1,37 @@
+{
+  "model_id": "srag_mt_baseline_v2",
+  "version": "2.0.0-experimental",
+  "status": "under_calibration",
+  "target_year": 2026,
+  "history_years": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
+  "minimum_historical_years": 3,
+  "seasonal_week_window": 2,
+  "primary_metric": "hospitalizacao_100k",
+  "supported_metrics": [
+    "incidencia_srag_100k",
+    "hospitalizacao_100k",
+    "uti_100k",
+    "obito_100k"
+  ],
+  "baseline": {
+    "center": "median",
+    "dispersion": "MAD",
+    "quantiles": [0.25, 0.75],
+    "requires_complete_zero_weeks": true
+  },
+  "anomaly": {
+    "robust_z_threshold": 3.5,
+    "status": "experimental",
+    "requires_backtesting": true
+  },
+  "trend": {
+    "recent_weeks": 2,
+    "previous_weeks": 2,
+    "pseudocount": 0.5,
+    "status": "experimental"
+  },
+  "silence": {
+    "enabled": false,
+    "reason": "Aguardar calibração histórica e validação de completude/oportunidade."
+  }
+}
