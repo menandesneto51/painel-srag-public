@@ -66,6 +66,7 @@ jobs:
             tests/test_sivep_pipeline.py \
             tests/test_sivep_pipeline_integration.py \
             tests/test_sivep_source_watch.py \
+            tests/test_snapshot_promotion.py \
             tests/test_stability.py \
             tests/test_vintage_backtest.py \
             tests/test_virology.py
