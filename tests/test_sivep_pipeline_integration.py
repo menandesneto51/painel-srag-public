@@ -122,6 +122,7 @@ class SivepPipelineIntegrationTests(unittest.TestCase):
             self.assertEqual(metadata["municipality_count"], 142)
             self.assertEqual(metadata["max_observed_week"], 12)
             self.assertEqual(metadata["stable_week_provisional"], 10)
+            self.assertEqual(metadata["municipal_weekly_rows"], 142 * 12)
 
             cuiaba = municipal.loc[municipal["codigo_ibge"] == "5103403"].iloc[0]
             vg = municipal.loc[municipal["codigo_ibge"] == "5108402"].iloc[0]
@@ -140,7 +141,10 @@ class SivepPipelineIntegrationTests(unittest.TestCase):
             self.assertEqual(int(municipal_weekly["casos"].sum()), 3)
             self.assertFalse(municipal_weekly.duplicated(["codigo_ibge", "SE"]).any())
             cuiaba_weeks = municipal_weekly.loc[municipal_weekly["codigo_ibge"] == "5103403"]
-            self.assertEqual(set(cuiaba_weeks["SE"].astype(int).tolist()), {10, 11})
+            self.assertEqual(set(cuiaba_weeks["SE"].astype(int).tolist()), set(range(1, 13)))
+            week1 = cuiaba_weeks.loc[cuiaba_weeks["SE"] == 1].iloc[0]
+            self.assertEqual(int(week1["casos"]), 0)
+            self.assertEqual(float(week1["incidencia_srag_100k"]), 0.0)
 
 
 if __name__ == "__main__":
