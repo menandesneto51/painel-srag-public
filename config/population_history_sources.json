@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "publisher": "IBGE",
+  "purpose": "Fontes potenciais para denominadores municipais históricos; não habilita automaticamente baseline por taxas.",
+  "years": {
+    "2019": {
+      "status": "official_annual_estimate",
+      "reference_date": "2019-07-01",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2019/estimativa_dou_2019.xls"
+    },
+    "2020": {
+      "status": "official_annual_estimate",
+      "reference_date": "2020-07-01",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2020/estimativa_dou_2020.xls"
+    },
+    "2021": {
+      "status": "official_annual_estimate",
+      "reference_date": "2021-07-01",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2021/estimativa_dou_2021.xls"
+    },
+    "2022": {
+      "status": "census_population_published_in_2023",
+      "reference_date": "2022-07-01",
+      "url": "https://ftp.ibge.gov.br/Informacoes_Gerais_e_Referencia/Relacao_da_Populacao_dos_Municipios_para_publicacao_no_DOU_em_2023/POP_DOU_2023_Municipios_POP2022_Malha2023.xls"
+    },
+    "2023": {
+      "status": "no_equivalent_annual_estimate_selected",
+      "reference_date": null,
+      "url": null,
+      "methodological_blocker": "Não substituir automaticamente por Censo 2022, interpolação ou estimativa de outro ano."
+    },
+    "2024": {
+      "status": "official_annual_estimate",
+      "reference_date": "2024-07-01",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2024/estimativa_dou_2024.xls"
+    },
+    "2025": {
+      "status": "official_annual_estimate",
+      "reference_date": "2025-07-01",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2025/estimativa_dou_2025.xls"
+    },
+    "2026": {
+      "status": "official_annual_estimate",
+      "reference_date": "2026-07-01",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2026/estimativa_dou_2026.xlsx"
+    }
+  },
+  "activation_rule": {
+    "historical_rate_baseline": "disabled",
+    "requirement": "Cada linha histórica deve ter população do próprio ANO ou metodologia alternativa formalmente aprovada e documentada."
+  }
+}
