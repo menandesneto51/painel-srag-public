@@ -64,5 +64,42 @@
       "temporal_consistency": "datas em ordem lógica"
     },
     "risk_separation": true
+  },
+  "virology": {
+    "molecular_result_field": "PCR_RESUL",
+    "molecular_interpretable_values": [
+      "1",
+      "2",
+      "3"
+    ],
+    "molecular_detectable_value": "1",
+    "influenza_positive_field": "POS_PCRFLU",
+    "influenza_positive_value": "1",
+    "influenza_type_field": "TP_FLU_PCR",
+    "influenza_types": {
+      "1": "Influenza A",
+      "2": "Influenza B"
+    },
+    "other_virus_positive_field": "POS_PCROUT",
+    "other_virus_positive_value": "1",
+    "virus_markers": {
+      "SARS-CoV-2": "PCR_SARS2",
+      "VSR": "PCR_VSR",
+      "Parainfluenza 1": "PCR_PARA1",
+      "Parainfluenza 2": "PCR_PARA2",
+      "Parainfluenza 3": "PCR_PARA3",
+      "Parainfluenza 4": "PCR_PARA4",
+      "Adenovírus": "PCR_ADENO",
+      "Metapneumovírus": "PCR_METAP",
+      "Bocavírus": "PCR_BOCA",
+      "Rinovírus": "PCR_RINO",
+      "Outro vírus respiratório": "PCR_OUTRO"
+    },
+    "marker_value": "1",
+    "rules": {
+      "specific_virus_positivity_enabled": false,
+      "reason": "Ausência de marcador específico não comprova que aquele agente foi testado; reportar detecções e cobertura molecular, não positividade específica sem denominador validado.",
+      "coinfection_allowed": true
+    }
   }
 }
