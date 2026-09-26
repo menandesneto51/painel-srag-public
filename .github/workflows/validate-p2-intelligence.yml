@@ -39,12 +39,15 @@ jobs:
             scripts/build_historical_baseline.py \
             scripts/detect_anomalies.py \
             scripts/build_confidence_profiles.py \
+            scripts/classify_silence.py \
             src/historical_baseline.py \
             src/anomaly_detection.py \
             src/confidence.py \
+            src/silence.py \
             tests/test_historical_baseline.py \
             tests/test_anomaly_detection.py \
-            tests/test_confidence.py
+            tests/test_confidence.py \
+            tests/test_silence.py
 
       - name: Run full regression suite
         run: python -m unittest discover -s tests -v
