@@ -139,6 +139,16 @@ def build_seasonal_baseline(
     data = _ensure_history(history)
     if metric not in data.columns:
         raise ValueError(f"Métrica não disponível: {metric}")
+    if metric.endswith("_100k"):
+        if "ano_populacao" not in data.columns:
+            raise ValueError(
+                "Baseline histórico por 100 mil exige ano_populacao em cada linha."
+            )
+        denominator_year = pd.to_numeric(data["ano_populacao"], errors="coerce")
+        if denominator_year.isna().any() or not (denominator_year.astype(int) == data["ANO"]).all():
+            raise ValueError(
+                "Baseline histórico por 100 mil bloqueado: ano_populacao deve coincidir com ANO."
+            )
     if min_years < 2:
         raise ValueError("min_years deve ser >= 2.")
     if week_window < 0 or week_window > 10:
