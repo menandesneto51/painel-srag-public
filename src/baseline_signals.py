@@ -8,6 +8,8 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
+from src.epi_calendar import epidemiological_weeks_in_year
+
 
 REQUIRED_HISTORY_COLUMNS = {
     "ANO",
@@ -68,6 +70,59 @@ def _ensure_history(history: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def _validate_complete_history(data: pd.DataFrame, years: list[int]) -> None:
+    selected = data.loc[data["ANO"].isin(years)].copy()
+    if selected.empty:
+        raise ValueError(f"Nenhum dado disponível para os anos históricos selecionados: {years}")
+
+    codes = sorted(selected["codigo_ibge"].unique().tolist())
+    problems: list[str] = []
+    for year in years:
+        expected_weeks = set(range(1, epidemiological_weeks_in_year(year) + 1))
+        year_data = selected.loc[selected["ANO"] == year]
+        for code in codes:
+            observed = set(
+                year_data.loc[year_data["codigo_ibge"] == code, "SE"].astype(int).tolist()
+            )
+            missing = sorted(expected_weeks.difference(observed))
+            extra = sorted(observed.difference(expected_weeks))
+            if missing or extra:
+                problems.append(
+                    f"{year}/{code}: missing={missing[:5]} extra={extra[:5]}"
+                )
+                if len(problems) >= 10:
+                    break
+        if len(problems) >= 10:
+            break
+
+    if problems:
+        raise ValueError(
+            "Histórico não possui semanas explícitas completas. "
+            "Ausência de linha não pode ser tratada como zero. Exemplos: "
+            + "; ".join(problems)
+        )
+
+
+def _validate_current_coverage(data: pd.DataFrame, year: int, stable_week: int) -> None:
+    current = data.loc[data["ANO"] == year]
+    if current.empty:
+        raise ValueError(f"Sem painel semanal para o ano atual {year}.")
+    expected = set(range(1, int(stable_week) + 1))
+    problems: list[str] = []
+    for code, group in current.groupby("codigo_ibge", sort=False):
+        observed = set(group["SE"].astype(int).tolist())
+        missing = sorted(expected.difference(observed))
+        if missing:
+            problems.append(f"{code}: missing={missing[:5]}")
+            if len(problems) >= 10:
+                break
+    if problems:
+        raise ValueError(
+            "Painel atual não possui zeros explícitos até a stable_week. Exemplos: "
+            + "; ".join(problems)
+        )
+
+
 def _circular_week_distance(a: pd.Series, week: int) -> pd.Series:
     direct = (a - week).abs()
     return np.minimum(direct, 53 - direct)
@@ -79,6 +134,7 @@ def build_seasonal_baseline(
     target_year: int = 2026,
     min_years: int = 3,
     week_window: int = 2,
+    history_years: Iterable[int] | None = None,
 ) -> pd.DataFrame:
     data = _ensure_history(history)
     if metric not in data.columns:
@@ -88,7 +144,15 @@ def build_seasonal_baseline(
     if week_window < 0 or week_window > 10:
         raise ValueError("week_window fora do intervalo 0..10.")
 
-    hist = data.loc[data["ANO"] < target_year].copy()
+    available_before_target = sorted(data.loc[data["ANO"] < target_year, "ANO"].unique().tolist())
+    selected_years = sorted({int(y) for y in (history_years or available_before_target)})
+    selected_years = [y for y in selected_years if y < target_year]
+    if len(selected_years) < min_years:
+        raise ValueError(
+            f"Anos históricos selecionados insuficientes: {selected_years}; mínimo={min_years}."
+        )
+    hist = data.loc[data["ANO"].isin(selected_years)].copy()
+    _validate_complete_history(hist, selected_years)
     municipalities = (
         data.loc[data["ANO"] == target_year, ["codigo_ibge", "municipio"]]
         .drop_duplicates("codigo_ibge")
@@ -151,8 +215,10 @@ def add_anomaly_signal(
     robust_z_threshold: float = 3.5,
 ) -> pd.DataFrame:
     current = _ensure_history(current_weekly)
+    current_year = int(current["ANO"].max())
+    _validate_current_coverage(current, current_year, stable_week)
     current = current.loc[
-        (current["ANO"] == current["ANO"].max()) & (current["SE"] <= stable_week)
+        (current["ANO"] == current_year) & (current["SE"] <= stable_week)
     ].copy()
 
     base = baseline.loc[baseline["metric"] == metric].copy()
@@ -212,6 +278,7 @@ def build_trend_signals(
 ) -> pd.DataFrame:
     data = _ensure_history(current_weekly)
     year = int(data["ANO"].max())
+    _validate_current_coverage(data, year, stable_week)
     data = data.loc[(data["ANO"] == year) & (data["SE"] <= stable_week)].copy()
 
     needed = recent_weeks + previous_weeks
