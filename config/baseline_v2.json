@@ -14,8 +14,12 @@
   ],
   "minimum_historical_years": 3,
   "seasonal_week_window": 2,
-  "primary_metric": "hospitalizacao_100k",
+  "primary_metric": "hospitalizacoes",
   "supported_metrics": [
+    "casos",
+    "hospitalizacoes",
+    "uti",
+    "obitos",
     "incidencia_srag_100k",
     "hospitalizacao_100k",
     "uti_100k",
@@ -81,5 +85,11 @@
         2025
       ]
     }
-  ]
+  ],
+  "population_denominators": {
+    "historical_rate_baseline_enabled": false,
+    "requirement": "ano_populacao deve ser igual a ANO em todas as linhas para métricas *_100k",
+    "current_reference_year": 2026,
+    "status": "annual_historical_denominators_pending"
+  }
 }
