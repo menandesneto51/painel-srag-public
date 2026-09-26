@@ -1,0 +1,53 @@
+name: Validate P2 intelligence
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2-p2-inteligencia
+
+concurrency:
+  group: validate-srag-p2-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  intelligence-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile P2 modules
+        run: |
+          python -m py_compile \
+            scripts/download_historical_sources.py \
+            scripts/build_historical_baseline.py \
+            scripts/detect_anomalies.py \
+            scripts/build_confidence_profiles.py \
+            src/historical_baseline.py \
+            src/anomaly_detection.py \
+            src/confidence.py \
+            tests/test_historical_baseline.py \
+            tests/test_anomaly_detection.py \
+            tests/test_confidence.py
+
+      - name: Run full regression suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Enforce base publication safety
+        run: python scripts/enforce_publication_policy.py
