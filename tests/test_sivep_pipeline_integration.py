@@ -16,9 +16,9 @@ class SivepPipelineIntegrationTests(unittest.TestCase):
             {"codigo_ibge": "5108402", "municipio": "Várzea Grande", "populacao": 320000},
         ]
         used_prefixes = {"510340", "510840"}
-        candidate = 10000
+        candidate = 1
         while len(rows) < 142:
-            prefix = f"51{candidate:04d}"
+            prefix = f"510{candidate:03d}"
             candidate += 1
             if prefix in used_prefixes:
                 continue
