@@ -36,12 +36,22 @@ Semanas com zero devem existir explicitamente. Ausência de linha não é tratad
 
 Padrão inicial:
 
-- anos históricos anteriores ao ano-alvo;
+- conjunto principal: 2023–2025;
+- 2019–2025 preservado para análises de sensibilidade;
 - janela sazonal de ±2 SE;
 - centro = mediana;
 - dispersão = MAD;
 - Q25 e Q75 preservados;
-- mínimo de 3 anos históricos.
+- mínimo de 3 anos históricos;
+- semanas sem ocorrência precisam existir explicitamente como zero.
+
+### Denominadores históricos
+
+A referência municipal atualmente versionada é IBGE 2026. Ela é adequada para chave territorial e para indicadores de 2026, mas não será usada silenciosamente como denominador de anos anteriores.
+
+Por isso, o baseline principal usa inicialmente **contagens de hospitalizações dentro de cada município**. Métricas `*_100k` ficam bloqueadas para baseline histórico até que cada linha tenha `ano_populacao == ANO`.
+
+Isso evita criar uma série histórica de taxas com denominador temporalmente incorreto.
 
 O uso de MAD reduz sensibilidade a anos epidêmicos extremos, mas ainda exige backtesting local.
 
