@@ -29,6 +29,7 @@ FILE_NAMES = {
     "kpis": "kpis.json",
     "weekly": "weekly_summary.csv",
     "risk": "risk_summary.csv",
+    "risk_candidate": "risk_summary_v2_candidate.csv",
     "silent": "silent_summary.csv",
     "virology": "virology_summary.csv",
     "forecast": "forecast_summary.csv",
@@ -65,12 +66,13 @@ def load_public_data():
 
     weekly = pd.read_csv(required_files["weekly"], encoding="utf-8-sig")
     risk = pd.read_csv(required_files["risk"], encoding="utf-8-sig")
+    risk_candidate = pd.read_csv(required_files["risk_candidate"], encoding="utf-8-sig")
     silent = pd.read_csv(required_files["silent"], encoding="utf-8-sig")
     virology = pd.read_csv(required_files["virology"], encoding="utf-8-sig")
     forecast = pd.read_csv(required_files["forecast"], encoding="utf-8-sig")
     or_obito = pd.read_csv(required_files["or_obito"], encoding="utf-8-sig")
     or_uti = pd.read_csv(required_files["or_uti"], encoding="utf-8-sig")
-    return required_files, kpis, metadata, weekly, risk, silent, virology, forecast, or_obito, or_uti
+    return required_files, kpis, metadata, weekly, risk, risk_candidate, silent, virology, forecast, or_obito, or_uti
 
 
 def fmt_value(val, is_percent=False):
@@ -153,7 +155,7 @@ def main():
         st.info("O app procura primeiro em data_public/ e depois na raiz do repositório.")
         st.stop()
 
-    required_files, kpis, metadata, weekly, risk, silent, virology, forecast, or_obito, or_uti = load_public_data()
+    required_files, kpis, metadata, weekly, risk, risk_candidate, silent, virology, forecast, or_obito, or_uti = load_public_data()
 
     issues = validate_loaded_data(
         metadata=metadata,
@@ -234,26 +236,55 @@ def main():
             st.info("Sem dados semanais.")
 
     with tabs[1]:
-        st.subheader("Risco e municípios silenciosos")
-        risk_blocked = has_errors(issues, {"risk", "temporal"})
-        if risk_blocked:
-            st.warning(
-                "Visualização territorial bloqueada: os denominadores/populações ou a referência temporal "
-                "ainda não passaram pelos gates da v2. O ranking não será exibido para evitar interpretação indevida."
+        st.subheader("Território — incidência auditada")
+        st.info(
+            "A incidência abaixo foi recalculada com população IBGE 2026. "
+            "O score de risco legado permanece bloqueado e não participa desta ordenação."
+        )
+
+        if not risk_candidate.empty:
+            candidate = risk_candidate.copy()
+            candidate["incidencia_100k"] = pd.to_numeric(candidate["incidencia_100k"], errors="coerce")
+            candidate["incidencia_100k_legacy"] = pd.to_numeric(
+                candidate["incidencia_100k_legacy"], errors="coerce"
+            )
+            candidate["diferenca_incidencia"] = (
+                candidate["incidencia_100k_legacy"] - candidate["incidencia_100k"]
+            )
+
+            audited_view = candidate.sort_values("incidencia_100k", ascending=False)
+            bar_chart(
+                audited_view.head(20),
+                "NM_MUN",
+                "incidencia_100k",
+                "Top 20 municípios por incidência recalculada (/100 mil)",
+            )
+
+            display_cols = [
+                "codigo_ibge",
+                "NM_MUN",
+                "populacao",
+                "notificacoes",
+                "casos_recentes",
+                "incidencia_100k",
+                "incidencia_recente_100k",
+                "incidencia_100k_legacy",
+                "diferenca_incidencia",
+                "score_v2_status",
+            ]
+            st.dataframe(
+                audited_view[[c for c in display_cols if c in audited_view.columns]].head(50),
+                use_container_width=True,
             )
         else:
-            if not risk.empty:
-                risk_view = risk.copy().sort_values("score_risco_srag", ascending=False)
-                bar_chart(risk_view.head(20), "NM_MUN", "score_risco_srag", "Top 20 municípios por score de risco")
-                st.dataframe(risk_view.head(30), use_container_width=True)
-            else:
-                st.info("Sem dados de risco.")
+            st.warning("Artefato territorial auditado ainda não disponível.")
 
-            st.markdown("**Municípios silenciosos prioritários**")
-            if not silent.empty:
-                st.dataframe(silent.head(30), use_container_width=True)
-            else:
-                st.info("Sem municípios silenciosos.")
+        st.markdown("**Score de risco e silêncio epidemiológico**")
+        st.warning(
+            "Bloqueados nesta versão. O score legado foi calculado sobre denominadores inconsistentes "
+            "e sua fórmula original não está documentada no repositório. "
+            "O modelo v2 está em calibração e será liberado somente após backtesting."
+        )
 
     with tabs[2]:
         st.subheader("Virologia")
