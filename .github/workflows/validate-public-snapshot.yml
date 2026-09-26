@@ -40,14 +40,17 @@ jobs:
             scripts/rebuild_risk_incidence.py \
             scripts/build_sivep_mt_aggregates.py \
             scripts/build_quality_metrics.py \
+            scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
             scripts/build_virology_metrics.py \
             scripts/estimate_stability.py \
             scripts/capture_vintage.py \
             scripts/backtest_vintages.py \
             scripts/check_sivep_source.py \
+            scripts/approve_candidate_snapshot.py \
             scripts/promote_snapshot.py \
             src/associations.py \
+            src/epi_calendar.py \
             src/quality_metrics.py \
             src/risk_model.py \
             src/stability.py \
@@ -55,7 +58,9 @@ jobs:
             src/virology.py \
             src/sivep_pipeline.py \
             tests/test_associations.py \
+            tests/test_epi_calendar.py \
             tests/test_public_data_validation.py \
+            tests/test_public_snapshot_builder.py \
             tests/test_quality_metrics.py \
             tests/test_risk_model.py \
             tests/test_sivep_pipeline.py \
