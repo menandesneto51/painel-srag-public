@@ -12,6 +12,10 @@ SIVEP_COMPILADO/
 .streamlit/secrets.toml
 .env
 
+# Fontes brutas baixadas para reprocessamento local/institucional
+data_raw/
+data_internal/
+
 # manter só os agregados públicos
 !data_public/
 !data_public/*.json
