@@ -67,11 +67,6 @@
   },
   "virology": {
     "molecular_result_field": "PCR_RESUL",
-    "molecular_interpretable_values": [
-      "1",
-      "2",
-      "3"
-    ],
     "molecular_detectable_value": "1",
     "influenza_positive_field": "POS_PCRFLU",
     "influenza_positive_value": "1",
@@ -100,6 +95,15 @@
       "specific_virus_positivity_enabled": false,
       "reason": "Ausência de marcador específico não comprova que aquele agente foi testado; reportar detecções e cobertura molecular, não positividade específica sem denominador validado.",
       "coinfection_allowed": true
-    }
+    },
+    "molecular_result_available_values": [
+      "1",
+      "2",
+      "3"
+    ],
+    "molecular_conclusive_values": [
+      "1",
+      "2"
+    ]
   }
 }
