@@ -71,7 +71,8 @@ def build_virology_metrics(
     records_with_multiple_agents = 0
     detectable_without_agent = 0
 
-    interpretable_values = set(map(str, virology["molecular_interpretable_values"]))
+    available_values = set(map(str, virology["molecular_result_available_values"]))
+    conclusive_values = set(map(str, virology["molecular_conclusive_values"]))
     detectable_value = str(virology["molecular_detectable_value"])
     marker_value = str(virology["marker_value"])
     flu_positive_value = str(virology["influenza_positive_value"])
@@ -117,9 +118,17 @@ def build_virology_metrics(
             weekly_totals[week]["registros"] += 1
             municipal_totals[(code, week)]["registros"] += 1
 
-            if pcr_result in interpretable_values:
-                weekly_totals[week]["pcr_interpretavel"] += 1
-                municipal_totals[(code, week)]["pcr_interpretavel"] += 1
+            if pcr_result in available_values:
+                weekly_totals[week]["pcr_resultado_disponivel"] += 1
+                municipal_totals[(code, week)]["pcr_resultado_disponivel"] += 1
+
+            if pcr_result in conclusive_values:
+                weekly_totals[week]["pcr_conclusivo"] += 1
+                municipal_totals[(code, week)]["pcr_conclusivo"] += 1
+
+            if pcr_result == "3":
+                weekly_totals[week]["pcr_inconclusivo"] += 1
+                municipal_totals[(code, week)]["pcr_inconclusivo"] += 1
 
             if pcr_result == detectable_value:
                 weekly_totals[week]["pcr_detectavel"] += 1
@@ -156,7 +165,9 @@ def build_virology_metrics(
     for week in all_weeks:
         total = weekly_totals[week]
         registrations = int(total["registros"])
-        interpretable = int(total["pcr_interpretavel"])
+        available = int(total["pcr_resultado_disponivel"])
+        conclusive = int(total["pcr_conclusivo"])
+        inconclusive = int(total["pcr_inconclusivo"])
         detectable = int(total["pcr_detectavel"])
         for agent in all_agents:
             detections = int(weekly_detections.get((week, agent), 0))
@@ -165,10 +176,15 @@ def build_virology_metrics(
                 "virus": agent,
                 "deteccoes": detections,
                 "registros_srag": registrations,
-                "pcr_interpretavel": interpretable,
+                "pcr_resultado_disponivel": available,
+                "pcr_conclusivo": conclusive,
+                "pcr_inconclusivo": inconclusive,
                 "pcr_detectavel": detectable,
                 "cobertura_resultado_molecular_percent": (
-                    interpretable / registrations * 100.0 if registrations else None
+                    available / registrations * 100.0 if registrations else None
+                ),
+                "cobertura_resultado_conclusivo_percent": (
+                    conclusive / registrations * 100.0 if registrations else None
                 ),
                 "participacao_entre_deteccoes_percent": None,
             })
@@ -199,7 +215,9 @@ def build_virology_metrics(
             for agent in agents
         )
         registrations = int(total["registros"])
-        interpretable = int(total["pcr_interpretavel"])
+        available = int(total["pcr_resultado_disponivel"])
+        conclusive = int(total["pcr_conclusivo"])
+        inconclusive = int(total["pcr_inconclusivo"])
         detectable = int(total["pcr_detectavel"])
 
         for agent in agents:
@@ -211,10 +229,15 @@ def build_virology_metrics(
                 "virus": agent,
                 "deteccoes": detections,
                 "registros_srag": registrations,
-                "pcr_interpretavel": interpretable,
+                "pcr_resultado_disponivel": available,
+                "pcr_conclusivo": conclusive,
+                "pcr_inconclusivo": inconclusive,
                 "pcr_detectavel": detectable,
                 "cobertura_resultado_molecular_percent": (
-                    interpretable / registrations * 100.0 if registrations else None
+                    available / registrations * 100.0 if registrations else None
+                ),
+                "cobertura_resultado_conclusivo_percent": (
+                    conclusive / registrations * 100.0 if registrations else None
                 ),
                 "participacao_entre_deteccoes_percent": (
                     detections / detection_total * 100.0 if detection_total else None
@@ -237,7 +260,7 @@ def build_virology_metrics(
         "coinfection_allowed": True,
         "denominator_note": (
             "Ausência de marcador específico não comprova teste daquele agente. "
-            "A saída reporta detecções, participação entre detecções e cobertura de resultado molecular; "
+            "A saída separa resultado molecular disponível, conclusivo e inconclusivo, além de detecções; "
             "não usa positividade específica por vírus sem denominador validado."
         ),
     }
