@@ -268,34 +268,96 @@ def build_mt_aggregates(
     if len(municipal) != 142 or municipal["codigo_ibge"].duplicated().any():
         raise ValueError("Agregado municipal final não preservou os 142 códigos IBGE únicos.")
 
-    ref_lookup = ref.set_index("codigo_sivep_6")
-    municipal_weekly_rows = []
-    for (code, week), values in sorted(
-        municipal_weekly_counts.items(),
-        key=lambda item: (item[0][1], item[0][0]),
-    ):
-        ref_row = ref_lookup.loc[code]
-        population = int(ref_row["populacao"])
-        row = {
-            "codigo_ibge": ref_row["codigo_ibge"],
-            "codigo_sivep_6": code,
-            "municipio": ref_row["municipio"],
-            "populacao": population,
-            "SE": int(week),
-            **values,
-        }
-        row["incidencia_srag_100k"] = values["casos"] / population * 100000.0
-        row["hospitalizacao_100k"] = values["hospitalizacoes"] / population * 100000.0
-        row["uti_100k"] = values["uti"] / population * 100000.0
-        row["obito_100k"] = values["obitos"] / population * 100000.0
-        municipal_weekly_rows.append(row)
+    max_week = int(weekly["SE"].max()) if not weekly.empty else None
 
-    municipal_weekly = pd.DataFrame(municipal_weekly_rows)
-    if not municipal_weekly.empty:
+    if max_week is not None:
+        observed_rows = []
+        ref_lookup = ref.set_index("codigo_sivep_6")
+        for (code, week), values in sorted(
+            municipal_weekly_counts.items(),
+            key=lambda item: (item[0][1], item[0][0]),
+        ):
+            ref_row = ref_lookup.loc[code]
+            observed_rows.append({
+                "codigo_ibge": ref_row["codigo_ibge"],
+                "codigo_sivep_6": code,
+                "municipio": ref_row["municipio"],
+                "populacao": int(ref_row["populacao"]),
+                "SE": int(week),
+                **values,
+            })
+
+        observed = pd.DataFrame(observed_rows)
+        weeks = pd.DataFrame({"SE": list(range(1, max_week + 1))})
+        base = ref[["codigo_ibge", "codigo_sivep_6", "municipio", "populacao"]].copy()
+        base["_join"] = 1
+        weeks["_join"] = 1
+        municipal_weekly = base.merge(weeks, on="_join", how="inner").drop(columns="_join")
+
+        if not observed.empty:
+            municipal_weekly = municipal_weekly.merge(
+                observed[[
+                    "codigo_ibge",
+                    "SE",
+                    "casos",
+                    "hospitalizacoes",
+                    "uti",
+                    "obitos",
+                    "curas",
+                ]],
+                on=["codigo_ibge", "SE"],
+                how="left",
+                validate="one_to_one",
+            )
+        else:
+            for field in ("casos", "hospitalizacoes", "uti", "obitos", "curas"):
+                municipal_weekly[field] = 0
+
+        for field in ("casos", "hospitalizacoes", "uti", "obitos", "curas"):
+            municipal_weekly[field] = municipal_weekly[field].fillna(0).astype(int)
+
+        municipal_weekly["incidencia_srag_100k"] = (
+            municipal_weekly["casos"] / municipal_weekly["populacao"] * 100000.0
+        )
+        municipal_weekly["hospitalizacao_100k"] = (
+            municipal_weekly["hospitalizacoes"] / municipal_weekly["populacao"] * 100000.0
+        )
+        municipal_weekly["uti_100k"] = (
+            municipal_weekly["uti"] / municipal_weekly["populacao"] * 100000.0
+        )
+        municipal_weekly["obito_100k"] = (
+            municipal_weekly["obitos"] / municipal_weekly["populacao"] * 100000.0
+        )
+        municipal_weekly = municipal_weekly.sort_values(
+            ["SE", "codigo_ibge"]
+        ).reset_index(drop=True)
+
         if municipal_weekly.duplicated(["codigo_ibge", "SE"]).any():
             raise ValueError("Agregado municipal semanal contém chave codigo_ibge+SE duplicada.")
+        expected_rows = 142 * max_week
+        if len(municipal_weekly) != expected_rows:
+            raise ValueError(
+                f"Agregado municipal semanal incompleto: {len(municipal_weekly)} linhas; "
+                f"esperado {expected_rows} (142 municípios x {max_week} SE)."
+            )
+    else:
+        municipal_weekly = pd.DataFrame(columns=[
+            "codigo_ibge",
+            "codigo_sivep_6",
+            "municipio",
+            "populacao",
+            "SE",
+            "casos",
+            "hospitalizacoes",
+            "uti",
+            "obitos",
+            "curas",
+            "incidencia_srag_100k",
+            "hospitalizacao_100k",
+            "uti_100k",
+            "obito_100k",
+        ])
 
-    max_week = int(weekly["SE"].max()) if not weekly.empty else None
     stable_week = None
     if max_week is not None:
         stable_week = max(1, max_week - config.stable_lag_weeks)
