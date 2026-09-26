@@ -274,19 +274,23 @@ def main():
     with tabs[1]:
         st.subheader("Território — incidência auditada")
         st.info(
-            "A incidência abaixo foi recalculada com população IBGE 2026. "
-            "O score de risco legado permanece bloqueado e não participa desta ordenação."
+            "A incidência abaixo utiliza população IBGE 2026. "
+            "O score composto não participa desta ordenação enquanto o modelo v2 estiver em calibração."
         )
 
         if not risk_candidate.empty:
             candidate = risk_candidate.copy()
-            candidate["incidencia_100k"] = pd.to_numeric(candidate["incidencia_100k"], errors="coerce")
-            candidate["incidencia_100k_legacy"] = pd.to_numeric(
-                candidate["incidencia_100k_legacy"], errors="coerce"
+            candidate["incidencia_100k"] = pd.to_numeric(
+                candidate["incidencia_100k"], errors="coerce"
             )
-            candidate["diferenca_incidencia"] = (
-                candidate["incidencia_100k_legacy"] - candidate["incidencia_100k"]
-            )
+
+            if "incidencia_100k_legacy" in candidate.columns:
+                candidate["incidencia_100k_legacy"] = pd.to_numeric(
+                    candidate["incidencia_100k_legacy"], errors="coerce"
+                )
+                candidate["diferenca_incidencia"] = (
+                    candidate["incidencia_100k_legacy"] - candidate["incidencia_100k"]
+                )
 
             audited_view = candidate.sort_values("incidencia_100k", ascending=False)
             bar_chart(
@@ -316,10 +320,11 @@ def main():
             st.warning("Artefato territorial auditado ainda não disponível.")
 
         st.markdown("**Score de risco e silêncio epidemiológico**")
+        risk_status = metadata.get("risk_model_status", "blocked")
+        silence_status = metadata.get("silence_model_status", "blocked")
         st.warning(
-            "Bloqueados nesta versão. O score legado foi calculado sobre denominadores inconsistentes "
-            "e sua fórmula original não está documentada no repositório. "
-            "O modelo v2 está em calibração e será liberado somente após backtesting."
+            f"Score territorial: {risk_status}. Silêncio epidemiológico: {silence_status}. "
+            "Esses módulos permanecem fora da tomada de decisão automatizada até calibração/backtesting."
         )
 
     with tabs[2]:
