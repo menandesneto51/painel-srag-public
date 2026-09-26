@@ -70,6 +70,13 @@ def validate_loaded_data(
                             "STABLE_WEEK_AFTER_DATA",
                             f"stable_week={stable_week_int} é superior à maior SE observada ({max_se}).",
                         ))
+                    if stable_week_int not in set(se.astype(int).tolist()):
+                        issues.append(issue(
+                            "error",
+                            "temporal",
+                            "STABLE_WEEK_NOT_PRESENT",
+                            f"stable_week={stable_week_int} não existe como linha no resumo semanal.",
+                        ))
                 except (TypeError, ValueError):
                     issues.append(issue("error", "temporal", "STABLE_WEEK_INVALID", "stable_week ausente ou inválida."))
 
@@ -238,7 +245,15 @@ def validate_loaded_data(
     # --- Forecast ---
     if not forecast.empty:
         required = {"valor_esperado", "ic95_inf", "ic95_sup"}
-        if required.issubset(forecast.columns):
+        missing = required.difference(forecast.columns)
+        if missing:
+            issues.append(issue(
+                "error",
+                "forecast",
+                "FORECAST_SCHEMA_MISSING",
+                "Forecast não vazio sem colunas obrigatórias: " + ", ".join(sorted(missing)),
+            ))
+        else:
             expected = _numeric(forecast["valor_esperado"])
             low = _numeric(forecast["ic95_inf"])
             high = _numeric(forecast["ic95_sup"])
@@ -249,13 +264,22 @@ def validate_loaded_data(
     # --- OR ---
     for scope, table in (("or_obito", or_obito), ("or_uti", or_uti)):
         required = {"OR", "IC95% inferior", "IC95% superior"}
-        if not table.empty and required.issubset(table.columns):
-            estimate = _numeric(table["OR"])
-            low = _numeric(table["IC95% inferior"])
-            high = _numeric(table["IC95% superior"])
-            invalid = (low > estimate) | (estimate > high) | (low > high)
-            if invalid.fillna(False).any():
-                issues.append(issue("error", scope, "OR_INTERVAL_INVALID", f"{scope} possui OR fora do IC95% ou limites invertidos."))
+        if not table.empty:
+            missing = required.difference(table.columns)
+            if missing:
+                issues.append(issue(
+                    "error",
+                    scope,
+                    "OR_SCHEMA_MISSING",
+                    f"{scope} não vazio sem colunas obrigatórias: " + ", ".join(sorted(missing)),
+                ))
+            else:
+                estimate = _numeric(table["OR"])
+                low = _numeric(table["IC95% inferior"])
+                high = _numeric(table["IC95% superior"])
+                invalid = (low > estimate) | (estimate > high) | (low > high)
+                if invalid.fillna(False).any():
+                    issues.append(issue("error", scope, "OR_INTERVAL_INVALID", f"{scope} possui OR fora do IC95% ou limites invertidos."))
 
     publication_status = str(metadata.get("publication_status", "")).lower().strip()
     if publication_status in {"blocked", "under_review"}:
@@ -278,21 +302,41 @@ def has_errors(issues: list[dict[str, str]], scopes: set[str] | None = None) -> 
     return False
 
 
-def find_public_file(root: Path, filename: str) -> Path:
-    for candidate in (root / "data_public" / filename, root / filename):
-        if candidate.exists():
-            return candidate
-    return root / "data_public" / filename
+CORE_SNAPSHOT_FILES = {
+    "metadata_public.json",
+    "kpis.json",
+    "weekly_summary.csv",
+    "risk_summary.csv",
+    "forecast_summary.csv",
+    "or_obito_summary.csv",
+    "or_uti_summary.csv",
+}
+
+
+def select_snapshot_dir(root: Path) -> Path:
+    public_dir = root / "data_public"
+    if all((public_dir / name).exists() for name in CORE_SNAPSHOT_FILES):
+        return public_dir
+    if all((root / name).exists() for name in CORE_SNAPSHOT_FILES):
+        return root
+    return public_dir
 
 
 def load_snapshot(root: Path) -> dict[str, Any]:
     import json
 
+    snapshot_dir = select_snapshot_dir(root)
+
     def read_json(name: str) -> dict[str, Any]:
-        return json.loads(find_public_file(root, name).read_text(encoding="utf-8-sig"))
+        return json.loads((snapshot_dir / name).read_text(encoding="utf-8-sig"))
 
     def read_csv(name: str) -> pd.DataFrame:
-        return pd.read_csv(find_public_file(root, name), encoding="utf-8-sig")
+        return pd.read_csv(snapshot_dir / name, encoding="utf-8-sig")
+
+    candidate_path = snapshot_dir / "risk_summary_v2_candidate.csv"
+    if not candidate_path.exists() and snapshot_dir == root:
+        audit_overlay = root / "data_public" / "risk_summary_v2_candidate.csv"
+        candidate_path = audit_overlay if audit_overlay.exists() else candidate_path
 
     return {
         "metadata": read_json("metadata_public.json"),
@@ -303,8 +347,8 @@ def load_snapshot(root: Path) -> dict[str, Any]:
         "or_obito": read_csv("or_obito_summary.csv"),
         "or_uti": read_csv("or_uti_summary.csv"),
         "risk_candidate": (
-            read_csv("risk_summary_v2_candidate.csv")
-            if find_public_file(root, "risk_summary_v2_candidate.csv").exists()
+            pd.read_csv(candidate_path, encoding="utf-8-sig")
+            if candidate_path.exists()
             else None
         ),
     }
