@@ -1,0 +1,20 @@
+{
+  "model_id": "srag_mt_anomaly_v2",
+  "version": "2.0.0-experimental",
+  "status": "experimental",
+  "method": "robust_seasonal_baseline",
+  "z_threshold": 3.5,
+  "persistence_weeks": 2,
+  "min_baseline_years": 3,
+  "dispersion": {
+    "primary": "MAD",
+    "fallback": "IQR",
+    "mad_consistency_constant": 0.6744897501960817,
+    "iqr_to_sigma": 1.3489795003921634
+  },
+  "rules": {
+    "use_only_stable_weeks": true,
+    "single_week_extreme_is_candidate_only": true,
+    "risk_classification_enabled": false
+  }
+}
