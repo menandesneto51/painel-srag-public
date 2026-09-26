@@ -3,5 +3,15 @@
   "stable_week": 47,
   "generated_at": "2026-04-27 15:43:44",
   "core_version": "v20c",
-  "description": "Agregados públicos gerados a partir da base interna do painel SRAG."
+  "description": "Agregados públicos gerados a partir da base interna do painel SRAG.",
+  "publication_status": "blocked",
+  "validation_status": "under_review",
+  "validation_reason": [
+    "stable_week incompatível com a maior SE presente no resumo semanal",
+    "denominadores municipais de incidência precisam ser reconstruídos e auditados",
+    "contrato de nomes entre KPIs semanais e interface precisa ser normalizado"
+  ],
+  "source_system": "SIVEP-Gripe",
+  "population_reference_required": "IBGE 2026",
+  "next_version": "v2.0.0"
 }
