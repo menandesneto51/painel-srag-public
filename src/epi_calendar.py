@@ -26,3 +26,18 @@ def epidemiological_week_start(year: int, week: int) -> date:
 
 def epidemiological_week_end(year: int, week: int) -> date:
     return epidemiological_week_start(year, week) + timedelta(days=6)
+
+
+def epidemiological_weeks_in_year(year: int) -> int:
+    """Retorna 52 ou 53 semanas epidemiológicas válidas no ano."""
+    year = int(year)
+    count = 0
+    for week in range(1, 54):
+        try:
+            epidemiological_week_start(year, week)
+        except ValueError:
+            break
+        count = week
+    if count not in {52, 53}:
+        raise ValueError(f"Calendário epidemiológico inesperado para {year}: {count} semanas.")
+    return count
