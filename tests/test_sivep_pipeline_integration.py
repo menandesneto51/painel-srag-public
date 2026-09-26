@@ -115,7 +115,7 @@ class SivepPipelineIntegrationTests(unittest.TestCase):
             self.make_config(config)
             self.make_sivep(sivep)
 
-            weekly, municipal, metadata = build_mt_aggregates(sivep, population, config)
+            weekly, municipal, municipal_weekly, metadata = build_mt_aggregates(sivep, population, config)
 
             self.assertEqual(metadata["source_rows"], 4)
             self.assertEqual(metadata["mt_residence_rows"], 3)
@@ -137,6 +137,10 @@ class SivepPipelineIntegrationTests(unittest.TestCase):
 
             self.assertEqual(int(weekly["casos"].sum()), 3)
             self.assertEqual(int(weekly["obitos"].sum()), 1)
+            self.assertEqual(int(municipal_weekly["casos"].sum()), 3)
+            self.assertFalse(municipal_weekly.duplicated(["codigo_ibge", "SE"]).any())
+            cuiaba_weeks = municipal_weekly.loc[municipal_weekly["codigo_ibge"] == "5103403"]
+            self.assertEqual(set(cuiaba_weeks["SE"].astype(int).tolist()), {10, 11})
 
 
 if __name__ == "__main__":
