@@ -70,6 +70,7 @@ def main() -> int:
             "codigo_ibge": row.codigo_ibge,
             "municipio": row.municipio,
             "confidence_class": profile["confidence_class"],
+            "reporting_quality_class": profile["reporting_quality_class"],
             "limiting_dimensions": ",".join(profile["limiting_dimensions"]),
             "stability_class": profile["components"]["stability"],
             "volume_class": profile["components"]["volume"],
