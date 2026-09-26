@@ -41,17 +41,20 @@ jobs:
             scripts/rebuild_risk_incidence.py \
             scripts/build_sivep_mt_aggregates.py \
             scripts/build_quality_metrics.py \
+            scripts/build_virology_metrics.py \
             scripts/check_sivep_source.py \
             scripts/promote_snapshot.py \
             src/quality_metrics.py \
             src/risk_model.py \
+            src/virology.py \
             src/sivep_pipeline.py \
             tests/test_public_data_validation.py \
             tests/test_quality_metrics.py \
             tests/test_risk_model.py \
             tests/test_sivep_pipeline.py \
             tests/test_sivep_pipeline_integration.py \
-            tests/test_sivep_source_watch.py
+            tests/test_sivep_source_watch.py \
+            tests/test_virology.py
 
       - name: Run regression tests
         run: python -m unittest discover -s tests -v
