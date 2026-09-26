@@ -3,6 +3,7 @@ import unittest
 
 import pandas as pd
 
+from src.epi_calendar import epidemiological_weeks_in_year
 from src.baseline_signals import (
     add_anomaly_signal,
     build_seasonal_baseline,
@@ -14,7 +15,7 @@ from src.baseline_signals import (
 def make_history():
     rows = []
     for year in (2022, 2023, 2024, 2025):
-        for week in range(1, 13):
+        for week in range(1, epidemiological_weeks_in_year(year) + 1):
             rows.append({
                 "ANO": year,
                 "SE": week,
@@ -51,6 +52,7 @@ class BaselineSignalTests(unittest.TestCase):
             target_year=2026,
             min_years=3,
             week_window=2,
+            history_years=[2023, 2024, 2025],
         )
         self.assertEqual(len(baseline), 53)
         self.assertTrue((baseline["baseline_status"] == "experimental").all())
@@ -77,6 +79,7 @@ class BaselineSignalTests(unittest.TestCase):
             target_year=2026,
             min_years=3,
             week_window=2,
+            history_years=[2023, 2024, 2025],
         )
         anomalies = add_anomaly_signal(
             history,
