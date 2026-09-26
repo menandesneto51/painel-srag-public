@@ -85,6 +85,13 @@ def normalize_week(value: object, reference_year: int) -> int | None:
     return week
 
 
+def ibge7_to_sivep6(value: object) -> str:
+    code = digits(value)
+    if len(code) != 7 or not code.startswith("51"):
+        raise ValueError(f"Código IBGE municipal inválido para MT: {value}")
+    return code[:6]
+
+
 def municipality_reference(path: Path) -> pd.DataFrame:
     ref = pd.read_csv(path, dtype={"codigo_ibge": "string"})
     required = {"codigo_ibge", "municipio", "populacao"}
@@ -96,7 +103,7 @@ def municipality_reference(path: Path) -> pd.DataFrame:
 
     ref = ref.copy()
     ref["codigo_ibge"] = ref["codigo_ibge"].astype("string").str.replace(r"\.0$", "", regex=True).str.zfill(7)
-    ref["codigo_sivep_6"] = ref["codigo_ibge"].str[:6]
+    ref["codigo_sivep_6"] = ref["codigo_ibge"].map(ibge7_to_sivep6)
 
     if ref["codigo_sivep_6"].duplicated().any():
         raise ValueError("Prefixo municipal IBGE de 6 dígitos não é único na referência.")
