@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "analysis_start_year": 2019,
+  "default_valid_from_year": 2019,
+  "exceptions": {
+    "5101837": {
+      "municipio": "Boa Esperança do Norte",
+      "valid_from_year": 2025,
+      "reason": "Município instalado oficialmente em 1º de janeiro de 2025.",
+      "historical_zero_fill_before_validity": false,
+      "predecessor_reconstruction_enabled": false
+    }
+  },
+  "rules": {
+    "zero_fill_only_when_municipality_valid": true,
+    "predecessor_reconstruction_enabled": false,
+    "rates_require_year_specific_population": true
+  }
+}
