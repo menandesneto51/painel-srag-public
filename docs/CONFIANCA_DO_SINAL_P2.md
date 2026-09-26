@@ -69,3 +69,20 @@ Exemplo de interpretação:
 - sinal normal + confiança insuficiente → não concluir ausência de problema.
 
 Essas frases são regras de interpretação, não automatização de decisão.
+
+
+## Qualidade de reporte
+
+Além de `confidence_class`, a v2 emite:
+
+`reporting_quality_class`
+
+Essa classe considera apenas:
+
+- completude de desfecho;
+- oportunidade de notificação;
+- consistência temporal.
+
+Ela **não inclui volume**. Isso é necessário para o módulo de silêncio: um município com zero casos na janela não pode ser automaticamente classificado como baixa qualidade apenas porque o volume atual é zero.
+
+`confidence_class` continua sendo usada para a confiança do sinal epidemiológico; `reporting_quality_class` serve como evidência de qualidade do processo de reporte.
