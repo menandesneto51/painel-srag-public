@@ -48,7 +48,7 @@ class BaselineSignalTests(unittest.TestCase):
     def test_baseline_has_53_weeks(self):
         baseline = build_seasonal_baseline(
             make_history(),
-            metric="hospitalizacao_100k",
+            metric="hospitalizacoes",
             target_year=2026,
             min_years=3,
             week_window=2,
@@ -60,7 +60,7 @@ class BaselineSignalTests(unittest.TestCase):
     def test_trend_detects_rising_recent_window(self):
         trends = build_trend_signals(
             make_history(),
-            metric="hospitalizacao_100k",
+            metric="hospitalizacoes",
             stable_week=12,
             recent_weeks=2,
             previous_weeks=2,
@@ -71,11 +71,24 @@ class BaselineSignalTests(unittest.TestCase):
         self.assertGreater(row["trend_ratio"], 1.0)
         self.assertGreater(row["trend_log2"], 0.0)
 
+    def test_rate_baseline_requires_annual_denominator(self):
+        history = make_history()
+        history["ano_populacao"] = 2026
+        with self.assertRaises(ValueError):
+            build_seasonal_baseline(
+                history,
+                metric="hospitalizacao_100k",
+                target_year=2026,
+                min_years=3,
+                week_window=2,
+                history_years=[2023, 2024, 2025],
+            )
+
     def test_anomaly_is_not_operational_alert(self):
         history = make_history()
         baseline = build_seasonal_baseline(
             history,
-            metric="hospitalizacao_100k",
+            metric="hospitalizacoes",
             target_year=2026,
             min_years=3,
             week_window=2,
@@ -84,13 +97,13 @@ class BaselineSignalTests(unittest.TestCase):
         anomalies = add_anomaly_signal(
             history,
             baseline,
-            metric="hospitalizacao_100k",
+            metric="hospitalizacoes",
             stable_week=12,
             robust_z_threshold=3.5,
         )
         trends = build_trend_signals(
             history,
-            metric="hospitalizacao_100k",
+            metric="hospitalizacoes",
             stable_week=12,
         )
         combined = combine_surveillance_signals(anomalies, trends)
