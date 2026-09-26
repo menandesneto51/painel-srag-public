@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "dataset": "Banco de dados da Síndrome Respiratória Aguda Grave (SRAG) - 2019 a 2026",
+  "package_id": "39a4995f-4a6e-440f-8c8f-b00c81fae0d0",
+  "landing_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026",
+  "sources": {
+    "2019": {
+      "status": "frozen",
+      "resource_date": "2026-03-23",
+      "resource_id": "d96d6348-083a-4184-a39a-794b5e8ec337",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2019/INFLUD19-23-03-2026.csv",
+      "local_filename": "sivep_2019_2026-03-23.csv"
+    },
+    "2020": {
+      "status": "frozen",
+      "resource_date": "2026-03-23",
+      "resource_id": "4b877048-d59c-4d29-b4e8-f715e05fda80",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2020/INFLUD20-23-03-2026.csv",
+      "local_filename": "sivep_2020_2026-03-23.csv"
+    },
+    "2021": {
+      "status": "frozen",
+      "resource_date": "2026-03-23",
+      "resource_id": "47743cf4-2b93-4161-905d-838bce5f4961",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2021/INFLUD21-23-03-2026.csv",
+      "local_filename": "sivep_2021_2026-03-23.csv"
+    },
+    "2022": {
+      "status": "frozen",
+      "resource_date": "2026-03-23",
+      "resource_id": "40d4027f-825e-4acd-98d8-21e0af36a183",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2022/INFLUD22-23-03-2026.csv",
+      "local_filename": "sivep_2022_2026-03-23.csv"
+    },
+    "2023": {
+      "status": "frozen",
+      "resource_date": "2026-03-23",
+      "resource_id": "0d78ff63-d6ca-4311-8dc8-6123cf1ca127",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2023/INFLUD23-23-03-2026.csv",
+      "local_filename": "sivep_2023_2026-03-23.csv"
+    },
+    "2024": {
+      "status": "frozen",
+      "resource_date": "2026-03-23",
+      "resource_id": "8cb52f73-0184-41d5-8a8f-87d8f415652c",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2024/INFLUD24-23-03-2026.csv",
+      "local_filename": "sivep_2024_2026-03-23.csv"
+    },
+    "2025": {
+      "status": "historical_revision",
+      "resource_date": "2026-09-14",
+      "resource_id": "20c49de3-ddc3-4b76-a942-1518eaae9c91",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-14-09-2026.csv",
+      "local_filename": "sivep_2025_2026-09-14.csv"
+    },
+    "2026": {
+      "status": "live_current",
+      "resource_date": "2026-09-14",
+      "resource_id": "74091efc-3f75-42e8-a6fa-6b79a8d30582",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2026/INFLUD26-14-09-2026.csv",
+      "local_filename": "sivep_2026_2026-09-14.csv"
+    }
+  },
+  "comparability_note": "A vigilância de SRAG foi ampliada a partir de 2020 com a pandemia de covid-19. Baselines devem exigir seleção explícita dos anos e documentar mudanças de definição, testagem e vigilância."
+}
