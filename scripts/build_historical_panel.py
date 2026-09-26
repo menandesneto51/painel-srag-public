@@ -58,6 +58,8 @@ def densify_full_year(
         panel[col] = pd.to_numeric(panel[col], errors="coerce").fillna(0).astype(int)
 
     panel["ANO"] = int(year)
+    panel["ano_populacao"] = 2026
+    panel["population_denominator_status"] = "current_reference_not_annual"
     panel["incidencia_srag_100k"] = panel["casos"] / panel["populacao"] * 100000.0
     panel["hospitalizacao_100k"] = panel["hospitalizacoes"] / panel["populacao"] * 100000.0
     panel["uti_100k"] = panel["uti"] / panel["populacao"] * 100000.0
