@@ -38,41 +38,68 @@ FILE_NAMES = {
     "metadata": "metadata_public.json",
 }
 
+CORE_KEYS = tuple(key for key in FILE_NAMES if key != "risk_candidate")
 
-def resolve_path(filename: str) -> Path:
-    p1 = DATA_DIR / filename
-    p2 = APP_DIR / filename
-    if p1.exists():
-        return p1
-    if p2.exists():
-        return p2
-    return p1
+
+def _has_complete_core(directory: Path) -> bool:
+    return all((directory / FILE_NAMES[key]).exists() for key in CORE_KEYS)
+
+
+def choose_snapshot_root() -> tuple[Path, str]:
+    if _has_complete_core(DATA_DIR):
+        return DATA_DIR, "public_v2"
+    if _has_complete_core(APP_DIR):
+        return APP_DIR, "legacy_root"
+    return DATA_DIR, "incomplete"
 
 
 def build_required_files():
-    return {key: resolve_path(name) for key, name in FILE_NAMES.items()}
+    snapshot_root, mode = choose_snapshot_root()
+    files = {
+        key: snapshot_root / FILE_NAMES[key]
+        for key in CORE_KEYS
+    }
+
+    candidate = snapshot_root / FILE_NAMES["risk_candidate"]
+    if not candidate.exists() and snapshot_root == APP_DIR:
+        audit_overlay = DATA_DIR / FILE_NAMES["risk_candidate"]
+        candidate = audit_overlay if audit_overlay.exists() else candidate
+
+    files["risk_candidate"] = candidate
+    return files, mode
 
 
-def check_files(required_files):
-    return [str(p.name) for p in required_files.values() if not p.exists()]
+def check_files(required_files, mode):
+    required_keys = set(CORE_KEYS)
+    if mode == "public_v2":
+        required_keys.add("risk_candidate")
+    return [
+        str(required_files[key].name)
+        for key in required_keys
+        if not required_files[key].exists()
+    ]
 
 
 @st.cache_data(show_spinner=False)
 def load_public_data():
-    required_files = build_required_files()
+    required_files, mode = build_required_files()
 
     kpis = json.loads(required_files["kpis"].read_text(encoding="utf-8-sig"))
     metadata = json.loads(required_files["metadata"].read_text(encoding="utf-8-sig"))
 
     weekly = pd.read_csv(required_files["weekly"], encoding="utf-8-sig")
     risk = pd.read_csv(required_files["risk"], encoding="utf-8-sig")
-    risk_candidate = pd.read_csv(required_files["risk_candidate"], encoding="utf-8-sig")
+    risk_candidate = (
+        pd.read_csv(required_files["risk_candidate"], encoding="utf-8-sig")
+        if required_files["risk_candidate"].exists()
+        else pd.DataFrame()
+    )
     silent = pd.read_csv(required_files["silent"], encoding="utf-8-sig")
     virology = pd.read_csv(required_files["virology"], encoding="utf-8-sig")
     forecast = pd.read_csv(required_files["forecast"], encoding="utf-8-sig")
     or_obito = pd.read_csv(required_files["or_obito"], encoding="utf-8-sig")
     or_uti = pd.read_csv(required_files["or_uti"], encoding="utf-8-sig")
-    return required_files, kpis, metadata, weekly, risk, risk_candidate, silent, virology, forecast, or_obito, or_uti
+    return mode, required_files, kpis, metadata, weekly, risk, risk_candidate, silent, virology, forecast, or_obito, or_uti
 
 
 def fmt_value(val, is_percent=False):
@@ -148,14 +175,14 @@ def render_validation_status(issues, metadata):
 
 
 def main():
-    required_files = build_required_files()
-    missing = check_files(required_files)
+    required_files, mode = build_required_files()
+    missing = check_files(required_files, mode)
     if missing:
         st.error("Arquivos públicos ausentes: " + ", ".join(missing))
         st.info("O app procura primeiro em data_public/ e depois na raiz do repositório.")
         st.stop()
 
-    required_files, kpis, metadata, weekly, risk, risk_candidate, silent, virology, forecast, or_obito, or_uti = load_public_data()
+    mode, required_files, kpis, metadata, weekly, risk, risk_candidate, silent, virology, forecast, or_obito, or_uti = load_public_data()
 
     issues = validate_loaded_data(
         metadata=metadata,
@@ -165,11 +192,19 @@ def main():
         forecast=forecast,
         or_obito=or_obito,
         or_uti=or_uti,
-        risk_candidate=risk_candidate,
+        risk_candidate=(risk_candidate if not risk_candidate.empty else None),
     )
 
     st.title("Painel SRAG Público")
     st.caption("Camada pública: somente agregados; microdados do SIVEP-Gripe não são publicados neste repositório.")
+    if mode == "legacy_root":
+        st.warning(
+            "Modo de transição: o snapshot principal ainda é o legado bloqueado. "
+            "A camada territorial v2 é exibida apenas como auditoria de denominadores, "
+            "sem compor um snapshot público homogêneo."
+        )
+    elif mode == "public_v2":
+        st.caption("Origem ativa: snapshot público v2 completo em data_public/.")
     render_validation_status(issues, metadata)
 
     c1, c2, c3, c4 = st.columns(4)
