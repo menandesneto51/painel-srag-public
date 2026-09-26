@@ -244,6 +244,11 @@ def build_mt_aggregates(
             .sort_values("SE")
             .reset_index(drop=True)
         )
+        max_observed = int(weekly["SE"].max())
+        complete_weeks = pd.DataFrame({"SE": list(range(1, max_observed + 1))})
+        weekly = complete_weeks.merge(weekly, on="SE", how="left")
+        for field in ("casos", "hospitalizacoes", "uti", "obitos", "curas"):
+            weekly[field] = weekly[field].fillna(0).astype(int)
     else:
         weekly = pd.DataFrame(
             columns=["SE", "casos", "hospitalizacoes", "uti", "obitos", "curas"]
