@@ -1,0 +1,10 @@
+{
+  "snapshot_id": "srag-mt-2026-YYYYMMDD",
+  "approved": false,
+  "epidemiology_review": false,
+  "statistical_review": false,
+  "privacy_review": false,
+  "approver": "",
+  "approved_at": "",
+  "notes": "Modelo. Nunca alterar para true sem revisão documentada."
+}
