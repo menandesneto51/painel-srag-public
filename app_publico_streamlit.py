@@ -165,6 +165,7 @@ def main():
         forecast=forecast,
         or_obito=or_obito,
         or_uti=or_uti,
+        risk_candidate=risk_candidate,
     )
 
     st.title("Painel SRAG Público")
