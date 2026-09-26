@@ -68,6 +68,7 @@ class ConfidenceTests(unittest.TestCase):
             baseline_year_count=5,
         )
         self.assertEqual(profile["confidence_class"], "insufficient")
+        self.assertEqual(profile["reporting_quality_class"], "high")
         self.assertIn("stability", profile["limiting_dimensions"])
         self.assertIsNone(profile["numeric_score"])
         self.assertTrue(profile["risk_separation"])
