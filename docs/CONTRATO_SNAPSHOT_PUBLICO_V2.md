@@ -82,3 +82,54 @@ Todo snapshot construído recebe:
 `publication_status = under_review`
 
 O builder nunca promove automaticamente dados para `validated`.
+
+
+## Fluxo de aprovação e promoção
+
+O fluxo é deliberadamente em duas etapas:
+
+### 1. Construir
+
+```bash
+python scripts/build_public_snapshot_v2.py
+```
+
+O resultado nasce obrigatoriamente como:
+
+`publication_status = under_review`
+
+### 2. Revisar e aprovar
+
+Preencher um arquivo baseado em:
+
+`config/approval.example.json`
+
+Depois executar:
+
+```bash
+python scripts/approve_candidate_snapshot.py --approval-file <arquivo.json>
+```
+
+Esse comando:
+
+- exige revisão epidemiológica;
+- exige revisão estatística;
+- exige revisão de privacidade;
+- executa pré-validação do snapshot;
+- grava a aprovação no metadata;
+- somente então altera o status para `validated`.
+
+### 3. Promover
+
+```bash
+python scripts/promote_snapshot.py --approval-file <arquivo.json>
+```
+
+A promoção só ocorre se:
+
+- o metadata estiver `validated`;
+- a aprovação embutida coincidir com o mesmo arquivo de aprovação;
+- todos os arquivos obrigatórios estiverem presentes;
+- não houver erro bloqueante nos gates.
+
+Nenhum arquivo é copiado para `data_public/` antes dessas verificações.
