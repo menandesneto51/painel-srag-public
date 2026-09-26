@@ -52,6 +52,27 @@ def validate_approval(path: Path) -> dict:
     return approval
 
 
+def validate_candidate_approval_state(candidate_dir: Path, approval: dict) -> dict:
+    metadata_path = candidate_dir / "metadata_public.json"
+    if not metadata_path.exists():
+        raise FileNotFoundError(f"metadata_public.json ausente em {candidate_dir}")
+
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if str(metadata.get("publication_status", "")).strip().lower() != "validated":
+        raise ValueError(
+            "Snapshot candidato ainda não está validated. "
+            "Execute scripts/approve_candidate_snapshot.py antes da promoção."
+        )
+
+    embedded = metadata.get("approval") or {}
+    for key in ("snapshot_id", "approver", "approved_at"):
+        if str(embedded.get(key, "")) != str(approval.get(key, "")):
+            raise ValueError(
+                f"Aprovação embutida no metadata diverge do approval-file em {key}."
+            )
+    return metadata
+
+
 def validate_candidate_set(candidate_dir: Path) -> list[dict[str, str]]:
     existing = {p.name for p in candidate_dir.iterdir() if p.is_file()}
     missing = REQUIRED_PUBLIC_FILES.difference(existing)
@@ -96,23 +117,7 @@ def main() -> int:
 
     approval = validate_approval(args.approval_file)
 
-    metadata_path = args.candidate_dir / "metadata_public.json"
-    if not metadata_path.exists():
-        raise FileNotFoundError(f"metadata_public.json ausente em {args.candidate_dir}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if str(metadata.get("publication_status", "")).strip().lower() != "validated":
-        raise ValueError(
-            "Snapshot candidato ainda não está validated. "
-            "Execute scripts/approve_candidate_snapshot.py antes da promoção."
-        )
-
-    embedded = metadata.get("approval") or {}
-    for key in ("snapshot_id", "approver", "approved_at"):
-        if str(embedded.get(key, "")) != str(approval.get(key, "")):
-            raise ValueError(
-                f"Aprovação embutida no metadata diverge do approval-file em {key}."
-            )
-
+    validate_candidate_approval_state(args.candidate_dir, approval)
     issues = validate_candidate_set(args.candidate_dir)
 
     print(f"snapshot_id={approval['snapshot_id']}")
