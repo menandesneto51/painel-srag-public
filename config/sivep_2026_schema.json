@@ -5,8 +5,12 @@
   "territorial_scope": {
     "residence_uf_field": "SG_UF",
     "residence_uf_value": "MT",
-    "municipality_code_candidates": ["CO_MUN_RES"],
-    "municipality_name_candidates": ["ID_MN_RESI"]
+    "municipality_code_candidates": [
+      "CO_MUN_RES"
+    ],
+    "municipality_name_candidates": [
+      "ID_MN_RESI"
+    ]
   },
   "time": {
     "symptom_week_field": "SEM_PRI",
@@ -20,19 +24,45 @@
   },
   "severity": {
     "hospital_field": "HOSPITAL",
-    "hospital_yes": ["1"],
+    "hospital_yes": [
+      "1"
+    ],
     "icu_field": "UTI",
-    "icu_yes": ["1"],
+    "icu_yes": [
+      "1"
+    ],
     "outcome_field": "EVOLUCAO",
-    "cure": ["1"],
-    "death": ["2"],
-    "death_other_causes": ["3"],
-    "ignored": ["9"]
+    "cure": [
+      "1"
+    ],
+    "death": [
+      "2"
+    ],
+    "death_other_causes": [
+      "3"
+    ],
+    "ignored": [
+      "9"
+    ]
   },
   "publication": {
     "raw_source_in_repository": false,
     "aggregate_by_residence": true,
     "municipality_key": "codigo_ibge",
     "municipality_name_is_not_key": true
+  },
+  "quality": {
+    "notification_date_field": "DT_NOTIFIC",
+    "digitization_date_field": "DT_DIGITA",
+    "closure_date_field": "DT_ENCERRA",
+    "final_classification_field": "CLASSI_FIN",
+    "metrics": {
+      "notification_delay_days": "DT_NOTIFIC - DT_SIN_PRI",
+      "digitization_delay_days": "DT_DIGITA - DT_NOTIFIC",
+      "outcome_completeness": "EVOLUCAO in {1,2,3}",
+      "closure_completeness": "DT_ENCERRA preenchida entre casos classificados",
+      "temporal_consistency": "datas em ordem lógica"
+    },
+    "risk_separation": true
   }
 }
