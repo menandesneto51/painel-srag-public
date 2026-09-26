@@ -38,7 +38,10 @@ jobs:
             scripts/enforce_publication_policy.py \
             scripts/download_official_sources.py \
             scripts/build_population_reference.py \
-            tests/test_public_data_validation.py
+            scripts/rebuild_risk_incidence.py \
+            src/risk_model.py \
+            tests/test_public_data_validation.py \
+            tests/test_risk_model.py
 
       - name: Run regression tests
         run: python -m unittest discover -s tests -v
