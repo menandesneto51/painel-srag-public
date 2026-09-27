@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.14 — Revisão Local",
+    page_title="SRAG MT v2.15 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.14 — Revisão Local")
+st.title("SRAG MT v2.15 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -78,6 +78,7 @@ release_gate_dir = CANDIDATE / "release_deploy_gate_v2_12"
 deployment_dir = CANDIDATE / "deployment_v2_12"
 rollback_dir = CANDIDATE / "rollback_v2_13"
 postmortem_dir = CANDIDATE / "postmortem_v2_14"
+ledger_dir = CANDIDATE / "change_lifecycle_v2_15"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -162,6 +163,9 @@ rollback_execution_v213 = read_csv(
 postmortem_records_v214 = read_csv(
     postmortem_dir / "postmortem_validated_v2_14.csv"
 )
+change_lifecycle_v215 = read_csv(
+    ledger_dir / "change_lifecycle_ledger_v2_15.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -182,6 +186,7 @@ tabs = st.tabs([
     "Deploy e efeito v2.12",
     "Rollback v2.13",
     "Post-mortem v2.14",
+    "Ledger de mudanças v2.15",
 ])
 
 with tabs[0]:
@@ -1898,6 +1903,106 @@ with tabs[17]:
     st.caption(
         "Governança v2.14: lição ≠ mudança aplicada; fatores contribuintes ≠ prova causal; "
         "qualquer retorno ao ciclo de regra depende de revisão humana."
+    )
+
+with tabs[18]:
+    st.subheader("Ledger auditável do ciclo de mudança — v2.15")
+    st.warning(
+        "O ledger é observacional: valida linhagem, cronologia, commit e ambiente. "
+        "Ele não executa mudanças, deploys, rollbacks ou qualquer ação automática."
+    )
+
+    if change_lifecycle_v215 is None:
+        show_missing(
+            "Ledger do ciclo de mudança v2.15",
+            ledger_dir / "change_lifecycle_ledger_v2_15.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Eventos", len(change_lifecycle_v215))
+        with c2:
+            proposals = (
+                change_lifecycle_v215["proposal_id"].nunique()
+                if "proposal_id" in change_lifecycle_v215.columns
+                else 0
+            )
+            st.metric("Propostas com linhagem", int(proposals))
+        with c3:
+            valid = (
+                change_lifecycle_v215["lineage_status"]
+                .astype(str)
+                .eq("linked_and_validated")
+                .sum()
+                if "lineage_status" in change_lifecycle_v215.columns
+                else 0
+            )
+            st.metric("Eventos validados", int(valid))
+
+        if "event_type" in change_lifecycle_v215.columns:
+            counts = (
+                change_lifecycle_v215["event_type"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("evento")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="evento",
+                y="registros",
+                title="Eventos por estágio do ciclo de mudança",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        proposal_options = ["Todas"]
+        if "proposal_id" in change_lifecycle_v215.columns:
+            proposal_options += sorted(
+                change_lifecycle_v215["proposal_id"]
+                .dropna()
+                .astype(str)
+                .unique()
+                .tolist()
+            )
+        selected_proposal = st.selectbox(
+            "Filtrar proposta",
+            proposal_options,
+            key="change_lifecycle_proposal_filter_v215",
+        )
+        view = change_lifecycle_v215.copy()
+        if selected_proposal != "Todas":
+            view = view.loc[
+                view["proposal_id"].astype(str).eq(selected_proposal)
+            ]
+
+        display_cols = [
+            "event_key",
+            "stage_order",
+            "event_type",
+            "record_id",
+            "parent_event_key",
+            "event_at",
+            "state",
+            "proposal_id",
+            "implementation_package_id",
+            "commit_sha",
+            "environment",
+            "lineage_status",
+            "ledger_is_not_execution",
+            "ledger_does_not_trigger_actions",
+            "automatic_action_enabled",
+            "human_review_required",
+        ]
+        st.dataframe(
+            view[[c for c in display_cols if c in view.columns]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.15: cadeia de custódia técnica somente. "
+        "Eventos órfãos, transições impossíveis, regressão cronológica, quebra de commit "
+        "ou ambiente inconsistente devem bloquear a construção do ledger."
     )
 
 st.divider()
