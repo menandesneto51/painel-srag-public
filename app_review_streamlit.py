@@ -48,6 +48,7 @@ legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
 stability_dir = CANDIDATE / "operational_stability"
 concordance_dir = CANDIDATE / "human_workflow_concordance_v2_6"
+proposal_dir = CANDIDATE / "rule_change_proposals_v2_7"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -807,6 +808,76 @@ with tabs[9]:
             "Governança v2.6: sem score de revisor, sem ranking municipal, "
             "sem mudança automática de regra e sem execução automática."
         )
+
+with tabs[10]:
+    st.subheader("Propostas de mudança de regra — v2.7")
+    st.warning(
+        "Proposta não é mudança aplicada. Nenhuma regra ou threshold é alterado "
+        "automaticamente; toda mudança exige análise e aprovação humana."
+    )
+
+    if rule_change_proposals is None:
+        show_missing(
+            "Propostas de mudança v2.7",
+            proposal_dir / "rule_change_proposals_v2_7.csv",
+        )
+    else:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Propostas", len(rule_change_proposals))
+        with c2:
+            if "affected_records" in rule_change_proposals.columns:
+                st.metric(
+                    "Registros afetados",
+                    int(pd.to_numeric(
+                        rule_change_proposals["affected_records"],
+                        errors="coerce",
+                    ).fillna(0).sum()),
+                )
+
+        if "proposal_type" in rule_change_proposals.columns:
+            counts = (
+                rule_change_proposals["proposal_type"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("tipo")
+                .reset_index(name="propostas")
+            )
+            fig = px.bar(
+                counts,
+                x="tipo",
+                y="propostas",
+                title="Propostas por tipo",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        display_cols = [
+            "proposal_id",
+            "rule_key",
+            "workflow_alignment",
+            "affected_records",
+            "affected_municipalities",
+            "proposal_type",
+            "proposal_status",
+            "problem_statement",
+            "analysis_required",
+            "automatic_rule_change_enabled",
+            "automatic_threshold_change_enabled",
+            "proposal_is_not_change",
+            "human_approval_required",
+        ]
+        st.dataframe(
+            rule_change_proposals[
+                [c for c in display_cols if c in rule_change_proposals.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.7: proposta ≠ mudança; alterações de lógica/threshold exigem "
+        "revisão de casos, backtesting, revisão epidemiológica/estatística e aprovação humana."
+    )
 
 st.divider()
 st.caption(
