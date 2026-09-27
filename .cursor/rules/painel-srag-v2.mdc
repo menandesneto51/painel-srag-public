@@ -130,3 +130,18 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter follow_up_state_is_not_risk=true.
 - O estado overdue deve ser calculado com as_of explícito e reprodutível.
 - Produtos v2.5 permanecem em data_candidate/ e não são promovidos automaticamente ao painel público.
+
+
+## Concordância workflow × decisão v2.6
+
+- Discordância entre fila/regra e decisão humana deve acionar revisão da regra/processo, nunca pontuação do revisor.
+- Decisão humana é autoridade do workflow institucional, mas não é padrão-ouro epidemiológico.
+- Não criar reviewer_score, ranking de revisores ou métricas de desempenho individual.
+- Não criar ranking municipal a partir da discordância.
+- Manter automatic_rule_change=false.
+- Manter automatic_execution=false.
+- Uma fila de rotina com decisão de escalonamento deve ser classificada para revisão de regra/contexto.
+- Uma fila não rotineira sem escalonamento também deve ser classificada para revisão de regra/contexto.
+- Concordância não prova correção epidemiológica da regra.
+- Alterações de regras exigem análise de casos, documentação, teste retrospectivo e aprovação humana.
+- Produtos v2.6 permanecem em data_candidate/ e não são promovidos automaticamente.
