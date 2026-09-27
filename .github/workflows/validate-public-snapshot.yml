@@ -60,6 +60,8 @@ jobs:
             scripts/build_operational_actions.py \
             scripts/build_state_operational_brief.py \
             scripts/run_v2_2_pipeline.py \
+            scripts/capture_operational_vintage.py \
+            scripts/compare_operational_vintages.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -84,6 +86,7 @@ jobs:
             src/healthcare_pressure_bridge.py \
             src/human_review_decisions.py \
             src/operational_review.py \
+            src/operational_persistence.py \
             src/operational_actions.py \
             src/operational_brief.py \
             src/state_review_report.py \
@@ -110,6 +113,7 @@ jobs:
             tests/test_healthcare_pressure_bridge.py \
             tests/test_human_review_decisions.py \
             tests/test_operational_review.py \
+            tests/test_operational_persistence.py \
             tests/test_operational_actions.py \
             tests/test_operational_brief.py \
             tests/test_operational_v2_2_integration.py \
