@@ -47,7 +47,6 @@ operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
 stability_dir = CANDIDATE / "operational_stability"
-decision_audit_dir = CANDIDATE / "decision_audit_v2_5"
 concordance_dir = CANDIDATE / "human_workflow_concordance_v2_6"
 
 territorial = read_csv(territorial_path)
@@ -80,12 +79,6 @@ operational_stability = read_csv(
 )
 follow_up_events_v25 = read_csv(
     decision_audit_dir / "follow_up_events_validated_v2_5.csv"
-)
-human_decisions_v25 = read_csv(
-    decision_audit_dir / "human_decisions_validated_v2_5.csv"
-)
-follow_up_status_v25 = read_csv(
-    decision_audit_dir / "follow_up_status_v2_5.csv"
 )
 workflow_concordance_v26 = read_csv(
     concordance_dir / "human_workflow_concordance_v2_6.csv"
