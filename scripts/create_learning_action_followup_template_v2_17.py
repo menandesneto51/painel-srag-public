@@ -75,7 +75,30 @@ def main() -> int:
             "rule_review_scope": row["rule_review_scope"],
         })
 
-    template = pd.DataFrame(rows)
+    template_columns = [
+        "postmortem_record_id",
+        "implementation_package_id",
+        "learning_action_type",
+        "action_sequence",
+        "action_description",
+        "owner_role",
+        "created_at",
+        "due_at",
+        "action_status",
+        "status_updated_at",
+        "completed_at",
+        "completion_evidence_refs",
+        "verification_status",
+        "verified_at",
+        "verifier_role",
+        "verification_notes",
+        "blocking_reason",
+        "cancellation_rationale",
+        "governance_handoff_ref",
+        "reenter_rule_review",
+        "rule_review_scope",
+    ]
+    template = pd.DataFrame(rows, columns=template_columns)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     template.to_csv(args.output, index=False, encoding="utf-8")
     print(f"rows={len(template)}")
