@@ -67,6 +67,7 @@ jobs:
             scripts/validate_decision_audit_v2_5.py \
             scripts/create_follow_up_template_v2_5.py \
             scripts/validate_follow_up_v2_5.py \
+            scripts/build_decision_audit_report_v2_5.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -95,6 +96,7 @@ jobs:
             src/operational_stability.py \
             src/decision_audit_v2_5.py \
             src/decision_followup_v2_5.py \
+            src/decision_audit_report_v2_5.py \
             src/operational_actions.py \
             src/operational_brief.py \
             src/state_review_report.py \
@@ -124,6 +126,7 @@ jobs:
             tests/test_operational_persistence.py \
             tests/test_operational_stability.py \
             tests/test_decision_audit_v2_5.py \
+            tests/test_decision_audit_report_v2_5.py \
             tests/test_operational_actions.py \
             tests/test_operational_brief.py \
             tests/test_operational_v2_2_integration.py \
