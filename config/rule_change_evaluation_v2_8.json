@@ -31,6 +31,11 @@
     "automatic_merge": false,
     "automatic_deploy": false,
     "human_approval_required": true,
-    "personal_identifier_storage": false
-  }
+    "personal_identifier_storage": false,
+    "shadow_review_required_for_logic_change": true,
+    "shadow_review_is_not_activation": true
+  },
+  "approval_eligible_proposal_statuses": [
+    "ready_for_human_decision"
+  ]
 }
