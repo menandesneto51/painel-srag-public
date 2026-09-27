@@ -137,6 +137,28 @@ class LearningCycleClosureV218Tests(unittest.TestCase):
             "learning_cycle_open",
         )
 
+    def test_personal_name_in_reviewer_role_is_rejected(self):
+        decision = self.decision()
+        decision.loc[0, "reviewer_role"] = "Maria Silva"
+        with self.assertRaises(ValueError):
+            validate_learning_cycle_closure(
+                decision,
+                self.postmortems(),
+                self.actions(),
+                CONFIG,
+            )
+
+    def test_email_in_closure_rationale_is_rejected(self):
+        decision = self.decision()
+        decision.loc[0, "decision_rationale"] = "Validado por maria@example.org"
+        with self.assertRaises(ValueError):
+            validate_learning_cycle_closure(
+                decision,
+                self.postmortems(),
+                self.actions(),
+                CONFIG,
+            )
+
     def test_action_snapshot_must_not_predate_evaluation(self):
         actions = self.actions()
         actions.loc[0, "as_of"] = "2026-10-20T12:00:00Z"
