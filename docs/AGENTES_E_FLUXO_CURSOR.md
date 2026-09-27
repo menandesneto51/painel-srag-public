@@ -258,3 +258,45 @@ O AGENTE-AUDITORIA deve preservar:
 - `decision_is_not_proof_of_execution=true`;
 - `automatic_execution_enabled=false`;
 - `follow_up_state_is_not_risk=true`.
+
+
+## 11. AGENTE-GOVERNANCA-DE-REGRAS
+
+Responsável por:
+
+- comparar fila/regra do sistema com decisões humanas validadas;
+- identificar classes de concordância e discordância;
+- apontar regras, gatilhos ou contextos que exigem revisão;
+- cruzar discordância com estabilidade v2.4 e follow-up v2.5;
+- produzir relatório de governança de regras.
+
+Não pode:
+
+- pontuar revisores;
+- inferir erro humano a partir de discordância;
+- tratar decisão humana como padrão-ouro epidemiológico;
+- ranquear municípios;
+- alterar regra automaticamente;
+- executar ação automaticamente.
+
+Saídas esperadas:
+
+- concordância por decisão;
+- filas/regras com maior necessidade de revisão;
+- casos para análise qualitativa;
+- documentação de propostas de mudança, sempre sujeitas a teste e aprovação humana.
+
+## Fluxo v2.6
+
+```text
+DATA-QA
+  -> EPIDEMIOLOGIA
+  -> TERRITORIAL
+  -> ESTATISTICA / FORECAST
+  -> PRIVACIDADE
+  -> OPERACIONAL
+  -> AUDITORIA
+  -> GOVERNANCA-DE-REGRAS
+  -> DOCUMENTACAO
+  -> revisão humana
+```
