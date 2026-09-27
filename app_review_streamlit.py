@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.15 — Revisão Local",
+    page_title="SRAG MT v2.16 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.15 — Revisão Local")
+st.title("SRAG MT v2.16 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -79,6 +79,7 @@ deployment_dir = CANDIDATE / "deployment_v2_12"
 rollback_dir = CANDIDATE / "rollback_v2_13"
 postmortem_dir = CANDIDATE / "postmortem_v2_14"
 ledger_dir = CANDIDATE / "change_lifecycle_v2_15"
+governance_observability_dir = CANDIDATE / "governance_observability_v2_16"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -166,6 +167,12 @@ postmortem_records_v214 = read_csv(
 change_lifecycle_v215 = read_csv(
     ledger_dir / "change_lifecycle_ledger_v2_15.csv"
 )
+governance_status_v216 = read_csv(
+    governance_observability_dir / "governance_proposal_status_v2_16.csv"
+)
+governance_transitions_v216 = read_csv(
+    governance_observability_dir / "governance_transition_metrics_v2_16.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -187,6 +194,7 @@ tabs = st.tabs([
     "Rollback v2.13",
     "Post-mortem v2.14",
     "Ledger de mudanças v2.15",
+    "Observabilidade de governança v2.16",
 ])
 
 with tabs[0]:
@@ -2003,6 +2011,161 @@ with tabs[18]:
         "Governança v2.15: cadeia de custódia técnica somente. "
         "Eventos órfãos, transições impossíveis, regressão cronológica, quebra de commit "
         "ou ambiente inconsistente devem bloquear a construção do ledger."
+    )
+
+with tabs[19]:
+    st.subheader("Observabilidade do processo de governança — v2.16")
+    st.warning(
+        "Estas métricas descrevem fluxo e tempo de processo. Não são score de pessoas, "
+        "não ranqueiam municípios, não representam risco epidemiológico e os thresholds "
+        "experimentais não são SLA institucional."
+    )
+
+    if governance_status_v216 is None:
+        show_missing(
+            "Status de governança v2.16",
+            governance_observability_dir / "governance_proposal_status_v2_16.csv",
+        )
+    else:
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.metric("Propostas", len(governance_status_v216))
+        with c2:
+            open_count = (
+                (~governance_status_v216["terminal_stage"]
+                 .astype(str).str.lower()
+                 .isin({"true", "1", "yes", "sim"}))
+                .sum()
+                if "terminal_stage" in governance_status_v216.columns
+                else 0
+            )
+            st.metric("Em fluxo", int(open_count))
+        with c3:
+            stale_count = (
+                governance_status_v216["stale_experimental"]
+                .astype(str)
+                .str.lower()
+                .isin({"true", "1", "yes", "sim"})
+                .sum()
+                if "stale_experimental" in governance_status_v216.columns
+                else 0
+            )
+            st.metric("Flags experimentais", int(stale_count))
+        with c4:
+            terminal_count = (
+                governance_status_v216["terminal_stage"]
+                .astype(str)
+                .str.lower()
+                .isin({"true", "1", "yes", "sim"})
+                .sum()
+                if "terminal_stage" in governance_status_v216.columns
+                else 0
+            )
+            st.metric("Estágio terminal", int(terminal_count))
+
+        if "current_stage" in governance_status_v216.columns:
+            counts = (
+                governance_status_v216["current_stage"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estagio")
+                .reset_index(name="propostas")
+            )
+            fig = px.bar(
+                counts,
+                x="estagio",
+                y="propostas",
+                title="Propostas por estágio atual",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        status_cols = [
+            "proposal_id",
+            "current_stage",
+            "current_state",
+            "events_count",
+            "first_event_at",
+            "last_event_at",
+            "hours_since_last_event",
+            "total_observed_hours",
+            "stale_threshold_hours",
+            "stale_experimental",
+            "terminal_stage",
+            "deployment_seen",
+            "effect_verification_seen",
+            "rollback_decision_seen",
+            "rollback_execution_seen",
+            "threshold_status",
+            "stale_flag_is_not_risk",
+            "reviewer_score_enabled",
+            "municipality_rank_enabled",
+            "automatic_action_enabled",
+            "as_of",
+        ]
+        st.dataframe(
+            governance_status_v216[
+                [c for c in status_cols if c in governance_status_v216.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Tempos entre etapas")
+    if governance_transitions_v216 is None:
+        show_missing(
+            "Métricas de transição v2.16",
+            governance_observability_dir / "governance_transition_metrics_v2_16.csv",
+        )
+    else:
+        computed = governance_transitions_v216.copy()
+        if {
+            "duration_status",
+            "transition_hours",
+            "event_type",
+        }.issubset(computed.columns):
+            computed = computed.loc[
+                computed["duration_status"].astype(str).eq("computed")
+            ].copy()
+            computed["transition_hours"] = pd.to_numeric(
+                computed["transition_hours"],
+                errors="coerce",
+            )
+            stage_medians = (
+                computed.groupby("event_type", as_index=False)["transition_hours"]
+                .median()
+                .dropna()
+            )
+            if not stage_medians.empty:
+                fig = px.bar(
+                    stage_medians,
+                    x="event_type",
+                    y="transition_hours",
+                    title="Mediana observada até cada etapa (horas)",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+        transition_cols = [
+            "proposal_id",
+            "parent_event_type",
+            "event_type",
+            "transition_hours",
+            "duration_status",
+            "process_metric_is_not_performance_score",
+            "reviewer_score_enabled",
+            "municipality_rank_enabled",
+        ]
+        st.dataframe(
+            governance_transitions_v216[
+                [c for c in transition_cols if c in governance_transitions_v216.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.16: thresholds = experimental_internal_not_sla; "
+        "stale ≠ risco; métricas de processo ≠ avaliação de desempenho; "
+        "nenhuma flag dispara ação automaticamente."
     )
 
 st.divider()
