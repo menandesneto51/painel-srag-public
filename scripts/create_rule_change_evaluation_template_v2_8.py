@@ -57,6 +57,8 @@ def main() -> int:
         "case_review_refs",
         "epidemiology_review_status",
         "epidemiology_review_refs",
+        "shadow_review_status",
+        "shadow_review_refs",
         "backtest_status",
         "backtest_refs",
         "statistical_review_status",
