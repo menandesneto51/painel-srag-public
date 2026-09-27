@@ -889,6 +889,81 @@ with tabs[10]:
             hide_index=True,
         )
 
+    st.markdown("### Avaliação em modo sombra")
+    st.info(
+        "O modo sombra compara fila atual e candidata sem ativar a regra candidata. "
+        "Maior concordância com decisões humanas não equivale a maior acurácia epidemiológica."
+    )
+
+    if rule_shadow_evaluation_v27 is None:
+        show_missing(
+            "Avaliação de regra candidata em modo sombra v2.7",
+            shadow_dir / "rule_shadow_evaluation_v2_7.csv",
+        )
+    else:
+        municipality_view = rule_shadow_evaluation_v27.drop_duplicates("codigo_ibge")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric(
+                "Municípios avaliados",
+                municipality_view["codigo_ibge"].nunique(),
+            )
+        with c2:
+            if "queue_changed" in municipality_view.columns:
+                changed = (
+                    municipality_view["queue_changed"]
+                    .astype(str)
+                    .str.lower()
+                    .isin({"true", "1", "yes", "sim"})
+                    .sum()
+                )
+                st.metric("Municípios que mudariam de fila", int(changed))
+
+        if "alignment_delta" in rule_shadow_evaluation_v27.columns:
+            counts = (
+                rule_shadow_evaluation_v27["alignment_delta"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("mudanca_concordancia")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="mudanca_concordancia",
+                y="registros",
+                title="Mudança de concordância do workflow no modo sombra",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        shadow_cols = [
+            "codigo_ibge",
+            "municipio",
+            "current_review_queue",
+            "candidate_review_queue",
+            "queue_changed",
+            "queue_transition",
+            "decision_record_id",
+            "decision_status",
+            "current_alignment",
+            "candidate_alignment",
+            "alignment_delta",
+            "proposal_id",
+            "candidate_rule_version",
+            "shadow_only",
+            "automatic_activation_enabled",
+            "automatic_rule_change_enabled",
+            "reviewer_score_enabled",
+            "municipality_rank_enabled",
+            "human_decision_is_epidemiological_gold_standard",
+        ]
+        st.dataframe(
+            rule_shadow_evaluation_v27[
+                [c for c in shadow_cols if c in rule_shadow_evaluation_v27.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
     st.caption(
         "Governança v2.7: proposta ≠ mudança; alterações de lógica/threshold exigem "
         "revisão de casos, backtesting, revisão epidemiológica/estatística e aprovação humana."
