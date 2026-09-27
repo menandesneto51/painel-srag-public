@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.12 — Revisão Local",
+    page_title="SRAG MT v2.13 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.12 — Revisão Local")
+st.title("SRAG MT v2.13 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -75,6 +75,7 @@ implementation_dir = CANDIDATE / "implementation_package_v2_9"
 merge_gate_dir = CANDIDATE / "merge_gate_v2_10"
 human_merge_dir = CANDIDATE / "human_merge_v2_11"
 deployment_dir = CANDIDATE / "deployment_v2_12"
+rollback_dir = CANDIDATE / "rollback_v2_13"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -147,6 +148,12 @@ deployment_records_v212 = read_csv(
 effect_verification_v212 = read_csv(
     deployment_dir / "effect_verification_validated_v2_12.csv"
 )
+rollback_decisions_v213 = read_csv(
+    rollback_dir / "human_rollback_decisions_validated_v2_13.csv"
+)
+rollback_execution_v213 = read_csv(
+    rollback_dir / "rollback_execution_validated_v2_13.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -165,6 +172,7 @@ tabs = st.tabs([
     "Gate de merge v2.10",
     "Merge humano e pós-merge v2.11",
     "Deploy e efeito v2.12",
+    "Rollback v2.13",
 ])
 
 with tabs[0]:
@@ -1583,6 +1591,124 @@ with tabs[15]:
     st.caption(
         "Governança v2.12: decisão de deploy ≠ execução; deploy exige evidência; "
         "verificação de efeito não é inferência causal; rollback e alteração de regra automáticos permanecem desabilitados."
+    )
+
+with tabs[16]:
+    st.subheader("Rollback humano e verificação pós-rollback — v2.13")
+    st.warning(
+        "Rollback é sempre decisão e execução humana separadas. "
+        "O sistema não executa rollback automaticamente e exige evidência explícita."
+    )
+
+    if rollback_decisions_v213 is None:
+        show_missing(
+            "Decisões de rollback v2.13",
+            rollback_dir / "human_rollback_decisions_validated_v2_13.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Decisões de rollback", len(rollback_decisions_v213))
+        with c2:
+            approved = (
+                rollback_decisions_v213["rollback_decision"]
+                .astype(str)
+                .eq("approve_human_rollback")
+                .sum()
+                if "rollback_decision" in rollback_decisions_v213.columns
+                else 0
+            )
+            st.metric("Aprovações humanas", int(approved))
+        with c3:
+            deferred = (
+                rollback_decisions_v213["rollback_decision"]
+                .astype(str)
+                .eq("defer_rollback")
+                .sum()
+                if "rollback_decision" in rollback_decisions_v213.columns
+                else 0
+            )
+            st.metric("Adiadas", int(deferred))
+
+        decision_cols = [
+            "rollback_decision_record_id",
+            "source_record_type",
+            "source_record_id",
+            "implementation_package_id",
+            "deployed_commit_sha",
+            "source_state",
+            "rollback_target_commit_sha",
+            "rollback_plan_ref",
+            "decided_at",
+            "reviewer_role",
+            "rollback_decision",
+            "decision_rationale",
+            "rollback_decision_is_not_rollback_execution",
+            "automatic_rollback_enabled",
+            "automatic_rule_change_enabled",
+        ]
+        st.dataframe(
+            rollback_decisions_v213[
+                [c for c in decision_cols if c in rollback_decisions_v213.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Execução e verificação pós-rollback")
+    if rollback_execution_v213 is None:
+        show_missing(
+            "Execução de rollback v2.13",
+            rollback_dir / "rollback_execution_validated_v2_13.csv",
+        )
+    else:
+        if "rollback_execution_state" in rollback_execution_v213.columns:
+            counts = (
+                rollback_execution_v213["rollback_execution_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="registros",
+                title="Estados pós-rollback",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        execution_cols = [
+            "rollback_execution_record_id",
+            "rollback_decision_record_id",
+            "implementation_package_id",
+            "rollback_target_commit_sha",
+            "rolled_back_commit_sha",
+            "rolled_back_at",
+            "reviewer_role",
+            "rollback_evidence_ref",
+            "post_rollback_ci_status",
+            "smoke_test_status",
+            "health_check_status",
+            "security_privacy_check_status",
+            "epidemiology_sanity_status",
+            "rollback_execution_state",
+            "verification_notes",
+            "rollback_record_requires_actual_rollback_evidence",
+            "automatic_rollback_enabled",
+            "automatic_rule_change_enabled",
+        ]
+        st.dataframe(
+            rollback_execution_v213[
+                [c for c in execution_cols if c in rollback_execution_v213.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.13: decisão de rollback ≠ execução; rollback exige evidência real; "
+        "alteração de regra, deploy e rollback automáticos permanecem desabilitados."
     )
 
 st.divider()
