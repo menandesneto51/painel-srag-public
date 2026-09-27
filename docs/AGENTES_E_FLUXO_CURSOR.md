@@ -569,3 +569,46 @@ O AGENTE-POS-DEPLOY deve preservar:
 - `automatic_deploy_enabled=false`;
 - `automatic_rollback_enabled=false`;
 - `automatic_rule_change_enabled=false`.
+
+
+## 18. AGENTE-ROLLBACK
+
+Responsável por:
+
+- validar se a origem é elegível para consideração de rollback;
+- conferir efeito inesperado ou estado rollback_consideration;
+- verificar plano de rollback;
+- conferir commit-alvo;
+- validar decisão humana;
+- verificar evidência da execução real;
+- conferir CI, smoke test, health check, segurança/privacidade e sanity epidemiológico pós-rollback;
+- registrar verified_restored ou needs_investigation;
+- manter separação entre decisão, execução e nova mudança de regra.
+
+Não pode:
+
+- executar rollback;
+- executar deploy;
+- alterar regra;
+- escolher automaticamente commit-alvo;
+- tratar efeito inesperado como prova causal epidemiológica;
+- armazenar identificadores pessoais do revisor.
+
+## Fluxo v2.13
+
+```text
+POS-DEPLOY
+  -> rollback_consideration / unexpected_behavior_needs_review
+  -> decisão humana de rollback
+  -> rollback executado externamente/manual
+  -> evidência do rollback
+  -> ROLLBACK
+  -> verified_restored | needs_investigation
+```
+
+O AGENTE-ROLLBACK deve preservar:
+
+- `rollback_decision_is_not_rollback_execution=true`;
+- `rollback_record_requires_actual_rollback_evidence=true`;
+- `automatic_rollback_enabled=false`;
+- `automatic_rule_change_enabled=false`.
