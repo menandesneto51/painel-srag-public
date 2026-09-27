@@ -16,12 +16,22 @@ def main() -> int:
     parser.add_argument(
         "--decisions",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "human_deploy_decisions_validated_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "human_deploy_decisions_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "deployment_record_template_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "deployment_record_template_v2_12.csv"
+        ),
     )
     args = parser.parse_args()
 
@@ -29,30 +39,45 @@ def main() -> int:
         raise FileNotFoundError(args.decisions)
 
     decisions = pd.read_csv(args.decisions)
+    required = {
+        "deploy_decision_record_id",
+        "release_gate_record_id",
+        "implementation_package_id",
+        "release_commit_sha",
+        "target_environment",
+        "deploy_decision",
+    }
+    missing = required.difference(decisions.columns)
+    if missing:
+        raise ValueError(
+            f"Decisões de deploy v2.12 sem colunas: {sorted(missing)}"
+        )
+
     approved = decisions.loc[
-        decisions["deploy_decision"].astype(str).eq("approve_human_deploy")
+        decisions["deploy_decision"]
+        .astype(str)
+        .eq("approve_human_deploy")
     ].copy()
 
     template = approved[[
         "deploy_decision_record_id",
+        "release_gate_record_id",
         "implementation_package_id",
-        "merged_commit_sha",
+        "release_commit_sha",
+        "target_environment",
     ]].copy()
-    for col in (
-        "deployed_at",
-        "reviewer_role",
-        "environment",
-        "deployed_commit_sha",
-        "deploy_evidence_ref",
-        "post_deploy_ci_status",
-        "smoke_test_status",
-        "health_check_status",
-        "security_privacy_check_status",
-        "rollback_readiness_status",
-        "deployment_state",
-        "deployment_notes",
-    ):
-        template[col] = ""
+    template["deployed_at"] = ""
+    template["reviewer_role"] = ""
+    template["environment"] = template["target_environment"]
+    template["deployed_commit_sha"] = template["release_commit_sha"]
+    template["deploy_evidence_ref"] = ""
+    template["post_deploy_ci_status"] = ""
+    template["smoke_test_status"] = ""
+    template["health_check_status"] = ""
+    template["security_privacy_check_status"] = ""
+    template["rollback_readiness_status"] = ""
+    template["deployment_state"] = ""
+    template["deployment_notes"] = ""
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     template.to_csv(args.output, index=False, encoding="utf-8")
