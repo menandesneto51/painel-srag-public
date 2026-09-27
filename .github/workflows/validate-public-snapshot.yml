@@ -73,6 +73,9 @@ jobs:
             scripts/create_rule_change_evaluation_template_v2_8.py \
             scripts/validate_rule_change_evaluation_v2_8.py \
             scripts/build_rule_change_evaluation_report_v2_8.py \
+            scripts/create_implementation_package_template_v2_9.py \
+            scripts/validate_implementation_package_v2_9.py \
+            scripts/build_implementation_package_report_v2_9.py \
             scripts/build_candidate_review_queue_v2_7.py \
             scripts/evaluate_rule_change_shadow_v2_7.py \
             scripts/build_quality_metrics.py \
@@ -110,6 +113,8 @@ jobs:
             src/rule_change_proposals_report_v2_7.py \
             src/rule_change_evaluation_v2_8.py \
             src/rule_change_evaluation_report_v2_8.py \
+            src/implementation_package_v2_9.py \
+            src/implementation_package_report_v2_9.py \
             src/candidate_rule_queue_v2_7.py \
             src/rule_shadow_evaluation_v2_7.py \
             src/rule_shadow_evaluation_report_v2_7.py \
@@ -149,6 +154,8 @@ jobs:
             tests/test_rule_change_proposals_report_v2_7.py \
             tests/test_rule_change_evaluation_v2_8.py \
             tests/test_rule_change_evaluation_report_v2_8.py \
+            tests/test_implementation_package_v2_9.py \
+            tests/test_implementation_package_report_v2_9.py \
             tests/test_candidate_rule_queue_v2_7.py \
             tests/test_rule_shadow_evaluation_v2_7.py \
             tests/test_rule_shadow_evaluation_report_v2_7.py \
