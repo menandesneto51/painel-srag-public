@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.5 — Revisão Local",
+    page_title="SRAG MT v2.6 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.5 — Revisão Local")
+st.title("SRAG MT v2.6 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -47,8 +47,8 @@ operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
 stability_dir = CANDIDATE / "operational_stability"
-decision_dir = CANDIDATE / "decision_audit_v2_5"
 decision_audit_dir = CANDIDATE / "decision_audit_v2_5"
+concordance_dir = CANDIDATE / "human_workflow_concordance_v2_6"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -78,20 +78,17 @@ operational_persistence = read_csv(
 operational_stability = read_csv(
     stability_dir / "operational_stability_v2_4.csv"
 )
-human_decisions = read_csv(
-    decision_dir / "human_decisions_validated_v2_5.csv"
-)
-follow_up_status = read_csv(
-    decision_dir / "follow_up_status_v2_5.csv"
-)
-follow_up_events = read_csv(
-    decision_dir / "follow_up_events_validated_v2_5.csv"
+follow_up_events_v25 = read_csv(
+    decision_audit_dir / "follow_up_events_validated_v2_5.csv"
 )
 human_decisions_v25 = read_csv(
     decision_audit_dir / "human_decisions_validated_v2_5.csv"
 )
 follow_up_status_v25 = read_csv(
     decision_audit_dir / "follow_up_status_v2_5.csv"
+)
+workflow_concordance_v26 = read_csv(
+    concordance_dir / "human_workflow_concordance_v2_6.csv"
 )
 
 tabs = st.tabs([
@@ -104,6 +101,7 @@ tabs = st.tabs([
     "Persistência v2.3",
     "Estabilidade v2.4",
     "Auditoria humana v2.5",
+    "Concordância workflow × decisão v2.6",
 ])
 
 with tabs[0]:
@@ -712,141 +710,110 @@ with tabs[8]:
             hide_index=True,
         )
 
-    st.caption(
-        "Governança v2.5: decisão humana registrada, execução automática desabilitada, "
-        "sem decisão em nível de paciente e sem prescrição clínica."
-    )
-
-with tabs[8]:
-    st.subheader("Decisões humanas e follow-up — v2.5")
-    st.warning(
-        "Esta aba exibe registros humanos auditáveis. Uma decisão registrada não prova "
-        "que a ação externa foi executada, e o estado de follow-up não é classe de risco."
-    )
-
-    if human_decisions is None:
-        show_missing(
-            "Decisões humanas validadas v2.5",
-            decision_dir / "human_decisions_validated_v2_5.csv",
-        )
-    else:
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            st.metric("Decisões", len(human_decisions))
-        with c2:
-            st.metric(
-                "Municípios com decisão",
-                human_decisions["codigo_ibge"].nunique(),
-            )
-        with c3:
-            if "follow_up_required" in human_decisions.columns:
-                required = (
-                    human_decisions["follow_up_required"]
-                    .astype(str)
-                    .str.lower()
-                    .isin({"true", "1", "yes", "sim"})
-                    .sum()
-                )
-                st.metric("Follow-ups requeridos", int(required))
-
-        if "decision_status" in human_decisions.columns:
-            counts = (
-                human_decisions["decision_status"]
-                .astype("string")
-                .value_counts(dropna=False)
-                .rename_axis("decisao")
-                .reset_index(name="registros")
-            )
-            fig = px.bar(
-                counts,
-                x="decisao",
-                y="registros",
-                title="Decisões humanas registradas",
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-        decision_cols = [
-            "decision_record_id",
-            "codigo_ibge",
-            "municipio",
-            "snapshot_id",
-            "review_queue",
-            "decision_scope",
-            "action_id",
-            "reviewed_at",
-            "reviewer_role",
-            "decision_status",
-            "rationale",
-            "follow_up_required",
-            "follow_up_due_at",
-            "follow_up_owner_role",
-            "decision_is_not_proof_of_execution",
-        ]
-        st.dataframe(
-            human_decisions[
-                [c for c in decision_cols if c in human_decisions.columns]
-            ],
-            use_container_width=True,
-            hide_index=True,
-        )
-
-    st.markdown("### Estado do follow-up")
-    if follow_up_status is None:
-        show_missing(
-            "Estado de follow-up v2.5",
-            decision_dir / "follow_up_status_v2_5.csv",
-        )
-    else:
-        if "follow_up_state" in follow_up_status.columns:
-            counts = (
-                follow_up_status["follow_up_state"]
-                .astype("string")
-                .value_counts(dropna=False)
-                .rename_axis("estado")
-                .reset_index(name="registros")
-            )
-            fig = px.bar(
-                counts,
-                x="estado",
-                y="registros",
-                title="Follow-up por estado",
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-        follow_cols = [
-            "decision_record_id",
-            "codigo_ibge",
-            "municipio",
-            "decision_status",
-            "follow_up_required",
-            "follow_up_due_at",
-            "follow_up_owner_role",
-            "latest_follow_up_event_status",
-            "latest_follow_up_event_at",
-            "follow_up_state",
-            "as_of",
-            "follow_up_state_is_not_risk",
-        ]
-        st.dataframe(
-            follow_up_status[
-                [c for c in follow_cols if c in follow_up_status.columns]
-            ],
-            use_container_width=True,
-            hide_index=True,
-        )
-
-    if follow_up_events is not None and not follow_up_events.empty:
+    if follow_up_events_v25 is not None and not follow_up_events_v25.empty:
         with st.expander("Eventos de follow-up registrados"):
             st.dataframe(
-                follow_up_events,
+                follow_up_events_v25,
                 use_container_width=True,
                 hide_index=True,
             )
 
     st.caption(
-        "Governança v2.5: apenas papel do revisor é armazenado; execução automática, "
-        "decisão em nível de paciente e prescrição clínica permanecem desabilitadas."
+        "Governança v2.5: decisão humana registrada, execução automática desabilitada, "
+        "sem decisão em nível de paciente e sem prescrição clínica."
     )
+
+with tabs[9]:
+    st.subheader("Concordância entre workflow e decisão humana — v2.6")
+    st.warning(
+        "A v2.6 serve para revisar regras do sistema. Discordância não significa erro humano, "
+        "e concordância não prova correção epidemiológica da regra."
+    )
+
+    if workflow_concordance_v26 is None:
+        show_missing(
+            "Concordância workflow × decisão v2.6",
+            concordance_dir / "human_workflow_concordance_v2_6.csv",
+        )
+    else:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Decisões avaliadas", len(workflow_concordance_v26))
+        with c2:
+            if "rule_review_required" in workflow_concordance_v26.columns:
+                review_required = (
+                    workflow_concordance_v26["rule_review_required"]
+                    .astype(str)
+                    .str.lower()
+                    .isin({"true", "1", "yes", "sim"})
+                    .sum()
+                )
+                st.metric("Registros para revisão de regra", int(review_required))
+
+        if "workflow_alignment" in workflow_concordance_v26.columns:
+            counts = (
+                workflow_concordance_v26["workflow_alignment"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("classe")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="classe",
+                y="registros",
+                title="Concordância entre fila e decisão humana",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        alignment_options = ["Todas"]
+        if "workflow_alignment" in workflow_concordance_v26.columns:
+            alignment_options += sorted(
+                workflow_concordance_v26["workflow_alignment"]
+                .dropna()
+                .astype(str)
+                .unique()
+                .tolist()
+            )
+        selected_alignment = st.selectbox(
+            "Filtrar classe de concordância",
+            alignment_options,
+            key="workflow_concordance_v26_filter",
+        )
+        view = workflow_concordance_v26.copy()
+        if selected_alignment != "Todas":
+            view = view.loc[
+                view["workflow_alignment"].astype(str).eq(selected_alignment)
+            ]
+
+        cols = [
+            "decision_record_id",
+            "codigo_ibge",
+            "municipio",
+            "snapshot_id",
+            "review_queue",
+            "decision_status",
+            "workflow_alignment",
+            "rule_review_required",
+            "workflow_pattern",
+            "current_nonroutine_run",
+            "follow_up_state",
+            "human_decision_is_epidemiological_gold_standard",
+            "reviewer_score_enabled",
+            "municipality_rank_enabled",
+            "automatic_rule_change_enabled",
+            "automatic_execution_enabled",
+        ]
+        st.dataframe(
+            view[[c for c in cols if c in view.columns]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        st.caption(
+            "Governança v2.6: sem score de revisor, sem ranking municipal, "
+            "sem mudança automática de regra e sem execução automática."
+        )
 
 st.divider()
 st.caption(
