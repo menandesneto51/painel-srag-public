@@ -126,6 +126,24 @@ class LearningActionFollowupV217Tests(unittest.TestCase):
                 "2026-10-22T12:00:00Z",
             )
 
+    def test_personal_name_in_role_is_rejected(self):
+        action = self.action()
+        action.loc[0, "owner_role"] = "Maria Silva"
+        with self.assertRaises(ValueError):
+            validate_learning_action_followup(
+                action, self.postmortems(), CONFIG,
+                "2026-10-15T12:00:00Z",
+            )
+
+    def test_email_in_persisted_text_is_rejected(self):
+        action = self.action()
+        action.loc[0, "action_description"] = "Contatar maria@example.org"
+        with self.assertRaises(ValueError):
+            validate_learning_action_followup(
+                action, self.postmortems(), CONFIG,
+                "2026-10-15T12:00:00Z",
+            )
+
     def test_personal_identifier_columns_are_rejected(self):
         action = self.action()
         action["owner_name"] = "Pessoa"
