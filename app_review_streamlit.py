@@ -74,6 +74,7 @@ evaluation_dir = CANDIDATE / "rule_change_evaluation_v2_8"
 implementation_dir = CANDIDATE / "implementation_package_v2_9"
 merge_gate_dir = CANDIDATE / "merge_gate_v2_10"
 human_merge_dir = CANDIDATE / "human_merge_v2_11"
+release_gate_dir = CANDIDATE / "release_deploy_gate_v2_12"
 deployment_dir = CANDIDATE / "deployment_v2_12"
 rollback_dir = CANDIDATE / "rollback_v2_13"
 
@@ -138,6 +139,9 @@ human_merge_decisions_v211 = read_csv(
 )
 post_merge_records_v211 = read_csv(
     human_merge_dir / "post_merge_records_validated_v2_11.csv"
+)
+release_gate_records_v212 = read_csv(
+    release_gate_dir / "release_deploy_gate_validated_v2_12.csv"
 )
 human_deploy_decisions_v212 = read_csv(
     deployment_dir / "human_deploy_decisions_validated_v2_12.csv"
@@ -1429,12 +1433,73 @@ with tabs[14]:
     )
 
 with tabs[15]:
-    st.subheader("Deploy humano e verificação de efeito — v2.12")
+    st.subheader("Release gate, deploy humano e verificação de efeito — v2.12")
     st.warning(
-        "Aprovar deploy não executa o deploy. O registro de deploy exige evidência real, "
-        "e a verificação de efeito avalia comportamento da implementação sem inferência causal epidemiológica."
+        "Elegibilidade não é deploy. A decisão humana exige release gate aprovado; "
+        "o deploy real deve usar exatamente o commit e ambiente autorizados, e a "
+        "verificação de efeito não é inferência causal epidemiológica."
     )
 
+    st.markdown("### Gate pré-deploy")
+    if release_gate_records_v212 is None:
+        show_missing(
+            "Release gate v2.12",
+            release_gate_dir / "release_deploy_gate_validated_v2_12.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Release gates", len(release_gate_records_v212))
+        with c2:
+            eligible = (
+                release_gate_records_v212["final_release_decision"]
+                .astype(str)
+                .eq("eligible_for_human_deploy")
+                .sum()
+                if "final_release_decision" in release_gate_records_v212.columns
+                else 0
+            )
+            st.metric("Elegíveis para decisão humana", int(eligible))
+        with c3:
+            blocked = (
+                release_gate_records_v212["final_release_decision"]
+                .astype(str)
+                .eq("blocked")
+                .sum()
+                if "final_release_decision" in release_gate_records_v212.columns
+                else 0
+            )
+            st.metric("Bloqueados", int(blocked))
+
+        gate_cols = [
+            "release_gate_record_id",
+            "post_merge_record_id",
+            "implementation_package_id",
+            "target_environment",
+            "verified_merged_commit_sha",
+            "release_commit_sha",
+            "release_version",
+            "predeploy_ci_status",
+            "predeploy_security_privacy_status",
+            "monitoring_readiness_status",
+            "rollback_plan_verification_status",
+            "change_window_status",
+            "final_release_decision",
+            "release_rationale",
+            "deploy_eligibility_is_not_deploy",
+            "automatic_deploy_enabled",
+            "automatic_rollback_enabled",
+            "human_deploy_required",
+        ]
+        st.dataframe(
+            release_gate_records_v212[
+                [c for c in gate_cols if c in release_gate_records_v212.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Decisão humana de deploy")
     if human_deploy_decisions_v212 is None:
         show_missing(
             "Decisões humanas de deploy v2.12",
@@ -1467,8 +1532,11 @@ with tabs[15]:
 
         deploy_decision_cols = [
             "deploy_decision_record_id",
+            "release_gate_record_id",
             "post_merge_record_id",
             "implementation_package_id",
+            "target_environment",
+            "release_commit_sha",
             "merged_commit_sha",
             "decided_at",
             "reviewer_role",
@@ -1513,8 +1581,10 @@ with tabs[15]:
         deployment_cols = [
             "deployment_record_id",
             "deploy_decision_record_id",
+            "release_gate_record_id",
             "implementation_package_id",
             "environment",
+            "release_commit_sha",
             "merged_commit_sha",
             "deployed_commit_sha",
             "deployed_at",
@@ -1589,7 +1659,8 @@ with tabs[15]:
         )
 
     st.caption(
-        "Governança v2.12: decisão de deploy ≠ execução; deploy exige evidência; "
+        "Governança v2.12: release gate obrigatório; decisão de deploy ≠ execução; "
+        "commit e ambiente do deploy devem ser exatamente os autorizados; deploy exige evidência; "
         "verificação de efeito não é inferência causal; rollback e alteração de regra automáticos permanecem desabilitados."
     )
 
