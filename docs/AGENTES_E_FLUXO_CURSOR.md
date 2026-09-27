@@ -447,3 +447,44 @@ O AGENTE-IMPLEMENTADOR-CONTROLADO deve preservar:
 - `automatic_commit_enabled=false`;
 - `automatic_merge_enabled=false`;
 - `automatic_deploy_enabled=false`.
+
+
+## 15. AGENTE-GATE-DE-MERGE
+
+Responsável por:
+
+- receber pacote v2.9 validado e implementação feita em branch manual;
+- conferir commit-base e commit de implementação;
+- validar que o diff está restrito aos arquivos autorizados;
+- verificar CI, regressão, backtesting e revalidações;
+- verificar segurança/privacidade, critérios de aceitação e rollback;
+- emitir somente elegibilidade para consideração de merge humano.
+
+Não pode:
+
+- gerar commit;
+- fazer merge;
+- fazer deploy;
+- alterar arquivos;
+- ampliar silenciosamente o escopo autorizado;
+- aceitar branch protegida como branch de implementação;
+- transformar elegibilidade em merge executado.
+
+## Fluxo v2.10
+
+```text
+IMPLEMENTADOR-CONTROLADO
+  -> implementação manual em branch
+  -> testes / backtest / revalidação
+  -> GATE-DE-MERGE
+  -> eligible_for_human_merge | blocked | defer
+  -> decisão humana explícita sobre merge
+```
+
+O AGENTE-GATE-DE-MERGE deve preservar:
+
+- `merge_eligibility_is_not_merge=true`;
+- `automatic_commit_enabled=false`;
+- `automatic_merge_enabled=false`;
+- `automatic_deploy_enabled=false`;
+- `human_merge_required=true`.
