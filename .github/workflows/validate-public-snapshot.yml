@@ -50,6 +50,7 @@ jobs:
             scripts/build_confidence_silence.py \
             scripts/run_p2_pipeline.py \
             scripts/backtest_p2_signals.py \
+            scripts/build_territorial_intelligence.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -69,6 +70,7 @@ jobs:
             src/signal_confidence.py \
             src/silence_signals.py \
             src/stability.py \
+            src/territorial_intelligence.py \
             src/vintage_backtest.py \
             src/virology.py \
             src/sivep_pipeline.py \
@@ -87,6 +89,7 @@ jobs:
             tests/test_sivep_source_watch.py \
             tests/test_snapshot_promotion.py \
             tests/test_stability.py \
+            tests/test_territorial_intelligence.py \
             tests/test_vintage_backtest.py \
             tests/test_virology.py
 
