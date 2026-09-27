@@ -31,6 +31,7 @@ CONFIG = {
         "context_requirement",
     ],
     "documentation_only_types": ["documentation"],
+    "approval_eligible_proposal_statuses": ["ready_for_human_decision"],
 }
 
 
@@ -39,7 +40,7 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
         return pd.DataFrame([{
             "proposal_id": "prop_1",
             "proposal_type": proposal_type,
-            "proposal_status": "draft",
+            "proposal_status": "ready_for_human_decision",
             "proposal_is_not_change": True,
             "human_approval_required": True,
         }])
@@ -51,6 +52,8 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
             "reviewer_role": "epidemiologista_senior",
             "case_review_status": "passed",
             "epidemiology_review_status": "passed",
+            "shadow_review_status": "passed",
+            "shadow_review_refs": "shadow-summary",
             "backtest_status": "passed",
             "statistical_review_status": "passed",
             "documentation_status": "passed",
@@ -58,6 +61,16 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
             "risk_summary": "Riscos de falso acionamento revisados.",
             "final_decision": decision,
             "decision_rationale": "Evidências suficientes para branch de implementação.",
+        }])
+
+    def shadow_evidence(self):
+        return pd.DataFrame([{
+            "proposal_id": "prop_1",
+            "shadow_only": True,
+            "automatic_activation": False,
+            "candidate_rule_activated": False,
+            "candidate_rule_version": "candidate-001",
+            "queue_change_fraction": 0.10,
         }])
 
     def test_repository_config_is_valid(self):
@@ -74,6 +87,7 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
             self.evaluation(),
             self.proposals(),
             CONFIG,
+            shadow_evidence=self.shadow_evidence(),
         )
         row = out.iloc[0]
         self.assertTrue(bool(row["decision_is_not_implementation"]))
@@ -90,6 +104,27 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
                 evaluation,
                 self.proposals(),
                 CONFIG,
+                shadow_evidence=self.shadow_evidence(),
+            )
+
+    def test_logic_approval_blocked_without_shadow_evidence(self):
+        with self.assertRaises(ValueError):
+            validate_rule_change_evaluations(
+                self.evaluation(),
+                self.proposals(),
+                CONFIG,
+                shadow_evidence=None,
+            )
+
+    def test_logic_approval_blocked_when_proposal_not_ready(self):
+        proposals = self.proposals()
+        proposals.loc[0, "proposal_status"] = "needs_backtest"
+        with self.assertRaises(ValueError):
+            validate_rule_change_evaluations(
+                self.evaluation(),
+                proposals,
+                CONFIG,
+                shadow_evidence=self.shadow_evidence(),
             )
 
     def test_reject_does_not_require_all_reviews_passed(self):
@@ -104,6 +139,7 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
 
     def test_documentation_change_allows_not_applicable_backtest(self):
         evaluation = self.evaluation()
+        evaluation.loc[0, "shadow_review_status"] = "not_applicable"
         evaluation.loc[0, "backtest_status"] = "not_applicable"
         evaluation.loc[0, "statistical_review_status"] = "not_applicable"
         out = validate_rule_change_evaluations(
