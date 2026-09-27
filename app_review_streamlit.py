@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.10 — Revisão Local",
+    page_title="SRAG MT v2.11 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.10 — Revisão Local")
+st.title("SRAG MT v2.11 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -73,6 +73,7 @@ shadow_dir = CANDIDATE / "rule_shadow_evaluation_v2_7"
 evaluation_dir = CANDIDATE / "rule_change_evaluation_v2_8"
 implementation_dir = CANDIDATE / "implementation_package_v2_9"
 merge_gate_dir = CANDIDATE / "merge_gate_v2_10"
+human_merge_dir = CANDIDATE / "human_merge_v2_11"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -130,6 +131,12 @@ implementation_packages_v29 = read_csv(
 merge_gate_records_v210 = read_csv(
     merge_gate_dir / "merge_gate_validated_v2_10.csv"
 )
+human_merge_decisions_v211 = read_csv(
+    human_merge_dir / "human_merge_decisions_validated_v2_11.csv"
+)
+post_merge_records_v211 = read_csv(
+    human_merge_dir / "post_merge_records_validated_v2_11.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -146,6 +153,7 @@ tabs = st.tabs([
     "Avaliação formal v2.8",
     "Pacotes de implementação v2.9",
     "Gate de merge v2.10",
+    "Merge humano e pós-merge v2.11",
 ])
 
 with tabs[0]:
@@ -1277,6 +1285,128 @@ with tabs[13]:
     st.caption(
         "Governança v2.10: o gate apenas declara elegibilidade. "
         "Merge e deploy continuam sendo decisões e ações humanas separadas."
+    )
+
+with tabs[14]:
+    st.subheader("Decisão humana de merge e pós-merge — v2.11")
+    st.warning(
+        "Aprovar merge não executa o merge. Registros pós-merge exigem evidência explícita "
+        "do merge e não representam deploy automático."
+    )
+
+    if human_merge_decisions_v211 is None:
+        show_missing(
+            "Decisões humanas de merge v2.11",
+            human_merge_dir / "human_merge_decisions_validated_v2_11.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Decisões", len(human_merge_decisions_v211))
+        with c2:
+            approved = (
+                human_merge_decisions_v211["merge_decision"]
+                .astype(str)
+                .eq("approve_human_merge")
+                .sum()
+                if "merge_decision" in human_merge_decisions_v211.columns
+                else 0
+            )
+            st.metric("Aprovações humanas", int(approved))
+        with c3:
+            deferred = (
+                human_merge_decisions_v211["merge_decision"]
+                .astype(str)
+                .eq("defer_merge")
+                .sum()
+                if "merge_decision" in human_merge_decisions_v211.columns
+                else 0
+            )
+            st.metric("Adiadas", int(deferred))
+
+        decision_cols = [
+            "merge_decision_record_id",
+            "merge_gate_record_id",
+            "implementation_package_id",
+            "proposal_id",
+            "implementation_branch",
+            "implementation_commit_sha",
+            "decided_at",
+            "reviewer_role",
+            "merge_decision",
+            "decision_rationale",
+            "merge_decision_is_not_merge_execution",
+            "automatic_merge_enabled",
+            "automatic_deploy_enabled",
+            "automatic_rollback_enabled",
+            "human_merge_required",
+        ]
+        st.dataframe(
+            human_merge_decisions_v211[
+                [c for c in decision_cols if c in human_merge_decisions_v211.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Verificação pós-merge")
+    if post_merge_records_v211 is None:
+        show_missing(
+            "Registros pós-merge v2.11",
+            human_merge_dir / "post_merge_records_validated_v2_11.csv",
+        )
+    else:
+        if "post_merge_state" in post_merge_records_v211.columns:
+            counts = (
+                post_merge_records_v211["post_merge_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="registros",
+                title="Estados pós-merge",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        post_cols = [
+            "post_merge_record_id",
+            "merge_decision_record_id",
+            "merge_gate_record_id",
+            "implementation_package_id",
+            "implementation_branch",
+            "implementation_commit_sha",
+            "merged_commit_sha",
+            "merge_result_mode",
+            "merge_evidence_ref",
+            "recorded_at",
+            "reviewer_role",
+            "post_merge_ci_status",
+            "smoke_test_status",
+            "epidemiology_sanity_status",
+            "security_privacy_check_status",
+            "rollback_readiness_status",
+            "post_merge_state",
+            "verification_notes",
+            "post_merge_record_requires_actual_merge_evidence",
+            "post_merge_record_is_not_deploy",
+            "automatic_deploy_enabled",
+            "automatic_rollback_enabled",
+        ]
+        st.dataframe(
+            post_merge_records_v211[
+                [c for c in post_cols if c in post_merge_records_v211.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.11: decisão de merge ≠ execução; pós-merge exige evidência real; "
+        "deploy e rollback automáticos permanecem desabilitados."
     )
 
 st.divider()
