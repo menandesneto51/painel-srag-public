@@ -43,6 +43,7 @@ territorial_path = (
 )
 signals_dir = CANDIDATE / "signals"
 backtest_dir = CANDIDATE / "backtest"
+operational_dir = CANDIDATE / "operational_review"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -55,6 +56,7 @@ baseline = read_csv(signals_dir / "baseline_seasonal.csv")
 backtest = read_csv(backtest_dir / "anomaly_threshold_backtest.csv")
 predictions = read_csv(backtest_dir / "anomaly_backtest_predictions.csv")
 virology = read_csv(CANDIDATE / "virology_municipal_weekly_mt_2026.csv")
+operational_queue = read_csv(operational_dir / "operational_review_queue_v2_2.csv")
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -62,6 +64,7 @@ tabs = st.tabs([
     "Confiança e silêncio",
     "Virologia",
     "Backtesting",
+    "Revisão operacional v2.2",
 ])
 
 with tabs[0]:
@@ -288,6 +291,77 @@ with tabs[4]:
     if predictions is not None:
         with st.expander("Predições retrospectivas"):
             st.dataframe(predictions.head(1000), use_container_width=True, hide_index=True)
+
+with tabs[5]:
+    st.subheader("Fila de revisão operacional v2.2")
+    st.warning(
+        "A fila organiza o tipo de revisão técnica. Ela não é ranking de risco, "
+        "não representa gravidade clínica e não executa ações automaticamente."
+    )
+    if operational_queue is None:
+        show_missing(
+            "Fila operacional v2.2",
+            operational_dir / "operational_review_queue_v2_2.csv",
+        )
+    else:
+        if "review_queue" in operational_queue.columns:
+            counts = (
+                operational_queue["review_queue"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("fila")
+                .reset_index(name="municipios")
+            )
+            fig = px.bar(
+                counts,
+                x="fila",
+                y="municipios",
+                title="Municípios por fila de revisão",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        queues = ["Todas"]
+        if "review_queue" in operational_queue.columns:
+            queues += sorted(
+                operational_queue["review_queue"]
+                .dropna()
+                .astype(str)
+                .unique()
+                .tolist()
+            )
+        selected_queue = st.selectbox(
+            "Filtrar fila de revisão",
+            queues,
+            key="operational_review_queue_filter",
+        )
+        view = operational_queue.copy()
+        if selected_queue != "Todas":
+            view = view.loc[
+                view["review_queue"].astype(str).eq(selected_queue)
+            ]
+
+        display_cols = [
+            "codigo_ibge",
+            "municipio",
+            "review_queue",
+            "queue_description",
+            "review_tags",
+            "evidence_summary",
+            "suggested_review_actions",
+            "human_review_required",
+            "automatic_execution_enabled",
+            "queue_is_not_risk_rank",
+        ]
+        st.dataframe(
+            view[[c for c in display_cols if c in view.columns]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        st.caption(
+            "Governança v2.2: human_review_required=true, "
+            "automatic_execution_enabled=false e queue_is_not_risk_rank=true."
+        )
 
 st.divider()
 st.caption(
