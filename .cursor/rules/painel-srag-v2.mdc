@@ -207,3 +207,18 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - workflow_agreement_worsened não significa automaticamente pior regra epidemiológica.
 - Toda mudança após shadow exige análise de casos, backtesting adequado, revisão epidemiológica/estatística/documental e aprovação humana.
 - Produtos v2.7 permanecem em data_candidate/ e não promovem regras automaticamente.
+
+## Avaliação formal v2.8
+
+- Aprovação v2.8 não é implementação.
+- Manter decision_is_not_implementation=true.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_threshold_change_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter human_approval_required=true.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais.
+- Mudanças de lógica exigem case review, revisão epidemiológica, backtesting, revisão estatística e documentação aprovados.
+- Mudanças documentais podem usar not_applicable apenas para backtesting/revisão estatística.
+- Uma proposta aprovada segue somente para branch separada de implementação.
+- Nenhuma avaliação v2.8 promove alteração diretamente para main ou produção.
