@@ -19,6 +19,11 @@ class RuleChangeEvaluationReportV28Tests(unittest.TestCase):
             "reviewer_role": "epidemiologista_senior",
             "case_review_status": "passed",
             "epidemiology_review_status": "passed",
+            "shadow_review_status": "passed",
+            "shadow_evidence_present": True,
+            "shadow_candidate_rule_version": "candidate-001",
+            "shadow_queue_change_fraction": 0.10,
+            "shadow_review_is_not_activation": True,
             "backtest_status": "passed",
             "statistical_review_status": "passed",
             "documentation_status": "passed",
@@ -41,11 +46,13 @@ class RuleChangeEvaluationReportV28Tests(unittest.TestCase):
         self.assertFalse(summary["automatic_merge"])
         self.assertFalse(summary["automatic_deploy"])
         self.assertTrue(summary["decision_is_not_implementation"])
+        self.assertEqual(summary["shadow_evidence_records"], 1)
 
     def test_report_states_approval_is_not_implementation(self):
         report = render_rule_change_evaluation_report(self.frame())
         self.assertIn("autoriza apenas preparação de branch", report)
         self.assertIn("não autoriza deploy automático", report)
+        self.assertIn("Shadow review", report)
 
 
 if __name__ == "__main__":
