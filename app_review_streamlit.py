@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.13 — Revisão Local",
+    page_title="SRAG MT v2.14 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.13 — Revisão Local")
+st.title("SRAG MT v2.14 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -77,6 +77,7 @@ human_merge_dir = CANDIDATE / "human_merge_v2_11"
 release_gate_dir = CANDIDATE / "release_deploy_gate_v2_12"
 deployment_dir = CANDIDATE / "deployment_v2_12"
 rollback_dir = CANDIDATE / "rollback_v2_13"
+postmortem_dir = CANDIDATE / "postmortem_v2_14"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -158,6 +159,9 @@ rollback_decisions_v213 = read_csv(
 rollback_execution_v213 = read_csv(
     rollback_dir / "rollback_execution_validated_v2_13.csv"
 )
+postmortem_records_v214 = read_csv(
+    postmortem_dir / "postmortem_validated_v2_14.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -177,6 +181,7 @@ tabs = st.tabs([
     "Merge humano e pós-merge v2.11",
     "Deploy e efeito v2.12",
     "Rollback v2.13",
+    "Post-mortem v2.14",
 ])
 
 with tabs[0]:
@@ -1780,6 +1785,119 @@ with tabs[16]:
     st.caption(
         "Governança v2.13: decisão de rollback ≠ execução; rollback exige evidência real; "
         "alteração de regra, deploy e rollback automáticos permanecem desabilitados."
+    )
+
+with tabs[17]:
+    st.subheader("Post-mortem e aprendizado controlado — v2.14")
+    st.warning(
+        "Aprendizado institucional não é prova causal e não altera regras automaticamente. "
+        "O retorno ao ciclo de regra exige revisão humana explícita."
+    )
+
+    if postmortem_records_v214 is None:
+        show_missing(
+            "Post-mortem v2.14",
+            postmortem_dir / "postmortem_validated_v2_14.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Post-mortems", len(postmortem_records_v214))
+        with c2:
+            closed = (
+                postmortem_records_v214["postmortem_status"]
+                .astype(str)
+                .eq("closed")
+                .sum()
+                if "postmortem_status" in postmortem_records_v214.columns
+                else 0
+            )
+            st.metric("Fechados", int(closed))
+        with c3:
+            reentries = (
+                postmortem_records_v214["reenter_rule_review"]
+                .astype(str)
+                .str.lower()
+                .isin({"true", "1", "yes", "sim"})
+                .sum()
+                if "reenter_rule_review" in postmortem_records_v214.columns
+                else 0
+            )
+            st.metric("Retornos à revisão de regra", int(reentries))
+
+        if "outcome_state" in postmortem_records_v214.columns:
+            counts = (
+                postmortem_records_v214["outcome_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("desfecho")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="desfecho",
+                y="registros",
+                title="Desfechos dos post-mortems",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        if "learning_action_type" in postmortem_records_v214.columns:
+            counts = (
+                postmortem_records_v214["learning_action_type"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("acao")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="acao",
+                y="registros",
+                title="Ações de aprendizado",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        display_cols = [
+            "postmortem_record_id",
+            "source_record_type",
+            "source_record_id",
+            "implementation_package_id",
+            "source_state",
+            "technical_commit_sha",
+            "conducted_at",
+            "reviewer_role",
+            "postmortem_status",
+            "outcome_state",
+            "event_summary",
+            "expected_behavior_summary",
+            "observed_behavior_summary",
+            "contributing_factors",
+            "safeguards_that_worked",
+            "safeguards_to_improve",
+            "lessons_learned",
+            "learning_action_type",
+            "follow_up_actions",
+            "evidence_refs",
+            "reenter_rule_review",
+            "rule_review_scope",
+            "rule_review_reason",
+            "postmortem_is_not_causal_proof",
+            "learning_is_not_rule_change",
+            "rule_reentry_requires_human_review",
+            "automatic_rule_change_enabled",
+            "automatic_issue_creation_enabled",
+        ]
+        st.dataframe(
+            postmortem_records_v214[
+                [c for c in display_cols if c in postmortem_records_v214.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.14: lição ≠ mudança aplicada; fatores contribuintes ≠ prova causal; "
+        "qualquer retorno ao ciclo de regra depende de revisão humana."
     )
 
 st.divider()
