@@ -51,7 +51,7 @@ Quando disponíveis, a v2.6 adiciona:
 
     streamlit run app_review_streamlit.py
 
-Usar a aba Concordância v2.6.
+Usar a aba **Concordância workflow × decisão v2.6**.
 
 ## Agentes no Cursor
 
@@ -62,7 +62,9 @@ Executar:
 3. OPERACIONAL
 4. ESTATISTICA
 5. PRIVACIDADE
-6. DOCUMENTACAO
+6. AUDITORIA
+7. GOVERNANCA-DE-REGRAS
+8. DOCUMENTACAO
 
 ## Regras obrigatórias
 
@@ -88,3 +90,10 @@ Depois de acumular decisões reais:
 - propor alteração de regra somente com análise de casos, documentação, teste retrospectivo e aprovação humana
 
 Nenhuma regra é reescrita automaticamente.
+
+## Proteção adicional
+
+- promoção/publicação automática = false
+- alteração de threshold automática = false
+- alteração de regra automática = false
+- qualquer proposta deve ser registrada, backtestada e aprovada por revisão humana
