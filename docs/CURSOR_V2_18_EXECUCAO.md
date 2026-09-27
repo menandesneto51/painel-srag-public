@@ -6,7 +6,7 @@
 python scripts/create_learning_cycle_closure_template_v2_18.py
 ~~~
 
-Preencher revisão humana e decisão.
+Preencher revisão humana e decisão. `reviewer_role` deve ser slug técnico minúsculo sem espaços; não inserir identificadores pessoais em rationale ou evidências.
 
 ~~~bash
 python scripts/validate_learning_cycle_closure_v2_18.py \
