@@ -1,0 +1,37 @@
+{
+  "model_id": "srag_mt_territorial_intelligence_v2_1",
+  "version": "2.1.0-experimental",
+  "status": "under_calibration",
+  "reference_window_weeks": 2,
+  "dimensions": {
+    "epidemiological_signal": {
+      "required": true,
+      "source": "combined_signals.csv"
+    },
+    "signal_confidence": {
+      "required": true,
+      "source": "signal_confidence.csv"
+    },
+    "epidemiological_silence": {
+      "required": true,
+      "source": "silence_signals.csv"
+    },
+    "virology": {
+      "required": false,
+      "source": "virology_municipal_weekly_mt_2026.csv",
+      "specific_positivity_enabled": false,
+      "dominant_agent_excludes": [
+        "Sem agente detectado/codificado",
+        "Detectável sem agente codificado"
+      ]
+    },
+    "healthcare_pressure": {
+      "required": false,
+      "source_scope": "institutional_optional",
+      "public_repo_must_not_require_internal_data": true
+    }
+  },
+  "composite_score_enabled": false,
+  "operational_alert_enabled": false,
+  "publication_status": "experimental"
+}
