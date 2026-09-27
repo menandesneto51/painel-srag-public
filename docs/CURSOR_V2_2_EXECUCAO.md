@@ -113,3 +113,31 @@ Produzir relatório com:
 - decisão humana registrada.
 
 Não promover artefatos v2.2 para `data_public/` nesta etapa.
+
+
+## Registro da decisão humana
+
+Gerar template municipal:
+
+```bash
+python scripts/create_human_review_template.py
+```
+
+Após preenchimento manual, validar:
+
+```bash
+python scripts/validate_human_review_decisions.py \
+  --input CAMINHO_SEGURO/human_review_decisions.csv
+```
+
+Decisões permitidas:
+
+- continue_monitoring;
+- request_data_validation;
+- request_epi_investigation;
+- request_laboratory_review;
+- request_assistance_coordination;
+- request_multidisciplinary_review;
+- closed_no_escalation.
+
+O registro é auditável, mas não executa a ação e não altera automaticamente o painel público.
