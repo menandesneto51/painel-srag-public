@@ -1,1 +1,36 @@
-{\n  "model_id": "srag_mt_rule_change_evaluation_v2_8",\n  "version": "2.8.0-experimental",\n  "status": "under_review",\n  "review_statuses": ["not_started", "in_progress", "passed", "failed", "not_applicable"],\n  "final_decisions": ["approve_for_implementation_branch", "reject", "defer"],\n  "logic_change_types": ["queue_rule", "action_trigger", "threshold", "context_requirement"],\n  "documentation_only_types": ["documentation"],\n  "principles": {\n    "proposal_is_not_change": true,\n    "decision_is_not_implementation": true,\n    "automatic_rule_change": false,\n    "automatic_threshold_change": false,\n    "automatic_merge": false,\n    "automatic_deploy": false,\n    "human_approval_required": true,\n    "personal_identifier_storage": false\n  }\n}\n
+{
+  "model_id": "srag_mt_rule_change_evaluation_v2_8",
+  "version": "2.8.0-experimental",
+  "status": "under_review",
+  "review_statuses": [
+    "not_started",
+    "in_progress",
+    "passed",
+    "failed",
+    "not_applicable"
+  ],
+  "final_decisions": [
+    "approve_for_implementation_branch",
+    "reject",
+    "defer"
+  ],
+  "logic_change_types": [
+    "queue_rule",
+    "action_trigger",
+    "threshold",
+    "context_requirement"
+  ],
+  "documentation_only_types": [
+    "documentation"
+  ],
+  "principles": {
+    "proposal_is_not_change": true,
+    "decision_is_not_implementation": true,
+    "automatic_rule_change": false,
+    "automatic_threshold_change": false,
+    "automatic_merge": false,
+    "automatic_deploy": false,
+    "human_approval_required": true,
+    "personal_identifier_storage": false
+  }
+}
