@@ -1,32 +1,38 @@
 param(
-    [Parameter(Mandatory = $true)][string]$Query,
+    [Parameter(Mandatory = $true)]
+    [string]$Query,
+
     [string]$Context = "PAINEL-SRAG-PUBLIC",
+
     [string]$CatalogRoot = $env:SES_DATA_CATALOG_ROOT,
-    [string]$AgentRoot = $env:SES_DATA_CATALOG_AGENT_ROOT,
-    [switch]$StrictConfig
+
+    [string]$AgentRoot = $env:SES_DATA_CATALOG_AGENT_ROOT
 )
 
 $ErrorActionPreference = "Stop"
-$launcher = Join-Path $PSScriptRoot "catalogo_ses.py"
 
-$argsList = @($launcher, "--query", $Query, "--context", $Context)
-if ($CatalogRoot) { $argsList += @("--catalog-root", $CatalogRoot) }
-if ($AgentRoot) { $argsList += @("--agent-root", $AgentRoot) }
-if ($StrictConfig) { $argsList += "--strict-config" }
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
+$localAgent = Join-Path $repoRoot "agents\ses_data_catalog\catalog_agent.py"
 
-if ($env:SES_DATA_CATALOG_PYTHON) {
-    & $env:SES_DATA_CATALOG_PYTHON @argsList
-    exit $LASTEXITCODE
+if (Test-Path $localAgent) {
+    $agent = $localAgent
+}
+elseif ($AgentRoot) {
+    $agent = Join-Path $AgentRoot "agents\ses_data_catalog\catalog_agent.py"
+}
+else {
+    throw "Defina SES_DATA_CATALOG_AGENT_ROOT apontando para o clone canônico do vigia-vsr."
 }
 
-if (Get-Command python -ErrorAction SilentlyContinue) {
-    & python @argsList
-    exit $LASTEXITCODE
+if (-not (Test-Path $agent)) {
+    throw "Motor SES_DATA_CATALOG não encontrado em: $agent"
 }
 
-if (Get-Command py -ErrorAction SilentlyContinue) {
-    & py -3 @argsList
-    exit $LASTEXITCODE
+$pythonArgs = @($agent, $Query, "--context", $Context)
+
+if ($CatalogRoot) {
+    $pythonArgs += @("--catalog-root", $CatalogRoot)
 }
 
-throw "Python não encontrado. Configure SES_DATA_CATALOG_PYTHON ou disponibilize python/py no PATH."
+python @pythonArgs
+exit $LASTEXITCODE
