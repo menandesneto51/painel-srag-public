@@ -300,3 +300,35 @@ DATA-QA
   -> DOCUMENTACAO
   -> revisão humana
 ```
+
+
+## 12. AGENTE-CONTROLE-DE-MUDANCAS
+
+Responsável por:
+
+- receber propostas v2.7;
+- verificar evidências e casos afetados;
+- exigir backtesting quando houver mudança de lógica/threshold;
+- coordenar revisão epidemiológica/estatística;
+- preservar versionamento e documentação;
+- registrar decisão humana sobre aprovar/rejeitar proposta.
+
+Não pode:
+
+- aplicar alteração automaticamente;
+- editar threshold automaticamente;
+- promover proposta direto para produção;
+- usar concordância para pontuar revisor;
+- criar ranking de municípios.
+
+## Fluxo v2.7
+
+```text
+GOVERNANCA-DE-REGRAS
+  -> CONTROLE-DE-MUDANCAS
+  -> EPIDEMIOLOGIA / ESTATISTICA
+  -> BACKTEST
+  -> DOCUMENTACAO
+  -> aprovação humana
+  -> implementação em branch separada
+```
