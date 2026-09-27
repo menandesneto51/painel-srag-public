@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.2 — Revisão Local",
+    page_title="SRAG MT v2.3 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.2 — Revisão Local")
+st.title("SRAG MT v2.3 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -45,6 +45,7 @@ signals_dir = CANDIDATE / "signals"
 backtest_dir = CANDIDATE / "backtest"
 operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
+persistence_dir = CANDIDATE / "operational_persistence"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -68,6 +69,9 @@ operational_actions = read_csv(
 domain_review_queues = read_csv(
     operational_dir / "domain_review_queues_v2_2.csv"
 )
+operational_persistence = read_csv(
+    persistence_dir / "operational_persistence_v2_3.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -76,6 +80,7 @@ tabs = st.tabs([
     "Virologia",
     "Backtesting",
     "Revisão operacional v2.2",
+    "Persistência v2.3",
 ])
 
 with tabs[0]:
@@ -426,6 +431,78 @@ with tabs[5]:
         "Governança v2.2: revisão humana obrigatória, execução automática desabilitada, "
         "sem decisão em nível de paciente e sem score composto."
     )
+
+with tabs[6]:
+    st.subheader("Persistência das filas de revisão — v2.3")
+    st.warning(
+        "Persistência, entrada ou mudança de fila não representam gravidade ou risco. "
+        "A v2.3 serve apenas para contextualizar a continuidade da revisão humana entre snapshots."
+    )
+    if operational_persistence is None:
+        show_missing(
+            "Persistência operacional v2.3",
+            persistence_dir / "operational_persistence_v2_3.csv",
+        )
+    else:
+        if "change_state" in operational_persistence.columns:
+            counts = (
+                operational_persistence["change_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="municipios")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="municipios",
+                title="Mudanças entre vintages da fila operacional",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        states = ["Todos"]
+        if "change_state" in operational_persistence.columns:
+            states += sorted(
+                operational_persistence["change_state"]
+                .dropna()
+                .astype(str)
+                .unique()
+                .tolist()
+            )
+        selected_state = st.selectbox(
+            "Filtrar estado de mudança",
+            states,
+            key="operational_persistence_filter",
+        )
+        view = operational_persistence.copy()
+        if selected_state != "Todos":
+            view = view.loc[
+                view["change_state"].astype(str).eq(selected_state)
+            ]
+
+        cols = [
+            "codigo_ibge",
+            "municipio",
+            "previous_review_queue",
+            "review_queue",
+            "change_state",
+            "new_review_tags",
+            "resolved_review_tags",
+            "current_snapshot_id",
+            "previous_snapshot_id",
+            "change_state_is_not_risk",
+            "persistence_is_not_severity",
+            "automatic_action_enabled",
+        ]
+        st.dataframe(
+            view[[c for c in cols if c in view.columns]],
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.caption(
+            "Governança v2.3: change_state_is_not_risk=true, "
+            "persistence_is_not_severity=true e automatic_action_enabled=false."
+        )
 
 st.divider()
 st.caption(
