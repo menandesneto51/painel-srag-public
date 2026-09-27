@@ -1,0 +1,26 @@
+{
+  "model_id": "srag_mt_human_workflow_concordance_v2_6",
+  "version": "2.6.0-experimental",
+  "status": "under_review",
+  "routine_queue": "routine_monitoring",
+  "escalation_decisions": [
+    "request_data_validation",
+    "request_epi_investigation",
+    "request_laboratory_review",
+    "request_assistance_coordination",
+    "request_multidisciplinary_review"
+  ],
+  "non_escalation_decisions": [
+    "continue_monitoring",
+    "closed_no_escalation"
+  ],
+  "principles": {
+    "human_decision_is_workflow_authority": true,
+    "human_decision_is_not_epidemiological_gold_standard": true,
+    "no_reviewer_scoring": true,
+    "no_municipality_ranking": true,
+    "discordance_triggers_rule_review": true,
+    "automatic_rule_change": false,
+    "automatic_execution": false
+  }
+}
