@@ -1,44 +1,40 @@
-version: "1.1"
+version: "1.0"
 name: "SES_DATA_CATALOG"
 execution_scope: "cursor_preflight"
 purpose: "Resolver fontes, objetos e campos no Catálogo Mestre SES-MT antes de nova coleta ou modelagem."
-launcher:
-  canonical: "python scripts/catalogo_ses.py --query \"<necessidade de dados>\""
-  windows_wrapper: ".\\scripts\\catalogo-ses.ps1 -Query \"<necessidade de dados>\""
-  self_test: "python scripts/catalogo_ses.py --self-test"
+
 engine:
   canonical_repository: "menandesneto51/vigia-vsr"
   canonical_path: "agents/ses_data_catalog/catalog_agent.py"
+  local_fallback_path: "agents/ses_data_catalog/catalog_agent.py"
   agent_root_env: "SES_DATA_CATALOG_AGENT_ROOT"
   catalog_root_env: "SES_DATA_CATALOG_ROOT"
-  resolution:
-    - "explicit --agent-root"
-    - "SES_DATA_CATALOG_AGENT_ROOT"
-    - "local agents/ses_data_catalog/catalog_agent.py"
-    - "sibling ../vigia-vsr/agents/ses_data_catalog/catalog_agent.py"
+
 project_context: "PAINEL-SRAG-PUBLIC"
+
+inputs:
+  - "data_question"
+  - "project_context"
+  - "catalog_inventories"
+
 outputs:
   - "catalog_evidence_pack"
   - "catalog_health"
   - "candidate_sources"
   - "candidate_fields"
   - "sensitivity_flags"
-  - "preflight_decision"
-decision_gate:
-  reuse_existing: "block_new_source"
-  refresh_catalog: "block_new_source_until_catalog_refresh"
-  review_new_source: "allow_governance_review_only"
-public_repository_boundary:
-  embed_internal_catalog: false
-  expose_pii: false
-  missing_configuration_status: "configuration_required"
-  missing_configuration_can_create_new_source: false
+
 handoff:
-  preferred: ["DATA_GUARDIAN", "DATAOPS"]
+  preferred:
+    - "DATA_GUARDIAN"
+    - "DATAOPS"
+
 restrictions:
-  - "Somente metadados no preflight."
+  - "Usar somente metadados no preflight."
   - "Nunca expor microdados ou PII."
-  - "Não criar nova fonte antes do catálogo."
-  - "Não interpretar preflight como autorização automática."
+  - "Não executar SQL destrutivo."
+  - "Não criar nova fonte antes de verificar o Catálogo Mestre."
+  - "Ausência no inventário não prova ausência do dado."
+
 can_block_new_data_source: true
 can_block_publication: false
