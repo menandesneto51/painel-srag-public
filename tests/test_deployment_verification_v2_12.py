@@ -23,6 +23,7 @@ CONFIG = {
         "rollback_consideration",
     ],
     "verification_statuses": ["passed", "failed", "not_applicable"],
+    "rollback_readiness_statuses": ["ready", "blocked", "not_applicable"],
     "effect_states": [
         "implementation_behavior_verified",
         "no_material_behavior_change",
@@ -99,6 +100,18 @@ class DeploymentVerificationV212Tests(unittest.TestCase):
             "deploy_decision_record_id"
         ]
         record.loc[0, "deployed_commit_sha"] = "4" * 40
+        with self.assertRaises(ValueError):
+            validate_deployment_records(record, decisions, CONFIG)
+
+    def test_invalid_rollback_readiness_is_rejected(self):
+        decisions = validate_human_deploy_decisions(
+            self.deploy_decision(), self.post_merge(), CONFIG
+        )
+        record = self.deployment()
+        record.loc[0, "deploy_decision_record_id"] = decisions.iloc[0][
+            "deploy_decision_record_id"
+        ]
+        record.loc[0, "rollback_readiness_status"] = "maybe"
         with self.assertRaises(ValueError):
             validate_deployment_records(record, decisions, CONFIG)
 
