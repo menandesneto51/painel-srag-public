@@ -12,6 +12,9 @@ def summarize_rule_change_evaluations(evaluations: pd.DataFrame) -> dict:
         "proposal_id",
         "proposal_type",
         "final_decision",
+        "shadow_review_status",
+        "shadow_evidence_present",
+        "shadow_review_is_not_activation",
         "decision_is_not_implementation",
         "automatic_rule_change_enabled",
         "automatic_threshold_change_enabled",
@@ -31,6 +34,8 @@ def summarize_rule_change_evaluations(evaluations: pd.DataFrame) -> dict:
         raise ValueError("Há avaliação com merge automático habilitado.")
     if evaluations["automatic_deploy_enabled"].astype(bool).any():
         raise ValueError("Há avaliação com deploy automático habilitado.")
+    if not evaluations["shadow_review_is_not_activation"].astype(bool).all():
+        raise ValueError("Shadow review deve permanecer distinto de ativação.")
     if not evaluations["decision_is_not_implementation"].astype(bool).all():
         raise ValueError("Decisão v2.8 deve permanecer distinta de implementação.")
     if not evaluations["human_approval_required"].astype(bool).all():
@@ -55,6 +60,9 @@ def summarize_rule_change_evaluations(evaluations: pd.DataFrame) -> dict:
             .to_dict()
             .items()
         },
+        "shadow_evidence_records": int(
+            evaluations["shadow_evidence_present"].astype(bool).sum()
+        ),
         "automatic_rule_change": False,
         "automatic_threshold_change": False,
         "automatic_merge": False,
@@ -74,6 +82,7 @@ def render_rule_change_evaluation_report(evaluations: pd.DataFrame) -> str:
         f"- Avaliações: **{summary['evaluations']}**",
         "- Alteração automática de regra: **desabilitada**",
         "- Alteração automática de threshold: **desabilitada**",
+        f"- Avaliações com evidência shadow vinculada: **{summary['shadow_evidence_records']}**",
         "- Merge automático: **desabilitado**",
         "- Deploy automático: **desabilitado**",
         "",
@@ -95,6 +104,9 @@ def render_rule_change_evaluation_report(evaluations: pd.DataFrame) -> str:
             f"- Papel do revisor: **{row.reviewer_role}**",
             f"- Case review: **{row.case_review_status}**",
             f"- Revisão epidemiológica: **{row.epidemiology_review_status}**",
+            f"- Shadow review: **{row.shadow_review_status}**",
+            f"- Evidência shadow presente: **{row.shadow_evidence_present}**",
+            f"- Versão candidata shadow: **{row.shadow_candidate_rule_version}**",
             f"- Backtesting: **{row.backtest_status}**",
             f"- Revisão estatística: **{row.statistical_review_status}**",
             f"- Documentação: **{row.documentation_status}**",
