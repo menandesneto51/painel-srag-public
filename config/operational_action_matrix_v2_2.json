@@ -1,0 +1,112 @@
+{
+  "matrix_id": "srag_mt_operational_actions_v2_2",
+  "version": "2.2.0-experimental",
+  "status": "under_validation",
+  "principles": {
+    "automatic_execution": false,
+    "clinical_prescription": false,
+    "composite_score": false,
+    "human_review_required": true,
+    "actions_are_suggestions": true
+  },
+  "sources": {
+    "ms_integrated_surveillance_guide": {
+      "title": "Guia de Vigilância Integrada da Covid-19, Influenza e Outros Vírus Respiratórios de Importância em Saúde Pública",
+      "url": "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2024/guia-vigilancia-integrada-da-covid-19-influenza-e-outros-virus-respiratorios-de-importancia-em-saude-publica/view"
+    },
+    "ms_respiratory_situation_room": {
+      "title": "Sala de Situação Nacional para Monitoramento e Resposta à Infecção por Vírus Respiratórios",
+      "url": "https://www.gov.br/saude/pt-br/composicao/svsa/resposta-a-emergencias/sala-de-situacao-de-saude/virus-respiratorios"
+    },
+    "ms_influenza_technical_notes": {
+      "title": "Notas Técnicas — Gripe/Influenza — Ministério da Saúde",
+      "url": "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gripe-influenza/notas-tecnicas"
+    }
+  },
+  "actions": [
+    {
+      "action_id": "DATA-01",
+      "domain": "data_quality",
+      "title": "Verificar oportunidade, completude e inconsistências do SIVEP-Gripe",
+      "trigger_tags_any": ["data_quality_review", "insufficient_evidence"],
+      "suggested_review_owner": "vigilancia_epidemiologica",
+      "suggested_timeframe": "priorizar_na_revisao_atual",
+      "action_text": "Revisar atraso de notificação/digitação, completude de desfecho e inconsistências temporais antes de interpretar o sinal epidemiológico.",
+      "source_refs": ["ms_integrated_surveillance_guide"]
+    },
+    {
+      "action_id": "SURV-01",
+      "domain": "surveillance",
+      "title": "Validar o sinal epidemiológico e sua coerência territorial",
+      "trigger_tags_any": ["epidemiology_review", "trend_review"],
+      "suggested_review_owner": "vigilancia_epidemiologica",
+      "suggested_timeframe": "priorizar_na_revisao_atual",
+      "action_text": "Revisar série temporal, semanas estáveis, histórico do município, municípios vizinhos/região e mudanças recentes de notificação antes de classificar o evento.",
+      "source_refs": ["ms_integrated_surveillance_guide", "ms_respiratory_situation_room"]
+    },
+    {
+      "action_id": "SURV-02",
+      "domain": "surveillance",
+      "title": "Verificar silêncio epidemiológico",
+      "trigger_tags_any": ["silence_verification"],
+      "suggested_review_owner": "vigilancia_epidemiologica",
+      "suggested_timeframe": "priorizar_na_revisao_atual",
+      "action_text": "Confirmar fluxo de notificação com os serviços, revisar oportunidade e verificar se a ausência observada é compatível com o histórico e o contexto regional.",
+      "source_refs": ["ms_integrated_surveillance_guide"]
+    },
+    {
+      "action_id": "LAB-01",
+      "domain": "laboratory",
+      "title": "Revisar codificação e resultados virológicos",
+      "trigger_tags_any": ["virology_review"],
+      "suggested_review_owner": "vigilancia_laboratorial",
+      "suggested_timeframe": "revisao_tecnica",
+      "action_text": "Revisar resultados moleculares, codificação do agente, possíveis coinfecções e coerência entre resultado detectável e agente informado.",
+      "source_refs": ["ms_integrated_surveillance_guide"]
+    },
+    {
+      "action_id": "LAB-02",
+      "domain": "laboratory",
+      "title": "Revisar cobertura de diagnóstico laboratorial",
+      "trigger_tags_any": ["laboratory_coverage_review"],
+      "suggested_review_owner": "vigilancia_laboratorial",
+      "suggested_timeframe": "revisao_tecnica",
+      "action_text": "Avaliar disponibilidade de resultado molecular, fluxo de coleta/processamento e possíveis gargalos que limitem a interpretação da circulação viral.",
+      "source_refs": ["ms_integrated_surveillance_guide"]
+    },
+    {
+      "action_id": "RAS-01",
+      "domain": "healthcare_network",
+      "title": "Revisar pressão e capacidade de resposta da Rede de Atenção à Saúde",
+      "trigger_tags_any": ["healthcare_coordination"],
+      "requires_healthcare_pressure_available": true,
+      "requires_pressure_validation_status": ["validated", "under_review"],
+      "suggested_review_owner": "gestao_assistencial_regulacao",
+      "suggested_timeframe": "coordenacao_intersetorial",
+      "action_text": "Revisar demanda hospitalar/UTI, regulação, disponibilidade assistencial e necessidade de coordenação entre vigilância e rede de atenção, preservando a fonte institucional dos dados.",
+      "source_refs": ["ms_respiratory_situation_room", "ms_influenza_technical_notes"]
+    },
+    {
+      "action_id": "PREV-01",
+      "domain": "prevention",
+      "title": "Revisar medidas de prevenção e imunização aplicáveis ao agente/contexto",
+      "trigger_virology_status_any": ["named_agent_detected"],
+      "requires_signal_confidence_any": ["high_experimental", "moderate_experimental"],
+      "suggested_review_owner": "imunizacao_prevencao",
+      "suggested_timeframe": "avaliacao_programatica",
+      "action_text": "Verificar, conforme orientações vigentes do Ministério da Saúde, medidas de prevenção, grupos prioritários e estratégias de imunização/profilaxia aplicáveis ao agente predominante e ao contexto local.",
+      "source_refs": ["ms_integrated_surveillance_guide", "ms_influenza_technical_notes"]
+    },
+    {
+      "action_id": "COM-01",
+      "domain": "risk_communication",
+      "title": "Avaliar necessidade de comunicação de risco",
+      "trigger_signal_status_any": ["elevated_and_rising_experimental", "elevated_not_rising_experimental"],
+      "requires_signal_confidence_any": ["high_experimental", "moderate_experimental"],
+      "suggested_review_owner": "cievs_comunicacao_risco",
+      "suggested_timeframe": "apos_validacao_epidemiologica",
+      "action_text": "Após validação epidemiológica do cenário, avaliar comunicação de risco proporcional às evidências, com mensagens coerentes sobre prevenção, busca oportuna por assistência e situação local.",
+      "source_refs": ["ms_respiratory_situation_room", "ms_integrated_surveillance_guide"]
+    }
+  ]
+}
