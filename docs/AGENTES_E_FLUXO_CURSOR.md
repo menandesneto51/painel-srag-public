@@ -821,3 +821,46 @@ O AGENTE-FOLLOWUP-DE-APRENDIZADO deve preservar:
 - `automatic_execution_enabled=false`;
 - `automatic_issue_creation_enabled=false`;
 - `automatic_rule_change_enabled=false`.
+
+## 23. AGENTE-GATE-DE-ENCERRAMENTO-DO-APRENDIZADO
+
+Responsável por:
+
+- consumir post-mortem v2.14 fechado e follow-up v2.17 validado;
+- verificar cobertura e estados terminais das ações;
+- identificar ações abertas, atrasadas, bloqueadas, pendentes ou rejeitadas que impeçam fechamento;
+- verificar coerência do learning_action_type ao longo da linhagem;
+- conferir se o snapshot v2.17 é temporalmente adequado à avaliação de fechamento;
+- conferir handoff de governança quando learning_action_type=rule_review;
+- preparar evidências para decisão humana de fechamento.
+
+Não pode:
+
+- fechar o ciclo automaticamente;
+- alterar post-mortem ou ação de follow-up;
+- criar issue, PR ou handoff automaticamente;
+- alterar regra ou threshold;
+- executar deploy ou rollback;
+- interpretar fechamento como efeito epidemiológico;
+- armazenar identificadores pessoais.
+
+## Fluxo v2.18
+
+```text
+post-mortem v2.14 fechado
+  + ações v2.17 validadas
+  -> GATE-DE-ENCERRAMENTO-DO-APRENDIZADO
+  -> revisão de cobertura/evidência/handoff
+  -> decisão humana
+  -> learning_cycle_closed_human | learning_cycle_open | deferred
+```
+
+O agente deve preservar:
+
+- `postmortem_closed_is_not_learning_cycle_closed=true`;
+- `closure_is_not_epidemiological_effect=true`;
+- `closure_does_not_change_source_records=true`;
+- `human_closure_required=true`;
+- `automatic_closure_enabled=false`;
+- `automatic_issue_creation_enabled=false`;
+- `automatic_rule_change_enabled=false`.
