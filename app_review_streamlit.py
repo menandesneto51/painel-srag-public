@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.8 — Revisão Local",
+    page_title="SRAG MT v2.9 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.8 — Revisão Local")
+st.title("SRAG MT v2.9 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -71,6 +71,7 @@ concordance_dir = CANDIDATE / "human_workflow_concordance_v2_6"
 proposal_dir = CANDIDATE / "rule_change_proposals_v2_7"
 shadow_dir = CANDIDATE / "rule_shadow_evaluation_v2_7"
 evaluation_dir = CANDIDATE / "rule_change_evaluation_v2_8"
+implementation_dir = CANDIDATE / "implementation_package_v2_9"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -122,6 +123,9 @@ rule_shadow_evaluation_v27, rule_shadow_source_v27 = read_latest_nested_csv(
 rule_change_evaluations_v28 = read_csv(
     evaluation_dir / "rule_change_evaluations_validated_v2_8.csv"
 )
+implementation_packages_v29 = read_csv(
+    implementation_dir / "implementation_packages_validated_v2_9.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -136,6 +140,7 @@ tabs = st.tabs([
     "Concordância workflow × decisão v2.6",
     "Propostas e modo sombra v2.7",
     "Avaliação formal v2.8",
+    "Pacotes de implementação v2.9",
 ])
 
 with tabs[0]:
@@ -1111,6 +1116,69 @@ with tabs[11]:
         "Governança v2.8: decisão ≠ implementação. Mudança lógica só pode ser aprovada "
         "com proposta elegível + evidência shadow v2.7 + backtest/revisões completos; "
         "merge/deploy automáticos permanecem desabilitados."
+    )
+
+with tabs[12]:
+    st.subheader("Pacotes controlados de implementação — v2.9")
+    st.warning(
+        "Pacote v2.9 não é implementação. Ele apenas prepara uma branch manual, "
+        "com arquivos-alvo, testes, critérios de aceitação e rollback."
+    )
+
+    if implementation_packages_v29 is None:
+        show_missing(
+            "Pacotes de implementação v2.9",
+            implementation_dir / "implementation_packages_validated_v2_9.csv",
+        )
+    else:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Pacotes", len(implementation_packages_v29))
+        with c2:
+            if "package_status" in implementation_packages_v29.columns:
+                ready = (
+                    implementation_packages_v29["package_status"]
+                    .astype(str)
+                    .eq("ready_for_manual_branch")
+                    .sum()
+                )
+                st.metric("Prontos para branch manual", int(ready))
+
+        display_cols = [
+            "implementation_package_id",
+            "proposal_id",
+            "evaluation_record_id",
+            "proposal_type",
+            "rule_key",
+            "created_at",
+            "planner_role",
+            "implementation_summary",
+            "target_paths",
+            "required_tests",
+            "acceptance_criteria",
+            "rollback_plan",
+            "package_status",
+            "target_branch_suggestion",
+            "package_is_not_implementation",
+            "manual_branch_required",
+            "automatic_branch_creation_enabled",
+            "automatic_code_edit_enabled",
+            "automatic_commit_enabled",
+            "automatic_merge_enabled",
+            "automatic_deploy_enabled",
+            "human_review_required",
+        ]
+        st.dataframe(
+            implementation_packages_v29[
+                [c for c in display_cols if c in implementation_packages_v29.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.9: branch manual obrigatória; criação de branch, edição, commit, "
+        "merge e deploy automáticos permanecem desabilitados."
     )
 
 st.divider()
