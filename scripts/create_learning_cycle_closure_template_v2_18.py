@@ -67,8 +67,22 @@ def main() -> int:
             "closure_evidence_refs": "",
         })
 
+    template_columns = [
+        "postmortem_record_id",
+        "implementation_package_id",
+        "learning_action_type",
+        "action_count_context",
+        "evaluated_at",
+        "reviewer_role",
+        "action_coverage_review_status",
+        "evidence_review_status",
+        "rule_handoff_review_status",
+        "closure_decision",
+        "decision_rationale",
+        "closure_evidence_refs",
+    ]
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(
+    pd.DataFrame(rows, columns=template_columns).to_csv(
         args.output, index=False, encoding="utf-8"
     )
     print(f"rows={len(rows)}")
