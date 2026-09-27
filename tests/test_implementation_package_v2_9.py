@@ -8,8 +8,20 @@ from src.implementation_package_v2_9 import validate_implementation_packages
 
 CONFIG = {
     "allowed_source_decision": "approve_for_implementation_branch",
+    "allowed_source_evaluation_status": ["human_rule_change_evaluation"],
+    "allowed_source_proposal_status": ["ready_for_human_decision"],
+    "logic_change_types": ["queue_rule", "action_trigger", "threshold", "context_requirement"],
+    "documentation_only_types": ["documentation"],
     "package_statuses": ["draft", "ready_for_manual_branch", "blocked", "superseded"],
-    "protected_path_prefixes": ["data_raw/", "data_internal/", ".git/", "secrets/", "credentials/"],
+    "protected_path_prefixes": [
+        "data_raw/",
+        "data_internal/",
+        "data_candidate/",
+        "data_public/",
+        ".git/",
+        "secrets/",
+        "credentials/",
+    ],
     "protected_exact_paths": [".env"],
 }
 
@@ -19,21 +31,40 @@ class ImplementationPackageV29Tests(unittest.TestCase):
         return pd.DataFrame([{
             "evaluation_record_id": "eval_1",
             "proposal_id": "prop_1",
+            "proposal_type": "queue_rule",
+            "source_proposal_status": "ready_for_human_decision",
             "final_decision": decision,
+            "case_review_status": "passed",
+            "epidemiology_review_status": "passed",
+            "shadow_review_status": "passed",
+            "shadow_evidence_present": True,
+            "shadow_candidate_rule_version": "candidate-v1",
+            "shadow_review_is_not_activation": True,
+            "backtest_status": "passed",
+            "statistical_review_status": "passed",
+            "documentation_status": "passed",
+            "evaluation_recorded_by_human": True,
+            "proposal_is_not_change": True,
             "decision_is_not_implementation": True,
             "automatic_rule_change_enabled": False,
             "automatic_threshold_change_enabled": False,
             "automatic_merge_enabled": False,
             "automatic_deploy_enabled": False,
+            "human_approval_required": True,
+            "personal_identifier_storage": False,
+            "evaluation_status": "human_rule_change_evaluation",
         }])
 
     def proposals(self):
         return pd.DataFrame([{
             "proposal_id": "prop_1",
             "proposal_type": "queue_rule",
+            "proposal_status": "ready_for_human_decision",
             "rule_key": "review_queue::epidemiology_review",
             "proposal_is_not_change": True,
             "human_approval_required": True,
+            "automatic_rule_change_enabled": False,
+            "automatic_threshold_change_enabled": False,
         }])
 
     def package(self):
@@ -42,6 +73,8 @@ class ImplementationPackageV29Tests(unittest.TestCase):
             "evaluation_record_id": "eval_1",
             "created_at": "2026-09-27T11:00:00Z",
             "planner_role": "engenharia_analitica",
+            "source_branch": "v2-saneamento-epidemiologico",
+            "source_commit_sha": "0123456789abcdef0123456789abcdef01234567",
             "implementation_summary": "Ajustar regra candidata em branch separada.",
             "target_paths": "config/operational_review_v2_2.json | tests/test_operational_review.py",
             "required_tests": "unit|regression|backtest",
