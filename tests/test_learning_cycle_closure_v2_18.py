@@ -115,6 +115,16 @@ class LearningCycleClosureV218Tests(unittest.TestCase):
                 CONFIG,
             )
 
+    def test_action_type_must_match_postmortem(self):
+        actions = self.actions(action_type="monitoring")
+        with self.assertRaises(ValueError):
+            validate_learning_cycle_closure(
+                self.decision(action_type="rule_review"),
+                self.postmortems("rule_review"),
+                actions,
+                CONFIG,
+            )
+
     def test_keep_open_accepts_blocking_action(self):
         out = validate_learning_cycle_closure(
             self.decision(close=False),
