@@ -216,3 +216,45 @@ DATA-QA
   -> DOCUMENTACAO
   -> revisão humana
 ```
+
+
+## 10. AGENTE-AUDITORIA
+
+Responsável por:
+
+- validar vínculo entre decisão e snapshot/fila/ação de origem;
+- verificar justificativa e evidências consultadas;
+- revisar prazos e responsáveis de follow-up;
+- identificar follow-ups abertos, vencidos, concluídos ou cancelados;
+- confirmar que decisão humana permanece separada de prova de execução;
+- verificar ausência de identificadores pessoais desnecessários no dataset candidato;
+- produzir relatório estadual de auditoria.
+
+Não pode:
+
+- transformar decisão em execução automática;
+- marcar ação externa como realizada sem registro explícito;
+- inferir conclusão de follow-up;
+- converter atraso de follow-up em risco epidemiológico;
+- armazenar nome/CPF/matrícula/e-mail do revisor no artefato candidato;
+- promover dados para a camada pública.
+
+## Fluxo v2.5
+
+```text
+DATA-QA
+  -> EPIDEMIOLOGIA
+  -> TERRITORIAL
+  -> ESTATISTICA / FORECAST
+  -> PRIVACIDADE
+  -> OPERACIONAL
+  -> AUDITORIA
+  -> DOCUMENTACAO
+  -> revisão humana / governança
+```
+
+O AGENTE-AUDITORIA deve preservar:
+
+- `decision_is_not_proof_of_execution=true`;
+- `automatic_execution_enabled=false`;
+- `follow_up_state_is_not_risk=true`.
