@@ -94,12 +94,47 @@ Uma mudança aprovada deve ser implementada em branch separada, comparada retros
 
 A regra candidata deve ser gerada separadamente no Cursor, sem substituir a regra vigente.
 
-Executar:
+### 1. Criar JSON candidato local
+
+Copiar a configuração atual para um caminho em `data_candidate/` e editar somente a cópia.
+
+Exemplo:
+
+```powershell
+New-Item -ItemType Directory -Force data_candidate\rule_candidates\PROP_ID
+Copy-Item config\operational_review_v2_2.json data_candidate\rule_candidates\PROP_ID\candidate_operational_review.json
+```
+
+O arquivo candidato não substitui `config/operational_review_v2_2.json`.
+
+### 2. Gerar fila candidata isolada
+
+```bash
+python scripts/build_candidate_review_queue_v2_7.py \
+  --proposal-id PROP_ID \
+  --candidate-rule-version candidate-001 \
+  --candidate-config data_candidate/rule_candidates/PROP_ID/candidate_operational_review.json
+```
+
+Saída:
+
+`data_candidate/rule_shadow_evaluation_v2_7/PROP_ID/candidate_review_queue_v2_7.csv`
+
+O builder exige:
+
+- 142 municípios;
+- revisão humana obrigatória;
+- sem score composto;
+- sem ação automática;
+- sem decisão em nível de paciente;
+- fallback final `routine_monitoring`.
+
+### 3. Executar avaliação shadow
 
 ```bash
 python scripts/evaluate_rule_change_shadow_v2_7.py \
   --proposal-id PROP_ID \
-  --candidate-queue CAMINHO/fila_candidata.csv \
+  --candidate-queue data_candidate/rule_shadow_evaluation_v2_7/PROP_ID/candidate_review_queue_v2_7.csv \
   --candidate-rule-version candidate-001
 ```
 
