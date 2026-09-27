@@ -393,3 +393,27 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter automatic_deploy_enabled=false.
 - Manter automatic_rollback_enabled=false.
 - Manter patient_level_decision_enabled=false.
+
+
+## Ledger de linhagem v2.15
+
+- v2.14 permanece reservado ao post-mortem/aprendizado institucional.
+- v2.15 é exclusivamente o ledger auditável do ciclo de mudança.
+- Ledger não é execução e não dispara ações.
+- Todo evento não raiz deve possuir pai existente.
+- Toda transição deve respeitar o mapa permitido.
+- Cronologia filho >= cronologia pai quando ambas existirem.
+- proposal_id e implementation_package_id devem preservar a linhagem.
+- Commit deve permanecer idêntico nos trechos configurados para continuidade.
+- Ambiente deve permanecer consistente entre release gate, decisão de deploy e deploy.
+- Eventos órfãos devem bloquear a construção do ledger.
+- Transições impossíveis devem bloquear a construção do ledger.
+- Quebra de commit ou ambiente deve bloquear a construção do ledger.
+- Não corrigir automaticamente inconsistência de lineage.
+- Não criar evento sintético para preencher lacuna.
+- Não pontuar revisores.
+- Não armazenar identificadores pessoais.
+- Manter ledger_is_not_execution=true.
+- Manter ledger_does_not_trigger_actions=true.
+- Manter automatic_action_enabled=false.
+- Manter human_review_required=true.
