@@ -6,6 +6,7 @@ import pandas as pd
 from src.territorial_intelligence import (
     build_territorial_intelligence,
     summarize_virology_window,
+    validate_healthcare_pressure,
 )
 
 
@@ -39,6 +40,34 @@ class TerritorialIntelligenceTests(unittest.TestCase):
         self.assertEqual(int(row["virology_pcr_result_available"]), 8)
         self.assertEqual(int(row["virology_named_agent_detections"]), 4)
         self.assertEqual(row["virology_dominant_agent"], "Influenza A")
+
+    def test_detectable_without_named_agent_is_preserved(self):
+        virology = pd.DataFrame([{
+            "codigo_ibge": "5103403",
+            "SE": 10,
+            "virus": "Detectável sem agente codificado",
+            "deteccoes": 2,
+            "registros_srag": 5,
+            "pcr_resultado_disponivel": 4,
+            "pcr_conclusivo": 3,
+            "pcr_detectavel": 2,
+        }])
+        out = summarize_virology_window(virology, stable_week=10, window_weeks=1)
+        row = out.iloc[0]
+        self.assertEqual(int(row["virology_named_agent_detections"]), 0)
+        self.assertEqual(int(row["virology_unclassified_detectable_detections"]), 2)
+        self.assertEqual(row["virology_status"], "detectable_without_named_agent")
+
+    def test_pressure_must_match_stable_week(self):
+        pressure = pd.DataFrame([{
+            "codigo_ibge": "5103403",
+            "reference_week": 9,
+            "pressure_status": "high",
+            "validation_status": "validated",
+            "source_scope": "institutional",
+        }])
+        with self.assertRaises(ValueError):
+            validate_healthcare_pressure(pressure, stable_week=10)
 
     def test_build_keeps_dimensions_separate_and_no_score(self):
         combined = pd.DataFrame([{
