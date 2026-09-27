@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.16 — Revisão Local",
+    page_title="SRAG MT v2.17 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.16 — Revisão Local")
+st.title("SRAG MT v2.17 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -80,6 +80,7 @@ rollback_dir = CANDIDATE / "rollback_v2_13"
 postmortem_dir = CANDIDATE / "postmortem_v2_14"
 ledger_dir = CANDIDATE / "change_lifecycle_v2_15"
 governance_observability_dir = CANDIDATE / "governance_observability_v2_16"
+learning_action_followup_dir = CANDIDATE / "learning_action_followup_v2_17"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -173,6 +174,9 @@ governance_status_v216 = read_csv(
 governance_transitions_v216 = read_csv(
     governance_observability_dir / "governance_transition_metrics_v2_16.csv"
 )
+learning_action_followup_v217 = read_csv(
+    learning_action_followup_dir / "learning_action_followup_validated_v2_17.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -195,6 +199,7 @@ tabs = st.tabs([
     "Post-mortem v2.14",
     "Ledger de mudanças v2.15",
     "Observabilidade de governança v2.16",
+    "Follow-up de aprendizado v2.17",
 ])
 
 with tabs[0]:
@@ -2166,6 +2171,115 @@ with tabs[19]:
         "Governança v2.16: thresholds = experimental_internal_not_sla; "
         "stale ≠ risco; métricas de processo ≠ avaliação de desempenho; "
         "nenhuma flag dispara ação automaticamente."
+    )
+
+
+with tabs[20]:
+    st.subheader("Follow-up auditável das ações de aprendizado — v2.17")
+    st.warning(
+        "Conclusão de ação não é prova de efetividade epidemiológica. "
+        "Fechamento verificado exige evidência e revisão humana; overdue é atraso de workflow, não risco."
+    )
+
+    if learning_action_followup_v217 is None:
+        show_missing(
+            "Follow-up de aprendizado v2.17",
+            learning_action_followup_dir / "learning_action_followup_validated_v2_17.csv",
+        )
+    else:
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.metric("Ações", len(learning_action_followup_v217))
+        with c2:
+            overdue = (
+                learning_action_followup_v217["overdue"]
+                .astype(str)
+                .str.lower()
+                .isin({"true", "1", "yes", "sim"})
+                .sum()
+                if "overdue" in learning_action_followup_v217.columns
+                else 0
+            )
+            st.metric("Atrasadas", int(overdue))
+        with c3:
+            verified = (
+                learning_action_followup_v217["follow_up_state"]
+                .astype(str)
+                .eq("verified_closed")
+                .sum()
+                if "follow_up_state" in learning_action_followup_v217.columns
+                else 0
+            )
+            st.metric("Fechadas e verificadas", int(verified))
+        with c4:
+            blocked = (
+                learning_action_followup_v217["follow_up_state"]
+                .astype(str)
+                .isin({"blocked", "blocked_overdue"})
+                .sum()
+                if "follow_up_state" in learning_action_followup_v217.columns
+                else 0
+            )
+            st.metric("Bloqueadas", int(blocked))
+
+        if "follow_up_state" in learning_action_followup_v217.columns:
+            counts = (
+                learning_action_followup_v217["follow_up_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="acoes")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="acoes",
+                title="Estados do follow-up das ações de aprendizado",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        display_cols = [
+            "learning_action_record_id",
+            "postmortem_record_id",
+            "implementation_package_id",
+            "learning_action_type",
+            "action_sequence",
+            "action_description",
+            "owner_role",
+            "created_at",
+            "due_at",
+            "action_status",
+            "status_updated_at",
+            "completed_at",
+            "completion_evidence_refs",
+            "verification_status",
+            "verified_at",
+            "verifier_role",
+            "verification_notes",
+            "blocking_reason",
+            "cancellation_rationale",
+            "governance_handoff_ref",
+            "follow_up_state",
+            "overdue",
+            "completion_is_not_effectiveness_proof",
+            "verification_is_not_epidemiological_effect",
+            "overdue_is_not_risk",
+            "automatic_execution_enabled",
+            "automatic_issue_creation_enabled",
+            "automatic_rule_change_enabled",
+        ]
+        st.dataframe(
+            learning_action_followup_v217[
+                [c for c in display_cols if c in learning_action_followup_v217.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.17: tracking ≠ execução; completed ≠ efetividade; "
+        "verified_closed ≠ efeito causal; overdue ≠ risco; rule_review concluída exige handoff humano; "
+        "execução, criação de issue e alteração de regra automáticas permanecem desabilitadas."
     )
 
 st.divider()
