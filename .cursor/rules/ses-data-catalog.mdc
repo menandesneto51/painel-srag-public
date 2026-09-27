@@ -4,24 +4,30 @@ alwaysApply: true
 ---
 
 # SES_DATA_CATALOG
-Antes de criar fonte, coletor, scraper, API, ETL, tabela, indicador ou linkage:
-1. Execute `.\scripts\catalogo-ses.ps1`.
-2. Verifique SISREG, DW SES, eSUS APS, IndicaSUS e SI-PNI.
-3. Reutilize fontes e loaders existentes.
-4. Exija `catalog_health` antes de concluir ausência de dado.
-5. Encaminhe candidatos a DATA_GUARDIAN/DATAOPS quando disponíveis.
-6. Valide grain, chaves, competência, atualização, completude, duplicidade e lineage.
-7. Não exponha PII.
-8. Prefira Bronze/Silver/Gold.
 
-Contexto: PAINEL-SRAG-PUBLIC.
+Antes de criar ou alterar fonte, coletor, scraper, API, ETL, tabela de integração, indicador ou linkage:
 
+1. Formule a necessidade de dados em uma consulta objetiva.
+2. Execute, em Windows/Linux/devcontainer:
+   `python scripts/catalogo_ses.py --query "<necessidade de dados>"`
+3. Se `preflight_complete != true`, interrompa a criação do novo ativo de dados e corrija a configuração conforme `docs/SES_DATA_CATALOG_SETUP.md`.
+4. Quando o preflight estiver completo, verifique SISREG, DW SES/Datawarehouse, eSUS APS, IndicaSUS e SI-PNI por meio de `catalog_health`.
+5. Reutilize fontes, objetos, loaders e camadas Bronze/Silver/Gold existentes antes de propor nova ingestão.
+6. Encaminhe candidatos a DATA_GUARDIAN/DATAOPS quando disponíveis.
+7. Valide grain, chaves, competência/frescura, completude, duplicidade, lineage e sensibilidade.
+8. Não conclua ausência de dado se o catálogo estiver `partial` ou `missing`.
+9. Nunca exponha PII em prompts, logs, documentação ou artefatos públicos.
+10. Nunca copie o Catálogo Mestre interno para este repositório público.
+11. O resultado do agente não autoriza automaticamente nova fonte, mudança de regra ou publicação.
 
 ## Gate de decisão
 
 Obedeça `preflight_decision.status`:
-- `reuse_existing`: bloquear nova fonte e reutilizar/validar candidatos existentes.
-- `refresh_catalog`: bloquear nova fonte até atualizar os inventários incompletos.
+
+- `reuse_existing`: bloquear nova fonte e reutilizar/validar os candidatos existentes.
+- `refresh_catalog`: bloquear nova fonte até atualizar os inventários ausentes/parciais e repetir a busca.
 - `review_new_source`: permitir apenas revisão formal de nova fonte; não implementar automaticamente.
 
-`new_source_allowed_for_review=true` autoriza análise de governança, não criação automática nem acesso a dados.
+`new_source_allowed_for_review=true` autoriza análise de governança, não criação automática, acesso a dados ou publicação.
+
+Contexto: PAINEL-SRAG-PUBLIC.
