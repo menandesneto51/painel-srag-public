@@ -1,0 +1,95 @@
+{
+  "model_id": "srag_mt_baseline_v2",
+  "version": "2.0.0-experimental",
+  "status": "under_calibration",
+  "target_year": 2026,
+  "history_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "minimum_historical_years": 3,
+  "seasonal_week_window": 2,
+  "primary_metric": "hospitalizacoes",
+  "supported_metrics": [
+    "casos",
+    "hospitalizacoes",
+    "uti",
+    "obitos",
+    "incidencia_srag_100k",
+    "hospitalizacao_100k",
+    "uti_100k",
+    "obito_100k"
+  ],
+  "baseline": {
+    "center": "median",
+    "dispersion": "MAD",
+    "quantiles": [
+      0.25,
+      0.75
+    ],
+    "requires_complete_zero_weeks": true,
+    "rationale": "Baseline principal inicia com 2023-2025; demais anos ficam para análise de sensibilidade até backtesting."
+  },
+  "anomaly": {
+    "robust_z_threshold": 3.5,
+    "status": "experimental",
+    "requires_backtesting": true
+  },
+  "trend": {
+    "recent_weeks": 2,
+    "previous_weeks": 2,
+    "pseudocount": 0.5,
+    "status": "experimental"
+  },
+  "silence": {
+    "enabled": false,
+    "reason": "Aguardar calibração histórica e validação de completude/oportunidade."
+  },
+  "baseline_years_default": [
+    2023,
+    2024,
+    2025
+  ],
+  "sensitivity_year_sets": [
+    {
+      "name": "post_pandemic_recent",
+      "years": [
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "name": "extended_recent",
+      "years": [
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "name": "all_available",
+      "years": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    }
+  ],
+  "population_denominators": {
+    "historical_rate_baseline_enabled": false,
+    "requirement": "ano_populacao deve ser igual a ANO em todas as linhas para métricas *_100k",
+    "current_reference_year": 2026,
+    "status": "annual_historical_denominators_pending"
+  }
+}

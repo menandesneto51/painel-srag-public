@@ -1,0 +1,30 @@
+{
+  "model_id": "srag_mt_human_decision_audit_v2_5",
+  "version": "2.5.0-experimental",
+  "status": "under_review",
+  "decision_scopes": ["queue", "action"],
+  "decision_statuses": [
+    "continue_monitoring",
+    "request_data_validation",
+    "request_epi_investigation",
+    "request_laboratory_review",
+    "request_assistance_coordination",
+    "request_multidisciplinary_review",
+    "closed_no_escalation"
+  ],
+  "follow_up_event_statuses": [
+    "acknowledged",
+    "in_progress",
+    "completed",
+    "cancelled"
+  ],
+  "principles": {
+    "human_decision_only": true,
+    "automatic_execution": false,
+    "patient_level_decision": false,
+    "clinical_prescription": false,
+    "decision_is_not_proof_of_execution": true,
+    "follow_up_event_is_human_record": true,
+    "personal_identifier_storage": false
+  }
+}

@@ -1,0 +1,498 @@
+---
+description: Regras obrigatórias para desenvolvimento do Painel SRAG Público v2
+alwaysApply: true
+---
+
+# Painel SRAG Público v2 — regras do Cursor
+
+## Missão
+
+Evoluir o painel sem publicar informação epidemiológica incorreta, não auditável ou incompatível com a camada pública.
+
+## Prioridade
+
+Antes de UI nova, executar P0:
+
+1. contratos;
+2. denominadores;
+3. metadados;
+4. validação;
+5. testes;
+6. somente depois novas funcionalidades.
+
+## Dados
+
+- Nunca adicionar microdados individuais ao repositório.
+- Nunca versionar credenciais, tokens, chaves ou arquivos internos.
+- Para taxas municipais, usar código IBGE como chave.
+- Toda taxa deve ser recalculável a partir de numerador e denominador presentes ou referenciados.
+- Não fabricar/popular valores faltantes para fazer testes passarem.
+- Não corrigir incidência por heurística baseada no nome do município.
+- Fonte populacional padrão da v2: estimativas oficiais do IBGE para o ano de referência.
+
+## Tempo epidemiológico
+
+- Validar ano e SE.
+- `stable_week` nunca pode ultrapassar a maior SE observada.
+- Não chamar uma semana de "estável" sem regra documentada.
+- Distinguir data de extração, data de geração e data de referência epidemiológica.
+
+## KPIs
+
+Contrato canônico:
+
+- `notificacoes`
+- `casos`
+- `hospitalizacoes`
+- `enfermaria`
+- `uti`
+- `obitos`
+- `cura`
+- `taxa_uti_hosp_percent`
+- `letalidade_hosp_percent`
+- `taxa_envio_lab_percent`
+
+Aceitar aliases legados somente na borda de leitura e registrar a normalização.
+
+## Risco
+
+Não alterar pesos ou classes silenciosamente.
+
+Qualquer mudança no score exige:
+
+- versão;
+- documentação;
+- teste;
+- changelog;
+- comparação com a versão anterior.
+
+Se o denominador municipal não estiver validado, mostrar o risco como bloqueado/não validado.
+
+## OR e modelos
+
+- Não interpretar OR como causalidade.
+- Informar método, referência, IC e se bruto/ajustado.
+- Forecast deve incluir incerteza e backtesting.
+- Saídas de IA/agentes devem ser marcadas como apoio analítico.
+
+## App
+
+- Não esconder erro de integridade com `try/except` genérico.
+- Mostrar avisos de qualidade e atualização.
+- Não usar delta de uma métrica semanal junto de um total acumulado como se fossem a mesma grandeza.
+- Funções epidemiológicas devem ficar fora da camada Streamlit quando possível.
+
+## Testes
+
+Toda correção de bug epidemiológico deve incluir teste de regressão.
+
+Executar antes de concluir:
+
+```bash
+python scripts/validate_public_data.py
+python -m unittest discover -s tests -v
+```
+
+## Entrega
+
+Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas estruturais para `main` sem revisão.
+
+
+## Operacional v2.2
+
+- Fila de revisão não é ranking de risco.
+- Não ordenar municípios por score composto.
+- Não habilitar execução automática de ações.
+- Não gerar decisão em nível de paciente.
+- Não gerar prescrição clínica.
+- Toda ação sugerida deve carregar evidência/gatilho e referência documental quando aplicável.
+- Comunicação de risco só pode ser sugerida após validação epidemiológica do cenário.
+- Ações assistenciais só podem usar pressão assistencial quando a fonte estiver explicitamente presente e com status de validação aceito.
+- Manter `human_review_required=true`.
+- Manter `automatic_execution=false`.
+- Manter `composite_score=false`.
+- Produtos v2.2 permanecem em `data_candidate/` até revisão humana e gate próprio.
+
+
+## Decisão e follow-up v2.5
+
+- Decisão registrada por humano não é prova de execução externa.
+- Follow-up registrado não é classe de risco.
+- Toda decisão deve estar vinculada a snapshot_id, fila de origem e, quando aplicável, action_id existente.
+- Não aceitar action_id inventado ou fila divergente da origem.
+- Exigir rationale não vazio.
+- Se follow_up_required=true, exigir prazo posterior à decisão e papel responsável.
+- Armazenar apenas reviewer_role; não armazenar nome, CPF, matrícula, e-mail ou outro identificador pessoal no dataset candidato.
+- Manter automatic_execution_enabled=false.
+- Manter patient_level_decision_enabled=false.
+- Manter clinical_prescription_enabled=false.
+- Manter decision_is_not_proof_of_execution=true.
+- Manter follow_up_state_is_not_risk=true.
+- O estado overdue deve ser calculado com as_of explícito e reprodutível.
+- Produtos v2.5 permanecem em data_candidate/ e não são promovidos automaticamente ao painel público.
+
+
+## Concordância workflow × decisão v2.6
+
+- Discordância entre fila/regra e decisão humana deve acionar revisão da regra/processo, nunca pontuação do revisor.
+- Decisão humana é autoridade do workflow institucional, mas não é padrão-ouro epidemiológico.
+- Não criar reviewer_score, ranking de revisores ou métricas de desempenho individual.
+- Não criar ranking municipal a partir da discordância.
+- Manter automatic_rule_change=false.
+- Manter automatic_execution=false.
+- Uma fila de rotina com decisão de escalonamento deve ser classificada para revisão de regra/contexto.
+- Uma fila não rotineira sem escalonamento também deve ser classificada para revisão de regra/contexto.
+- Concordância não prova correção epidemiológica da regra.
+- Alterações de regras exigem análise de casos, documentação, teste retrospectivo e aprovação humana.
+- Produtos v2.6 permanecem em data_candidate/ e não são promovidos automaticamente.
+
+## Concordância e calibração v2.6
+
+- A v2.6 calibra regras do sistema, não pessoas.
+- Decisão humana é autoridade do workflow institucional, mas não padrão-ouro epidemiológico.
+- Discordância entre fila e decisão humana deve gerar revisão de regra/processo, nunca avaliação negativa do revisor.
+- Manter reviewer_score_enabled=false.
+- Manter municipality_rank_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_execution_enabled=false.
+- Concordância não prova correção epidemiológica da regra.
+- Qualquer alteração de matriz exige análise de casos, documentação, teste retrospectivo e aprovação humana.
+- Produtos v2.6 permanecem em data_candidate/ e não são promovidos automaticamente.
+
+
+## Concordância workflow-humano v2.6
+
+- Decisão humana é autoridade final do workflow, mas não padrão-ouro epidemiológico.
+- Discordância entre fila/regra e decisão humana deve acionar revisão da regra, não avaliação do revisor.
+- Não calcular score de revisor.
+- Não ranquear revisores.
+- Não ranquear municípios com base na concordância.
+- Não alterar regra automaticamente.
+- Não alterar threshold automaticamente.
+- Toda mudança de regra exige análise de casos, documentação, teste retrospectivo e aprovação humana.
+- Manter human_decision_is_epidemiological_gold_standard=false.
+- Manter reviewer_score_enabled=false.
+- Manter municipality_rank_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_execution_enabled=false.
+
+
+## Propostas de mudança v2.7
+
+- Proposta de mudança não é mudança aplicada.
+- Não alterar regra automaticamente.
+- Não alterar threshold automaticamente.
+- Não aplicar proposta diretamente em config de produção.
+- Toda proposta deve manter proposal_is_not_change=true.
+- Toda proposta deve manter human_approval_required=true.
+- Mudanças de lógica/threshold exigem revisão de casos, backtesting, revisão epidemiológica, revisão estatística quando aplicável, documentação e aprovação humana.
+- Não usar proposta para pontuar revisores.
+- Não usar proposta para ranquear municípios.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_threshold_change_enabled=false.
+
+
+## Propostas e modo sombra v2.7
+
+- Proposta de mudança não é mudança aplicada.
+- Regra candidata deve ser avaliada em modo sombra antes de qualquer ativação.
+- O avaliador não deve reescrever automaticamente JSON/YAML/configuração de produção.
+- Manter shadow_only=true.
+- Manter automatic_activation=false.
+- Manter automatic_rule_change=false.
+- Manter reviewer_scoring=false.
+- Manter municipality_ranking=false.
+- Decisão humana continua não sendo padrão-ouro epidemiológico.
+- workflow_agreement_improved não significa maior acurácia epidemiológica.
+- workflow_agreement_worsened não significa automaticamente pior regra epidemiológica.
+- Toda mudança após shadow exige análise de casos, backtesting adequado, revisão epidemiológica/estatística/documental e aprovação humana.
+- Produtos v2.7 permanecem em data_candidate/ e não promovem regras automaticamente.
+
+## Avaliação formal v2.8
+
+- Aprovação v2.8 não é implementação.
+- Manter decision_is_not_implementation=true.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_threshold_change_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter human_approval_required=true.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais.
+- Mudanças de lógica exigem case review, revisão epidemiológica, backtesting, revisão estatística e documentação aprovados.
+- Mudanças documentais podem usar not_applicable apenas para backtesting/revisão estatística.
+- Uma proposta aprovada segue somente para branch separada de implementação.
+- Nenhuma avaliação v2.8 promove alteração diretamente para main ou produção.
+
+
+## Avaliação formal de mudanças v2.8
+
+- approve_for_implementation_branch não é implementação.
+- Para mudança lógica/threshold/contexto, exigir proposal_status=ready_for_human_decision.
+- Exigir shadow_review_status=passed.
+- Exigir evidência shadow v2.7 da mesma proposal_id.
+- A evidência shadow deve manter shadow_only=true, automatic_activation=false e candidate_rule_activated=false.
+- Exigir case review, epidemiologia, backtest, estatística e documentação com status passed para mudanças lógicas.
+- Para mudança exclusivamente documental, shadow/backtest/estatística podem ser not_applicable conforme contrato.
+- Manter decision_is_not_implementation=true.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_threshold_change_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Registrar apenas reviewer_role; não armazenar identificador pessoal do revisor no dataset candidato.
+- A aprovação v2.8 autoriza somente branch separada de implementação.
+
+
+## Pacote de implementação v2.9
+
+- Pacote validado não é implementação.
+- Branch de implementação deve ser criada manualmente por pessoa ou fluxo institucional autorizado.
+- Não criar branch automaticamente.
+- Não editar código automaticamente.
+- Não gerar commit automaticamente.
+- Não fazer merge automaticamente.
+- Não fazer deploy automaticamente.
+- Pacote v2.9 só pode referenciar avaliação v2.8 com final_decision=approve_for_implementation_branch.
+- Bloquear caminhos absolutos, traversal com .. e caminhos protegidos (.env, data_raw/, data_internal/, .git/, secrets/, credentials/).
+- Exigir implementation_summary, required_tests, acceptance_criteria e rollback_plan.
+- Manter package_is_not_implementation=true.
+- Manter manual_branch_required=true.
+- Manter automatic_branch_creation_enabled=false.
+- Manter automatic_code_edit_enabled=false.
+- Manter automatic_commit_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter human_review_required=true.
+
+
+## Gate de merge v2.10
+
+- Elegibilidade para merge não é merge executado.
+- Não realizar commit automaticamente.
+- Não realizar merge automaticamente.
+- Não realizar deploy automaticamente.
+- Gate v2.10 só pode usar pacote v2.9 com package_status=ready_for_manual_branch.
+- implementation_branch não pode ser main/master nem igual à source_branch.
+- source_commit_sha deve corresponder exatamente ao pacote v2.9.
+- implementation_commit_sha deve ser SHA completo e diferente do source_commit_sha.
+- Todo changed_path deve estar explicitamente autorizado em target_paths do pacote v2.9.
+- Exigir diff_review_status=passed e scope_review_status=passed para elegibilidade.
+- Exigir ci_status=passed e regression_tests_status=passed.
+- Exigir backtest_status=passed para mudanças de lógica.
+- Exigir epidemiology_revalidation_status=passed.
+- Exigir statistical_revalidation_status=passed para mudanças de lógica.
+- Exigir security_privacy_review_status=passed.
+- Exigir acceptance_criteria_status=passed.
+- Exigir rollback_verification_status=passed.
+- Manter merge_eligibility_is_not_merge=true.
+- Manter automatic_commit_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter human_merge_required=true.
+- Manter human_review_required=true.
+
+
+## Merge humano e pós-merge v2.11
+
+- Decisão humana de merge não é execução do merge.
+- Somente gate v2.10 com final_gate_decision=eligible_for_human_merge pode receber decisão v2.11.
+- Pós-merge só pode existir após decisão approve_human_merge.
+- Exigir merge_evidence_ref e merged_commit_sha.
+- verified_healthy exige CI pós-merge, smoke test, sanity epidemiológico e segurança/privacidade com status passed.
+- verified_healthy exige rollback_readiness_status=ready.
+- Não executar merge automaticamente.
+- Não executar deploy automaticamente.
+- Não executar rollback automaticamente.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais do revisor.
+- Manter merge_decision_is_not_merge_execution=true.
+- Manter post_merge_record_requires_actual_merge_evidence=true.
+- Manter post_merge_record_is_not_deploy=true.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter human_merge_required=true.
+- Manter human_post_merge_verification_required=true.
+
+
+## Deploy humano e verificação de efeito v2.12
+
+- Release gate pré-deploy é obrigatório.
+- Somente pós-merge v2.11 com post_merge_state=verified_healthy e rollback_readiness_status=ready pode entrar no release gate.
+- release_commit_sha deve ser exatamente o merged_commit_sha verificado.
+- target_environment deve ser hml ou prd.
+- eligible_for_human_deploy não é deploy executado.
+- Somente release gate com final_release_decision=eligible_for_human_deploy pode seguir para decisão humana de deploy.
+- Decisão humana de deploy não é execução do deploy.
+- O deploy real deve usar exatamente o release_commit_sha e target_environment autorizados.
+- Registro de deploy exige deploy_evidence_ref e deployed_commit_sha.
+- verified_healthy exige CI pós-deploy, smoke test, health check e segurança/privacidade com status passed.
+- verified_healthy exige rollback_readiness_status=ready.
+- Deploy registrado não é verificação de efeito.
+- Verificação de efeito deve usar janela observacional explícita e measured_at posterior ou igual ao fim da janela.
+- Verificação de efeito não é inferência causal epidemiológica.
+- Não alterar regra automaticamente após verificação de efeito.
+- Não executar deploy automaticamente.
+- Não executar rollback automaticamente.
+- Não gerar decisão em nível de paciente.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais do revisor.
+- Manter deploy_eligibility_is_not_deploy=true.
+- Manter release_gate_required=true.
+- Manter deploy_decision_is_not_deploy_execution=true.
+- Manter deployment_record_requires_actual_deploy_evidence=true.
+- Manter effect_verification_is_not_causal_inference=true.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter patient_level_decision_enabled=false.
+
+
+## Rollback humano v2.13
+
+- Rollback é sempre decisão humana separada de execução.
+- Somente deployment_state=rollback_consideration ou effect_state=unexpected_behavior_needs_review podem originar decisão v2.13.
+- Um efeito inesperado não é inferência causal epidemiológica.
+- Exigir rollback_target_commit_sha e rollback_plan_ref.
+- rollback_target_commit_sha deve diferir do commit atualmente implantado.
+- Somente approve_human_rollback pode originar registro de execução.
+- rolled_back_commit_sha deve corresponder exatamente ao alvo aprovado.
+- verified_restored exige CI, smoke test, health check, segurança/privacidade e sanity epidemiológico com status passed.
+- Exigir rollback_evidence_ref.
+- Não executar rollback automaticamente.
+- Não executar deploy automaticamente.
+- Não alterar regra automaticamente.
+- Não gerar decisão em nível de paciente.
+- Armazenar apenas reviewer_role.
+- Manter rollback_decision_is_not_rollback_execution=true.
+- Manter rollback_record_requires_actual_rollback_evidence=true.
+- Manter automatic_rollback_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter patient_level_decision_enabled=false.
+
+
+## Post-mortem e aprendizado v2.14
+
+- Post-mortem não é prova causal.
+- Aprendizado não é mudança aplicada.
+- Fontes válidas: verificação de efeito v2.12 e rollback v2.13 validados.
+- Registrar comportamento esperado, observado, fatores contribuintes, salvaguardas, lições, ações e evidências.
+- Não transformar fatores contribuintes em causalidade epidemiológica automática.
+- Se reenter_rule_review=true, exigir learning_action_type=rule_review.
+- Se reenter_rule_review=true, exigir rule_review_scope e rule_review_reason.
+- Retorno ao ciclo de regra exige revisão humana explícita.
+- Não criar issue automaticamente.
+- Não alterar regra ou threshold automaticamente.
+- Não executar deploy automaticamente.
+- Não executar rollback automaticamente.
+- Não gerar decisão em nível de paciente.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais.
+- Manter postmortem_is_not_causal_proof=true.
+- Manter learning_is_not_rule_change=true.
+- Manter rule_reentry_requires_human_review=true.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_issue_creation_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter patient_level_decision_enabled=false.
+
+
+## Ledger de linhagem v2.15
+
+- v2.14 permanece reservado ao post-mortem/aprendizado institucional.
+- v2.15 é exclusivamente o ledger auditável do ciclo de mudança.
+- Ledger não é execução e não dispara ações.
+- Todo evento não raiz deve possuir pai existente.
+- Toda transição deve respeitar o mapa permitido.
+- Cronologia filho >= cronologia pai quando ambas existirem.
+- proposal_id e implementation_package_id devem preservar a linhagem.
+- Commit deve permanecer idêntico nos trechos configurados para continuidade.
+- Ambiente deve permanecer consistente entre release gate, decisão de deploy e deploy.
+- Eventos órfãos devem bloquear a construção do ledger.
+- Transições impossíveis devem bloquear a construção do ledger.
+- Quebra de commit ou ambiente deve bloquear a construção do ledger.
+- Não corrigir automaticamente inconsistência de lineage.
+- Não criar evento sintético para preencher lacuna.
+- Não pontuar revisores.
+- Não armazenar identificadores pessoais.
+- Manter ledger_is_not_execution=true.
+- Manter ledger_does_not_trigger_actions=true.
+- Manter automatic_action_enabled=false.
+- Manter human_review_required=true.
+
+
+## Observabilidade de governança v2.16
+
+- Métricas v2.16 descrevem o processo, não desempenho individual.
+- Não calcular score de revisor.
+- Não ranquear revisores.
+- Não ranquear municípios.
+- stale_experimental não é risco epidemiológico.
+- Thresholds v2.16 são experimentais e não constituem SLA institucional.
+- Cálculos de idade/estagnação devem usar as_of explícito com timezone.
+- Não disparar notificação ou ação automaticamente a partir de stale_experimental.
+- Não alterar threshold automaticamente.
+- Manter process_metrics_are_not_performance_scores=true.
+- Manter reviewer_score_enabled=false.
+- Manter municipality_rank_enabled=false.
+- Manter stale_flag_is_not_risk=true.
+- Manter thresholds_are_institutional_sla=false.
+- Manter automatic_action_enabled=false.
+- Manter human_review_required=true.
+
+## Follow-up de aprendizado v2.17
+
+- v2.17 só pode consumir post-mortem v2.14 validado com status in_review/closed e learning_action_type diferente de none.
+- Cada ação deve possuir postmortem_record_id, action_sequence, action_description, owner_role, created_at, due_at, action_status e status_updated_at.
+- Armazenar apenas papéis para responsável e verificador; owner_role/verifier_role devem ser slugs técnicos minúsculos sem espaços. Rejeitar nome, CPF, CNS, e-mail, telefone ou outro identificador pessoal também dentro dos textos/evidências persistidos.
+- Todos os timestamps devem possuir timezone explícito.
+- due_at deve ser posterior a created_at.
+- status_updated_at não pode estar no futuro em relação a as_of.
+- action_status=completed exige completed_at e completion_evidence_refs.
+- Ação concluída deve ter verification_status pending, verified ou rejected.
+- verified/rejected exige verified_at, verifier_role e verification_notes.
+- verified_closed significa evidência conferida por humano; não significa efetividade epidemiológica.
+- blocked exige blocking_reason.
+- cancelled exige cancellation_rationale e verification_status=not_applicable.
+- overdue deve ser derivado com as_of explícito e representa atraso de workflow, não risco epidemiológico.
+- learning_action_type=rule_review concluída exige governance_handoff_ref.
+- governance_handoff_ref documenta handoff humano; não cria issue, PR, regra ou threshold.
+- Não executar ação automaticamente.
+- Não criar issue automaticamente.
+- Não alterar regra ou threshold automaticamente.
+- Manter tracking_is_not_execution=true.
+- Manter completion_is_not_effectiveness_proof=true.
+- Manter verification_is_not_epidemiological_effect=true.
+- Manter overdue_is_not_risk=true.
+- Manter human_verification_required=true.
+- Manter automatic_execution_enabled=false.
+- Manter automatic_issue_creation_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter personal_identifier_storage=false.
+
+## Encerramento do ciclo de aprendizado v2.18
+
+- postmortem_status=closed não equivale a ciclo de aprendizado encerrado.
+- v2.18 só pode consumir post-mortem v2.14 fechado e ações v2.17 validadas.
+- learning_action_type das ações v2.17 deve corresponder ao post-mortem v2.14.
+- close_learning_cycle exige ao menos uma ação v2.17.
+- close_learning_cycle exige todas as ações em verified_closed ou cancelled.
+- close_learning_cycle exige action_coverage_review_status=passed.
+- close_learning_cycle exige evidence_review_status=passed.
+- close_learning_cycle exige closure_evidence_refs.
+- Para learning_action_type=rule_review, exigir rule_handoff_review_status=passed e governance_handoff_ref presente em ação verified_closed.
+- O snapshot de ações v2.17 deve possuir as_of único por post-mortem e não pode ser anterior a evaluated_at.
+- Armazenar apenas reviewer_role como slug técnico minúsculo sem espaços; rejeitar identificadores pessoais também em rationale/evidências persistidos.
+- O fechamento não prova efetividade ou causalidade epidemiológica.
+- O registro v2.18 não altera post-mortem, ações, regra, threshold, deploy ou rollback.
+- Não fechar ciclo automaticamente.
+- Não criar issue automaticamente.
+- Não alterar regra automaticamente.
+- Manter postmortem_closed_is_not_learning_cycle_closed=true.
+- Manter closure_is_not_epidemiological_effect=true.
+- Manter closure_does_not_change_source_records=true.
+- Manter human_closure_required=true.
+- Manter automatic_closure_enabled=false.
+- Manter automatic_issue_creation_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter personal_identifier_storage=false.

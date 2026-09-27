@@ -1,0 +1,28 @@
+{
+  "model_id": "srag_mt_rollback_governance_v2_13",
+  "version": "2.13.0-experimental",
+  "status": "under_review",
+  "eligible_deployment_states": ["rollback_consideration"],
+  "eligible_effect_states": ["unexpected_behavior_needs_review"],
+  "rollback_decisions": [
+    "approve_human_rollback",
+    "reject_rollback",
+    "defer_rollback"
+  ],
+  "rollback_execution_states": [
+    "verified_restored",
+    "needs_investigation"
+  ],
+  "verification_statuses": ["passed", "failed", "not_applicable"],
+  "principles": {
+    "rollback_decision_is_not_rollback_execution": true,
+    "rollback_record_requires_actual_rollback_evidence": true,
+    "human_rollback_required": true,
+    "human_post_rollback_verification_required": true,
+    "automatic_rollback": false,
+    "automatic_deploy": false,
+    "automatic_rule_change": false,
+    "patient_level_decision": false,
+    "personal_identifier_storage": false
+  }
+}

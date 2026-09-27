@@ -1,0 +1,83 @@
+{
+  "model_id": "srag_mt_operational_review_v2_2",
+  "version": "2.2.0-experimental",
+  "status": "under_review",
+  "principles": {
+    "queue_is_not_risk_rank": true,
+    "no_automatic_action": true,
+    "human_review_required": true,
+    "patient_level_decisions_disabled": true,
+    "composite_score_enabled": false
+  },
+  "review_tag_actions": {
+    "epidemiology_review": [
+      "Revisar curva municipal nas semanas estáveis e confirmar a persistência do excesso observado.",
+      "Comparar o sinal com municípios vizinhos/região e com a tendência estadual.",
+      "Registrar hipótese epidemiológica e evidências utilizadas antes de qualquer escalonamento."
+    ],
+    "trend_review": [
+      "Revisar as duas janelas temporais usadas na tendência e verificar efeito de atraso/revisão dos dados.",
+      "Confirmar se o crescimento permanece após atualização do próximo vintage."
+    ],
+    "data_quality_review": [
+      "Revisar oportunidade, completude, inconsistências temporais e registros ainda sem desfecho.",
+      "Priorizar correção/validação do fluxo de informação antes de interpretar o sinal epidemiológico."
+    ],
+    "insufficient_evidence": [
+      "Manter interpretação operacional suspensa até haver evidência mínima suficiente.",
+      "Documentar quais componentes estão ausentes ou insuficientes."
+    ],
+    "silence_verification": [
+      "Verificar fluxo de notificação e atividade das unidades notificadoras antes de concluir ausência de SRAG.",
+      "Comparar com histórico municipal, rede assistencial e contexto regional."
+    ],
+    "virology_review": [
+      "Revisar distribuição temporal dos agentes detectados e consistência da codificação laboratorial.",
+      "Verificar coinfecções e resultados detectáveis sem agente codificado."
+    ],
+    "laboratory_coverage_review": [
+      "Revisar disponibilidade e oportunidade dos resultados moleculares.",
+      "Não interpretar ausência de detecção como ausência de circulação quando a cobertura laboratorial for insuficiente."
+    ],
+    "healthcare_coordination": [
+      "Revisar a evidência assistencial agregada com regulação/assistência quando a fonte estiver validada.",
+      "Manter os dados institucionais restritos fora da camada pública."
+    ]
+  },
+  "queue_rules": [
+    {
+      "queue": "data_validation_first",
+      "requires_any_tags": ["data_quality_review", "insufficient_evidence"],
+      "description": "Qualidade/evidência precisa ser revisada antes de interpretação operacional."
+    },
+    {
+      "queue": "targeted_silence_verification",
+      "requires_any_tags": ["silence_verification"],
+      "description": "Verificação direcionada de silêncio epidemiológico."
+    },
+    {
+      "queue": "multidisciplinary_review",
+      "requires_all_tags": ["epidemiology_review", "healthcare_coordination"],
+      "description": "Revisão conjunta epidemiologia + assistência/regulação."
+    },
+    {
+      "queue": "epidemiology_virology_review",
+      "requires_all_tags": ["epidemiology_review", "virology_review"],
+      "description": "Revisão integrada do sinal epidemiológico e virologia."
+    },
+    {
+      "queue": "epidemiology_review",
+      "requires_any_tags": ["epidemiology_review", "trend_review"],
+      "description": "Revisão epidemiológica do sinal/tendência."
+    },
+    {
+      "queue": "laboratory_review",
+      "requires_any_tags": ["virology_review", "laboratory_coverage_review"],
+      "description": "Revisão laboratorial/virológica."
+    },
+    {
+      "queue": "routine_monitoring",
+      "description": "Sem gatilho específico de revisão pelas regras experimentais atuais."
+    }
+  ]
+}

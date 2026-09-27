@@ -1,0 +1,53 @@
+name: Watch SIVEP 2026 source
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 11 * * *"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  source-watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check OpenDataSUS SIVEP source
+        id: check
+        shell: bash
+        run: |
+          set +e
+          python scripts/check_sivep_source.py --output source_watch_report.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          cat source_watch_report.json
+          if [ "$code" -eq 0 ] || [ "$code" -eq 3 ]; then
+            exit 0
+          fi
+          exit "$code"
+
+      - name: Open source update issue
+        if: steps.check.outputs.exit_code == '3'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          title="Atualizar fonte SIVEP-Gripe 2026"
+          existing=$(gh issue list --state open --search "$title in:title" --json number --jq 'length')
+          if [ "$existing" -eq 0 ]; then
+            latest_date=$(python -c "import json; print(json.load(open('source_watch_report.json'))['latest']['resource_date'])")
+            latest_url=$(python -c "import json; print(json.load(open('source_watch_report.json'))['latest']['url'])")
+            pinned_date=$(python -c "import json; print(json.load(open('source_watch_report.json'))['pinned']['resource_date'])")
+            gh issue create \
+              --title "$title" \
+              --body "O watcher detectou um CSV SIVEP-Gripe 2026 mais recente. Fonte pinada: **$pinned_date**. Nova fonte: **$latest_date**. Recurso oficial: $latest_url. Atualizar `config/sources.json`, baixar/reprocessar, executar QA e somente então promover novo snapshot."
+          fi

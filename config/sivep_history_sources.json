@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "dataset": "Banco de dados da Síndrome Respiratória Aguda Grave (SRAG) - 2019 a 2026",
+  "package_id": "39a4995f-4a6e-440f-8c8f-b00c81fae0d0",
+  "publisher": "Ministério da Saúde / OpenDataSUS",
+  "history": {
+    "2019": {
+      "resource_date": "2026-03-23",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2019/INFLUD19-23-03-2026.csv",
+      "local_filename": "INFLUD19-23-03-2026.csv",
+      "status": "frozen_snapshot"
+    },
+    "2020": {
+      "resource_date": "2026-03-23",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2020/INFLUD20-23-03-2026.csv",
+      "local_filename": "INFLUD20-23-03-2026.csv",
+      "status": "frozen_snapshot"
+    },
+    "2021": {
+      "resource_date": "2026-03-23",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2021/INFLUD21-23-03-2026.csv",
+      "local_filename": "INFLUD21-23-03-2026.csv",
+      "status": "frozen_snapshot"
+    },
+    "2022": {
+      "resource_date": "2026-03-23",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2022/INFLUD22-23-03-2026.csv",
+      "local_filename": "INFLUD22-23-03-2026.csv",
+      "status": "frozen_snapshot"
+    },
+    "2023": {
+      "resource_date": "2026-03-23",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2023/INFLUD23-23-03-2026.csv",
+      "local_filename": "INFLUD23-23-03-2026.csv",
+      "status": "frozen_snapshot"
+    },
+    "2024": {
+      "resource_date": "2026-03-23",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2024/INFLUD24-23-03-2026.csv",
+      "local_filename": "INFLUD24-23-03-2026.csv",
+      "status": "frozen_snapshot"
+    },
+    "2025": {
+      "resource_date": "2026-09-14",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-14-09-2026.csv",
+      "local_filename": "INFLUD25-14-09-2026.csv",
+      "status": "latest_available_snapshot"
+    }
+  }
+}

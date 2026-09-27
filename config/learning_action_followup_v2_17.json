@@ -1,0 +1,32 @@
+{
+  "model_id": "srag_mt_learning_action_followup_v2_17",
+  "version": "2.17.0-experimental",
+  "status": "under_review",
+  "eligible_postmortem_statuses": ["in_review", "closed"],
+  "action_statuses": [
+    "planned",
+    "acknowledged",
+    "in_progress",
+    "blocked",
+    "completed",
+    "cancelled"
+  ],
+  "verification_statuses": [
+    "not_started",
+    "pending",
+    "verified",
+    "rejected",
+    "not_applicable"
+  ],
+  "principles": {
+    "tracking_is_not_execution": true,
+    "completion_is_not_effectiveness_proof": true,
+    "verification_is_not_epidemiological_effect": true,
+    "overdue_is_not_risk": true,
+    "human_verification_required": true,
+    "automatic_execution": false,
+    "automatic_issue_creation": false,
+    "automatic_rule_change": false,
+    "personal_identifier_storage": false
+  }
+}

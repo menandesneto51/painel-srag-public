@@ -1,0 +1,22 @@
+{
+  "model_id": "srag_mt_operational_persistence_v2_3",
+  "version": "2.3.0-experimental",
+  "status": "under_review",
+  "routine_queue": "routine_monitoring",
+  "change_states": [
+    "baseline_snapshot_nonroutine",
+    "baseline_snapshot_routine",
+    "entered_review",
+    "persistent_same_queue",
+    "changed_review_queue",
+    "returned_to_routine",
+    "routine_stable"
+  ],
+  "principles": {
+    "change_state_is_not_risk": true,
+    "persistence_is_not_severity": true,
+    "no_ranking": true,
+    "no_automatic_action": true,
+    "human_review_required_for_interpretation": true
+  }
+}

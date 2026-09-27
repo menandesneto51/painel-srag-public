@@ -1,0 +1,41 @@
+{
+  "model_id": "srag_mt_postmortem_learning_v2_14",
+  "version": "2.14.0-experimental",
+  "status": "under_review",
+  "source_record_types": ["effect", "rollback"],
+  "postmortem_statuses": ["draft", "in_review", "closed"],
+  "outcome_states": [
+    "change_retained",
+    "change_reverted",
+    "investigation_open",
+    "inconclusive"
+  ],
+  "learning_action_types": [
+    "none",
+    "documentation",
+    "monitoring",
+    "testing",
+    "runbook",
+    "rule_review",
+    "data_quality",
+    "security_privacy"
+  ],
+  "rule_review_scopes": [
+    "queue_rule",
+    "action_trigger",
+    "threshold",
+    "context_requirement",
+    "documentation"
+  ],
+  "principles": {
+    "postmortem_is_not_causal_proof": true,
+    "learning_is_not_rule_change": true,
+    "rule_reentry_requires_human_review": true,
+    "automatic_rule_change": false,
+    "automatic_issue_creation": false,
+    "automatic_deploy": false,
+    "automatic_rollback": false,
+    "patient_level_decision": false,
+    "personal_identifier_storage": false
+  }
+}

@@ -1,0 +1,247 @@
+name: Validate public SRAG snapshot
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: validate-srag-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  code-and-data-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile Python
+        run: |
+          python -m py_compile \
+            app_publico_streamlit.py \
+            app_review_streamlit.py \
+            public_data_validation.py \
+            scripts/validate_public_data.py \
+            scripts/enforce_publication_policy.py \
+            scripts/download_official_sources.py \
+            scripts/build_population_reference.py \
+            scripts/rebuild_risk_incidence.py \
+            scripts/build_sivep_mt_aggregates.py \
+            scripts/download_sivep_history.py \
+            scripts/build_historical_panel.py \
+            scripts/build_baseline_signals.py \
+            scripts/build_confidence_silence.py \
+            scripts/run_p2_pipeline.py \
+            scripts/backtest_p2_signals.py \
+            scripts/build_territorial_intelligence.py \
+            scripts/build_territorial_review_cards.py \
+            scripts/sanitize_healthcare_pressure.py \
+            scripts/build_operational_review.py \
+            scripts/create_human_review_template.py \
+            scripts/validate_human_review_decisions.py \
+            scripts/build_operational_actions.py \
+            scripts/build_state_operational_brief.py \
+            scripts/run_v2_2_pipeline.py \
+            scripts/capture_operational_vintage.py \
+            scripts/compare_operational_vintages.py \
+            scripts/analyze_operational_stability.py \
+            scripts/create_decision_audit_template_v2_5.py \
+            scripts/validate_decision_audit_v2_5.py \
+            scripts/create_follow_up_template_v2_5.py \
+            scripts/validate_follow_up_v2_5.py \
+            scripts/build_decision_audit_report_v2_5.py \
+            scripts/build_human_workflow_concordance_v2_6.py \
+            scripts/build_rule_change_proposals_v2_7.py \
+            scripts/create_rule_change_evaluation_template_v2_8.py \
+            scripts/validate_rule_change_evaluation_v2_8.py \
+            scripts/build_rule_change_evaluation_report_v2_8.py \
+            scripts/create_implementation_package_template_v2_9.py \
+            scripts/validate_implementation_package_v2_9.py \
+            scripts/build_implementation_package_report_v2_9.py \
+            scripts/create_merge_gate_template_v2_10.py \
+            scripts/validate_merge_gate_v2_10.py \
+            scripts/build_merge_gate_report_v2_10.py \
+            scripts/create_human_merge_decision_template_v2_11.py \
+            scripts/validate_human_merge_decision_v2_11.py \
+            scripts/create_post_merge_template_v2_11.py \
+            scripts/validate_post_merge_v2_11.py \
+            scripts/build_human_merge_report_v2_11.py \
+            scripts/create_release_deploy_gate_template_v2_12.py \
+            scripts/validate_release_deploy_gate_v2_12.py \
+            scripts/create_human_deploy_decision_template_v2_12.py \
+            scripts/validate_human_deploy_decision_v2_12.py \
+            scripts/create_deployment_record_template_v2_12.py \
+            scripts/validate_deployment_record_v2_12.py \
+            scripts/create_effect_verification_template_v2_12.py \
+            scripts/validate_effect_verification_v2_12.py \
+            scripts/build_deployment_verification_report_v2_12.py \
+            scripts/create_human_rollback_decision_template_v2_13.py \
+            scripts/validate_human_rollback_decision_v2_13.py \
+            scripts/create_rollback_execution_template_v2_13.py \
+            scripts/validate_rollback_execution_v2_13.py \
+            scripts/build_rollback_report_v2_13.py \
+            scripts/create_postmortem_template_v2_14.py \
+            scripts/validate_postmortem_v2_14.py \
+            scripts/build_postmortem_report_v2_14.py \
+            scripts/build_change_lifecycle_ledger_v2_15.py \
+            scripts/build_governance_observability_v2_16.py \
+            scripts/create_learning_action_followup_template_v2_17.py \
+            scripts/validate_learning_action_followup_v2_17.py \
+            scripts/build_learning_action_followup_report_v2_17.py \
+            scripts/create_learning_cycle_closure_template_v2_18.py \
+            scripts/validate_learning_cycle_closure_v2_18.py \
+            scripts/build_learning_cycle_closure_report_v2_18.py \
+            scripts/build_candidate_review_queue_v2_7.py \
+            scripts/evaluate_rule_change_shadow_v2_7.py \
+            scripts/build_quality_metrics.py \
+            scripts/build_public_snapshot_v2.py \
+            scripts/build_associations.py \
+            scripts/build_virology_metrics.py \
+            scripts/estimate_stability.py \
+            scripts/capture_vintage.py \
+            scripts/backtest_vintages.py \
+            scripts/check_sivep_source.py \
+            scripts/approve_candidate_snapshot.py \
+            scripts/promote_snapshot.py \
+            src/associations.py \
+            src/baseline_signals.py \
+            src/epi_calendar.py \
+            src/quality_metrics.py \
+            src/p2_backtest.py \
+            src/risk_model.py \
+            src/signal_confidence.py \
+            src/silence_signals.py \
+            src/stability.py \
+            src/territorial_intelligence.py \
+            src/territorial_review_cards.py \
+            src/healthcare_pressure_bridge.py \
+            src/human_review_decisions.py \
+            src/operational_review.py \
+            src/operational_persistence.py \
+            src/operational_stability.py \
+            src/decision_audit_v2_5.py \
+            src/decision_followup_v2_5.py \
+            src/decision_audit_report_v2_5.py \
+            src/human_workflow_concordance_v2_6.py \
+            src/human_workflow_concordance_report_v2_6.py \
+            src/rule_change_proposals_v2_7.py \
+            src/rule_change_proposals_report_v2_7.py \
+            src/rule_change_evaluation_v2_8.py \
+            src/rule_change_evaluation_report_v2_8.py \
+            src/implementation_package_v2_9.py \
+            src/implementation_package_report_v2_9.py \
+            src/merge_gate_v2_10.py \
+            src/merge_gate_report_v2_10.py \
+            src/human_merge_record_v2_11.py \
+            src/human_merge_report_v2_11.py \
+            src/release_deploy_gate_v2_12.py \
+            src/deployment_verification_v2_12.py \
+            src/deployment_verification_report_v2_12.py \
+            src/rollback_governance_v2_13.py \
+            src/rollback_report_v2_13.py \
+            src/postmortem_learning_v2_14.py \
+            src/postmortem_report_v2_14.py \
+            src/change_lifecycle_ledger_v2_15.py \
+            src/change_lifecycle_report_v2_15.py \
+            src/governance_observability_v2_16.py \
+            src/governance_observability_report_v2_16.py \
+            src/learning_action_followup_v2_17.py \
+            src/learning_action_followup_report_v2_17.py \
+            src/learning_cycle_closure_v2_18.py \
+            src/learning_cycle_closure_report_v2_18.py \
+            src/candidate_rule_queue_v2_7.py \
+            src/rule_shadow_evaluation_v2_7.py \
+            src/rule_shadow_evaluation_report_v2_7.py \
+            src/operational_actions.py \
+            src/operational_brief.py \
+            src/state_review_report.py \
+            src/vintage_backtest.py \
+            src/virology.py \
+            src/sivep_pipeline.py \
+            tests/test_associations.py \
+            tests/test_baseline_signals.py \
+            tests/test_confidence_silence.py \
+            tests/test_epi_calendar.py \
+            tests/test_historical_panel.py \
+            tests/test_p2_backtest.py \
+            tests/test_public_data_validation.py \
+            tests/test_public_snapshot_builder.py \
+            tests/test_quality_metrics.py \
+            tests/test_risk_model.py \
+            tests/test_sivep_pipeline.py \
+            tests/test_sivep_pipeline_integration.py \
+            tests/test_sivep_source_watch.py \
+            tests/test_snapshot_promotion.py \
+            tests/test_stability.py \
+            tests/test_territorial_intelligence.py \
+            tests/test_territorial_review_cards.py \
+            tests/test_healthcare_pressure_bridge.py \
+            tests/test_human_review_decisions.py \
+            tests/test_operational_review.py \
+            tests/test_operational_persistence.py \
+            tests/test_operational_stability.py \
+            tests/test_decision_audit_v2_5.py \
+            tests/test_decision_audit_report_v2_5.py \
+            tests/test_human_workflow_concordance_v2_6.py \
+            tests/test_human_workflow_concordance_report_v2_6.py \
+            tests/test_rule_change_proposals_v2_7.py \
+            tests/test_rule_change_proposals_report_v2_7.py \
+            tests/test_rule_change_evaluation_v2_8.py \
+            tests/test_rule_change_evaluation_report_v2_8.py \
+            tests/test_implementation_package_v2_9.py \
+            tests/test_implementation_package_report_v2_9.py \
+            tests/test_merge_gate_v2_10.py \
+            tests/test_merge_gate_report_v2_10.py \
+            tests/test_human_merge_record_v2_11.py \
+            tests/test_human_merge_report_v2_11.py \
+            tests/test_release_deploy_gate_v2_12.py \
+            tests/test_deployment_verification_v2_12.py \
+            tests/test_deployment_verification_report_v2_12.py \
+            tests/test_rollback_governance_v2_13.py \
+            tests/test_rollback_report_v2_13.py \
+            tests/test_postmortem_learning_v2_14.py \
+            tests/test_postmortem_report_v2_14.py \
+            tests/test_change_lifecycle_ledger_v2_15.py \
+            tests/test_change_lifecycle_report_v2_15.py \
+            tests/test_governance_observability_v2_16.py \
+            tests/test_governance_observability_report_v2_16.py \
+            tests/test_learning_action_followup_v2_17.py \
+            tests/test_learning_action_followup_report_v2_17.py \
+            tests/test_learning_cycle_closure_v2_18.py \
+            tests/test_learning_cycle_closure_report_v2_18.py \
+            tests/test_candidate_rule_queue_v2_7.py \
+            tests/test_rule_shadow_evaluation_v2_7.py \
+            tests/test_rule_shadow_evaluation_report_v2_7.py \
+            tests/test_review_app_structure.py \
+            tests/test_operational_actions.py \
+            tests/test_operational_brief.py \
+            tests/test_operational_v2_2_integration.py \
+            tests/test_vintage_backtest.py \
+            tests/test_virology.py
+
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Print epidemiological validation report
+        run: python scripts/validate_public_data.py || true
+
+      - name: Enforce publication policy
+        run: python scripts/enforce_publication_policy.py

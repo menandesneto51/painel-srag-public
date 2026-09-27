@@ -1,0 +1,41 @@
+{
+  "model_id": "srag_mt_rule_change_evaluation_v2_8",
+  "version": "2.8.0-experimental",
+  "status": "under_review",
+  "review_statuses": [
+    "not_started",
+    "in_progress",
+    "passed",
+    "failed",
+    "not_applicable"
+  ],
+  "final_decisions": [
+    "approve_for_implementation_branch",
+    "reject",
+    "defer"
+  ],
+  "logic_change_types": [
+    "queue_rule",
+    "action_trigger",
+    "threshold",
+    "context_requirement"
+  ],
+  "documentation_only_types": [
+    "documentation"
+  ],
+  "principles": {
+    "proposal_is_not_change": true,
+    "decision_is_not_implementation": true,
+    "automatic_rule_change": false,
+    "automatic_threshold_change": false,
+    "automatic_merge": false,
+    "automatic_deploy": false,
+    "human_approval_required": true,
+    "personal_identifier_storage": false,
+    "shadow_review_required_for_logic_change": true,
+    "shadow_review_is_not_activation": true
+  },
+  "approval_eligible_proposal_statuses": [
+    "ready_for_human_decision"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "model_id": "srag_mt_rule_change_proposals_v2_7",
+  "version": "2.7.0-experimental",
+  "status": "under_review",
+  "proposal_statuses": [
+    "draft",
+    "needs_case_review",
+    "needs_backtest",
+    "needs_epi_review",
+    "needs_statistical_review",
+    "ready_for_human_decision",
+    "approved",
+    "rejected"
+  ],
+  "change_types": [
+    "queue_rule",
+    "action_trigger",
+    "threshold",
+    "documentation",
+    "context_requirement"
+  ],
+  "principles": {
+    "automatic_rule_change": false,
+    "automatic_threshold_change": false,
+    "proposal_is_not_change": true,
+    "approval_required": true,
+    "backtest_required_for_logic_change": true,
+    "human_review_required": true
+  }
+}

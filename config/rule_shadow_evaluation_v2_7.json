@@ -1,0 +1,23 @@
+{
+  "model_id": "srag_mt_rule_shadow_evaluation_v2_7",
+  "version": "2.7.0-experimental",
+  "status": "under_review",
+  "required_municipalities": 142,
+  "allowed_proposal_statuses_for_shadow": [
+    "draft",
+    "needs_case_review",
+    "needs_backtest",
+    "needs_epi_review",
+    "needs_statistical_review",
+    "ready_for_human_decision"
+  ],
+  "principles": {
+    "shadow_only": true,
+    "automatic_activation": false,
+    "automatic_rule_change": false,
+    "human_decision_is_not_epidemiological_gold_standard": true,
+    "reviewer_scoring": false,
+    "municipality_ranking": false,
+    "approval_required_after_shadow": true
+  }
+}

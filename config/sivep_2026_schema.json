@@ -1,0 +1,253 @@
+{
+  "schema_version": "1.0",
+  "source": "SIVEP-Gripe",
+  "reference_year": 2026,
+  "territorial_scope": {
+    "residence_uf_field": "SG_UF",
+    "residence_uf_value": "MT",
+    "municipality_code_candidates": [
+      "CO_MUN_RES"
+    ],
+    "municipality_name_candidates": [
+      "ID_MN_RESI"
+    ]
+  },
+  "time": {
+    "symptom_week_field": "SEM_PRI",
+    "symptom_date_field": "DT_SIN_PRI",
+    "stable_week_policy": {
+      "mode": "lag_from_latest_observed",
+      "lag_weeks": 2,
+      "status": "provisional",
+      "requires_backtesting": true
+    }
+  },
+  "severity": {
+    "hospital_field": "HOSPITAL",
+    "hospital_yes": [
+      "1"
+    ],
+    "icu_field": "UTI",
+    "icu_yes": [
+      "1"
+    ],
+    "outcome_field": "EVOLUCAO",
+    "cure": [
+      "1"
+    ],
+    "death": [
+      "2"
+    ],
+    "death_other_causes": [
+      "3"
+    ],
+    "ignored": [
+      "9"
+    ]
+  },
+  "publication": {
+    "raw_source_in_repository": false,
+    "aggregate_by_residence": true,
+    "municipality_key": "codigo_ibge",
+    "municipality_name_is_not_key": true
+  },
+  "quality": {
+    "notification_date_field": "DT_NOTIFIC",
+    "digitization_date_field": "DT_DIGITA",
+    "closure_date_field": "DT_ENCERRA",
+    "final_classification_field": "CLASSI_FIN",
+    "metrics": {
+      "notification_delay_days": "DT_NOTIFIC - DT_SIN_PRI",
+      "digitization_delay_days": "DT_DIGITA - DT_NOTIFIC",
+      "outcome_completeness": "EVOLUCAO in {1,2,3}",
+      "closure_completeness": "DT_ENCERRA preenchida entre casos classificados",
+      "temporal_consistency": "datas em ordem lógica"
+    },
+    "risk_separation": true
+  },
+  "virology": {
+    "molecular_result_field": "PCR_RESUL",
+    "molecular_detectable_value": "1",
+    "influenza_positive_field": "POS_PCRFLU",
+    "influenza_positive_value": "1",
+    "influenza_type_field": "TP_FLU_PCR",
+    "influenza_types": {
+      "1": "Influenza A",
+      "2": "Influenza B"
+    },
+    "other_virus_positive_field": "POS_PCROUT",
+    "other_virus_positive_value": "1",
+    "virus_markers": {
+      "SARS-CoV-2": "PCR_SARS2",
+      "VSR": "PCR_VSR",
+      "Parainfluenza 1": "PCR_PARA1",
+      "Parainfluenza 2": "PCR_PARA2",
+      "Parainfluenza 3": "PCR_PARA3",
+      "Parainfluenza 4": "PCR_PARA4",
+      "Adenovírus": "PCR_ADENO",
+      "Metapneumovírus": "PCR_METAP",
+      "Bocavírus": "PCR_BOCA",
+      "Rinovírus": "PCR_RINO",
+      "Outro vírus respiratório": "PCR_OUTRO"
+    },
+    "marker_value": "1",
+    "rules": {
+      "specific_virus_positivity_enabled": false,
+      "reason": "Ausência de marcador específico não comprova que aquele agente foi testado; reportar detecções e cobertura molecular, não positividade específica sem denominador validado.",
+      "coinfection_allowed": true
+    },
+    "molecular_result_available_values": [
+      "1",
+      "2",
+      "3"
+    ],
+    "molecular_conclusive_values": [
+      "1",
+      "2"
+    ]
+  },
+  "associations": {
+    "model": "crude_2x2",
+    "outcomes": {
+      "obito": {
+        "field": "EVOLUCAO",
+        "case_values": [
+          "2"
+        ],
+        "control_values": [
+          "1"
+        ]
+      },
+      "uti": {
+        "field": "UTI",
+        "case_values": [
+          "1"
+        ],
+        "control_values": [
+          "2"
+        ]
+      }
+    },
+    "exposures": {
+      "Doença hepática": {
+        "field": "HEPATICA",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Doença renal": {
+        "field": "RENAL",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Imunodepressão": {
+        "field": "IMUNODEPRE",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Doença neurológica": {
+        "field": "NEUROLOGIC",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Pneumopatia": {
+        "field": "PNEUMOPATI",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Obesidade": {
+        "field": "OBESIDADE",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Diabetes": {
+        "field": "DIABETES",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Asma": {
+        "field": "ASMA",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Cardiopatia": {
+        "field": "CARDIOPATI",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Puerpério": {
+        "field": "PUERPERA",
+        "yes": [
+          "1"
+        ],
+        "no": [
+          "2"
+        ]
+      },
+      "Sexo masculino": {
+        "field": "CS_SEXO",
+        "yes": [
+          "M"
+        ],
+        "no": [
+          "F"
+        ]
+      },
+      "Gestação": {
+        "field": "CS_GESTANT",
+        "yes": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "no": [
+          "5"
+        ]
+      },
+      "Idade >= 60 anos": {
+        "derived": "age_ge_60",
+        "age_field": "NU_IDADE_N",
+        "age_type_field": "TP_IDADE"
+      }
+    },
+    "missing_policy": "pairwise_exclusion",
+    "zero_cell_policy": "haldane_anscombe_0_5",
+    "adjusted_model_enabled": false
+  }
+}

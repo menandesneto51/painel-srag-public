@@ -1,0 +1,52 @@
+{
+  "model_id": "srag_mt_implementation_package_v2_9",
+  "version": "2.9.0-experimental",
+  "status": "under_review",
+  "allowed_source_decision": "approve_for_implementation_branch",
+  "allowed_source_evaluation_status": [
+    "human_rule_change_evaluation"
+  ],
+  "allowed_source_proposal_status": [
+    "ready_for_human_decision"
+  ],
+  "logic_change_types": [
+    "queue_rule",
+    "action_trigger",
+    "threshold",
+    "context_requirement"
+  ],
+  "documentation_only_types": [
+    "documentation"
+  ],
+  "package_statuses": [
+    "draft",
+    "ready_for_manual_branch",
+    "blocked",
+    "superseded"
+  ],
+  "protected_path_prefixes": [
+    "data_raw/",
+    "data_internal/",
+    "data_candidate/",
+    "data_public/",
+    ".git/",
+    "secrets/",
+    "credentials/"
+  ],
+  "protected_exact_paths": [
+    ".env"
+  ],
+  "principles": {
+    "package_is_not_implementation": true,
+    "manual_branch_required": true,
+    "source_commit_required": true,
+    "source_evaluation_must_be_human": true,
+    "v2_8_gates_inherited": true,
+    "automatic_branch_creation": false,
+    "automatic_code_edit": false,
+    "automatic_commit": false,
+    "automatic_merge": false,
+    "automatic_deploy": false,
+    "human_review_required": true
+  }
+}

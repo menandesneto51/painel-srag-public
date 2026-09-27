@@ -1,0 +1,34 @@
+{
+  "model_id": "srag_mt_risk_v2",
+  "version": "2.0.0-experimental",
+  "status": "under_calibration",
+  "dimensions": [
+    "activity",
+    "trend",
+    "severity",
+    "virology",
+    "healthcare_pressure"
+  ],
+  "confidence_is_separate": true,
+  "composite_score_enabled": false,
+  "severity_smoothing": {
+    "method": "statewide_rate_prior",
+    "prior_strength": null,
+    "calibration_required": true
+  },
+  "activity_classification": {
+    "method_candidates": [
+      "historical_percentiles",
+      "k_medians_plus_percentile_boundaries"
+    ],
+    "thresholds": null,
+    "calibration_required": true
+  },
+  "publication_gate": {
+    "requires_denominator_validation": true,
+    "requires_backtesting": true,
+    "requires_epidemiology_review": true,
+    "requires_statistical_review": true,
+    "requires_human_approval": true
+  }
+}

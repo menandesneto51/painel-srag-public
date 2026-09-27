@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "reference_date": "2026-09-26",
+  "sources": {
+    "sivep_gripe_2026": {
+      "publisher": "Ministério da Saúde / OpenDataSUS",
+      "dataset": "Banco de dados da Síndrome Respiratória Aguda Grave (SRAG) - 2019 a 2026",
+      "resource_date": "2026-09-14",
+      "format": "csv",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2026/INFLUD26-14-09-2026.csv",
+      "landing_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026",
+      "local_filename": "sivep_gripe_2026_2026-09-14.csv",
+      "sensitivity": "public_source_microdata",
+      "publish_raw_in_repo": false,
+      "package_id": "39a4995f-4a6e-440f-8c8f-b00c81fae0d0",
+      "resource_id": "74091efc-3f75-42e8-a6fa-6b79a8d30582",
+      "ckan_api": "https://dadosabertos.saude.gov.br/api/3/action/package_show?id=39a4995f-4a6e-440f-8c8f-b00c81fae0d0"
+    },
+    "ibge_population_2026": {
+      "publisher": "IBGE",
+      "dataset": "Estimativas da população residente para os municípios e para as unidades da federação",
+      "reference_date": "2026-07-01",
+      "publication_context": "estimativas publicadas no DOU",
+      "format": "xlsx",
+      "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2026/estimativa_dou_2026.xlsx",
+      "landing_page": "https://www.ibge.gov.br/estatisticas/sociais/populacao/9103-estimativas-de-populacao.html",
+      "local_filename": "estimativa_dou_2026.xlsx",
+      "sensitivity": "public_aggregate",
+      "publish_raw_in_repo": false
+    }
+  }
+}
