@@ -88,3 +88,69 @@ Executar:
 - não promover proposta aprovada diretamente para produção
 
 Uma mudança aprovada deve ser implementada em branch separada, comparada retrospectivamente e passar pelo CI antes de qualquer adoção.
+
+
+## Modo sombra
+
+A regra candidata deve ser gerada separadamente no Cursor, sem substituir a regra vigente.
+
+Executar:
+
+```bash
+python scripts/evaluate_rule_change_shadow_v2_7.py \
+  --proposal-id PROP_ID \
+  --candidate-queue CAMINHO/fila_candidata.csv \
+  --candidate-rule-version candidate-001
+```
+
+Saídas por proposta:
+
+- rule_shadow_evaluation_v2_7.csv
+- rule_shadow_evaluation_summary_v2_7.json
+- rule_shadow_evaluation_report_v2_7.md
+
+O modo sombra compara:
+
+- fila atual;
+- fila candidata;
+- decisões humanas v2.5, quando disponíveis.
+
+Ele mede mudança de concordância do workflow, não acurácia epidemiológica.
+
+### Leitura correta
+
+- workflow_agreement_improved = maior concordância com decisões humanas registradas;
+- workflow_agreement_worsened = menor concordância com o workflow humano;
+- nenhuma dessas classes prova desempenho epidemiológico superior/inferior.
+
+### Gate depois do shadow
+
+Mesmo com resultado favorável:
+
+1. proposta continua sem ativação;
+2. revisar casos alterados;
+3. executar backtesting pertinente;
+4. revisar epidemiologia/estatística;
+5. atualizar documentação;
+6. registrar decisão humana;
+7. implementar apenas em branch separada;
+8. passar pelo CI antes de adoção.
+
+## Divisão de agentes
+
+### AGENTE-GOVERNANCA-DE-REGRAS
+
+- identifica discordâncias;
+- gera contexto para proposta;
+- executa/analisa shadow;
+- aponta regras/gatilhos para revisão.
+
+### AGENTE-CONTROLE-DE-MUDANCAS
+
+- gerencia status da proposta;
+- exige evidências/revisões;
+- coordena backtesting;
+- registra aprovação/rejeição;
+- impede promoção automática.
+
+Os dois agentes não pontuam revisores, não ranqueiam municípios e não ativam regras automaticamente.
