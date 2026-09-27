@@ -84,6 +84,8 @@ jobs:
             scripts/create_post_merge_template_v2_11.py \
             scripts/validate_post_merge_v2_11.py \
             scripts/build_human_merge_report_v2_11.py \
+            scripts/create_release_deploy_gate_template_v2_12.py \
+            scripts/validate_release_deploy_gate_v2_12.py \
             scripts/create_human_deploy_decision_template_v2_12.py \
             scripts/validate_human_deploy_decision_v2_12.py \
             scripts/create_deployment_record_template_v2_12.py \
@@ -139,6 +141,7 @@ jobs:
             src/merge_gate_report_v2_10.py \
             src/human_merge_record_v2_11.py \
             src/human_merge_report_v2_11.py \
+            src/release_deploy_gate_v2_12.py \
             src/deployment_verification_v2_12.py \
             src/deployment_verification_report_v2_12.py \
             src/rollback_governance_v2_13.py \
@@ -188,6 +191,7 @@ jobs:
             tests/test_merge_gate_report_v2_10.py \
             tests/test_human_merge_record_v2_11.py \
             tests/test_human_merge_report_v2_11.py \
+            tests/test_release_deploy_gate_v2_12.py \
             tests/test_deployment_verification_v2_12.py \
             tests/test_deployment_verification_report_v2_12.py \
             tests/test_rollback_governance_v2_13.py \
