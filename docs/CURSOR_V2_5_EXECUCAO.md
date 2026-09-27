@@ -39,7 +39,7 @@ Preencher manualmente:
 - follow_up_due_at quando requerido;
 - follow_up_owner_role quando requerido.
 
-Não inserir dados pessoais de pacientes.
+Não inserir dados pessoais de pacientes. No artefato candidato, registrar apenas `reviewer_role`; não armazenar nome, CPF, matrícula, e-mail ou outro identificador pessoal do revisor.
 
 ## 3. Validar decisões
 
@@ -68,11 +68,20 @@ Saídas:
 - follow_up_events_validated_v2_5.csv;
 - follow_up_status_v2_5.csv.
 
-## 7. Revisão visual
+## 7. Gerar auditoria estadual
+
+    python scripts/build_decision_audit_report_v2_5.py
+
+Saídas:
+
+- decision_audit_summary_v2_5.json;
+- decision_audit_report_v2_5.md.
+
+## 8. Revisão visual
 
     streamlit run app_review_streamlit.py
 
-Usar a aba Auditoria humana v2.5.
+Usar a aba **Decisões e follow-up v2.5**.
 
 ## Agentes no Cursor
 
@@ -82,7 +91,8 @@ Executar:
 2. EPIDEMIOLOGIA;
 3. OPERACIONAL;
 4. PRIVACIDADE;
-5. DOCUMENTACAO.
+5. AUDITORIA;
+6. DOCUMENTACAO.
 
 ## Regras obrigatórias
 
