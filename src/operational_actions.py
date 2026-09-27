@@ -35,6 +35,24 @@ def load_action_matrix(path: Path) -> dict:
     ids = [str(a.get("action_id", "")) for a in actions]
     if not actions or len(ids) != len(set(ids)) or any(not x for x in ids):
         raise ValueError("action_id ausente ou duplicado na matriz.")
+
+    sources = cfg.get("sources") or {}
+    for action in actions:
+        refs = action.get("source_refs") or []
+        unknown = [ref for ref in refs if ref not in sources]
+        if unknown:
+            raise ValueError(
+                f"Ação {action.get('action_id')} referencia fonte inexistente: {unknown}"
+            )
+        if not action.get("action_text"):
+            raise ValueError(
+                f"Ação {action.get('action_id')} sem action_text."
+            )
+        if not action.get("suggested_review_owner"):
+            raise ValueError(
+                f"Ação {action.get('action_id')} sem suggested_review_owner."
+            )
+
     return cfg
 
 
