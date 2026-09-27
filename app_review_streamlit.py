@@ -45,6 +45,9 @@ signals_dir = CANDIDATE / "signals"
 backtest_dir = CANDIDATE / "backtest"
 
 territorial = read_csv(territorial_path)
+review_cards = read_csv(
+    CANDIDATE / "territorial_intelligence" / "territorial_review_cards_v2_1.csv"
+)
 combined = read_csv(signals_dir / "combined_signals.csv")
 confidence = read_csv(signals_dir / "signal_confidence.csv")
 silence = read_csv(signals_dir / "silence_signals.csv")
@@ -103,6 +106,33 @@ with tabs[0]:
             use_container_width=True,
             hide_index=True,
         )
+
+        if review_cards is not None and not review_cards.empty:
+            st.markdown("### Card explicável por município")
+            municipalities = (
+                review_cards[["codigo_ibge", "municipio"]]
+                .drop_duplicates()
+                .sort_values("municipio")
+            )
+            options = municipalities["municipio"].astype(str).tolist()
+            selected_municipality = st.selectbox(
+                "Município para revisão detalhada",
+                options,
+                key="review_card_municipality",
+            )
+            card = review_cards.loc[
+                review_cards["municipio"].astype(str).eq(selected_municipality)
+            ].iloc[0]
+            st.write("**Evidências:**", card.get("evidence_summary", ""))
+            tags = str(card.get("review_tags", "") or "")
+            if tags:
+                st.write("**Tags de revisão:**", ", ".join([x for x in tags.split("|") if x]))
+            notes = str(card.get("review_notes", "") or "")
+            if notes:
+                st.write("**Notas:**", notes)
+            st.caption(
+                "Card experimental: requer revisão humana e não contém recomendação operacional automática."
+            )
 
 with tabs[1]:
     st.subheader("Atividade, tendência e anomalia")
