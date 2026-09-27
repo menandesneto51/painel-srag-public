@@ -158,3 +158,20 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Concordância não prova correção epidemiológica da regra.
 - Qualquer alteração de matriz exige análise de casos, documentação, teste retrospectivo e aprovação humana.
 - Produtos v2.6 permanecem em data_candidate/ e não são promovidos automaticamente.
+
+
+## Concordância workflow-humano v2.6
+
+- Decisão humana é autoridade final do workflow, mas não padrão-ouro epidemiológico.
+- Discordância entre fila/regra e decisão humana deve acionar revisão da regra, não avaliação do revisor.
+- Não calcular score de revisor.
+- Não ranquear revisores.
+- Não ranquear municípios com base na concordância.
+- Não alterar regra automaticamente.
+- Não alterar threshold automaticamente.
+- Toda mudança de regra exige análise de casos, documentação, teste retrospectivo e aprovação humana.
+- Manter human_decision_is_epidemiological_gold_standard=false.
+- Manter reviewer_score_enabled=false.
+- Manter municipality_rank_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_execution_enabled=false.
