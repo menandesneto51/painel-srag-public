@@ -358,6 +358,10 @@ Não pode:
 
 Responsável por:
 
+- verificar elegibilidade da proposta para decisão final;
+- exigir evidência shadow v2.7 para mudanças lógicas/threshold/contexto;
+- confirmar shadow_only=true e ausência de ativação automática;
+
 - consolidar evidências de propostas v2.7;
 - verificar case review;
 - verificar revisão epidemiológica;
@@ -368,6 +372,9 @@ Responsável por:
 - preparar recomendação para decisão humana formal v2.8.
 
 Não pode:
+
+- aprovar mudança lógica sem shadow v2.7 válido;
+- tratar melhor concordância humana como maior acurácia epidemiológica;
 
 - implementar a mudança;
 - alterar threshold;
