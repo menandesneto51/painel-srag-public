@@ -240,3 +240,25 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter automatic_deploy_enabled=false.
 - Registrar apenas reviewer_role; não armazenar identificador pessoal do revisor no dataset candidato.
 - A aprovação v2.8 autoriza somente branch separada de implementação.
+
+
+## Pacote de implementação v2.9
+
+- Pacote validado não é implementação.
+- Branch de implementação deve ser criada manualmente por pessoa ou fluxo institucional autorizado.
+- Não criar branch automaticamente.
+- Não editar código automaticamente.
+- Não gerar commit automaticamente.
+- Não fazer merge automaticamente.
+- Não fazer deploy automaticamente.
+- Pacote v2.9 só pode referenciar avaliação v2.8 com final_decision=approve_for_implementation_branch.
+- Bloquear caminhos absolutos, traversal com .. e caminhos protegidos (.env, data_raw/, data_internal/, .git/, secrets/, credentials/).
+- Exigir implementation_summary, required_tests, acceptance_criteria e rollback_plan.
+- Manter package_is_not_implementation=true.
+- Manter manual_branch_required=true.
+- Manter automatic_branch_creation_enabled=false.
+- Manter automatic_code_edit_enabled=false.
+- Manter automatic_commit_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter human_review_required=true.
