@@ -76,6 +76,9 @@ jobs:
             scripts/create_implementation_package_template_v2_9.py \
             scripts/validate_implementation_package_v2_9.py \
             scripts/build_implementation_package_report_v2_9.py \
+            scripts/create_merge_gate_template_v2_10.py \
+            scripts/validate_merge_gate_v2_10.py \
+            scripts/build_merge_gate_report_v2_10.py \
             scripts/build_candidate_review_queue_v2_7.py \
             scripts/evaluate_rule_change_shadow_v2_7.py \
             scripts/build_quality_metrics.py \
@@ -115,6 +118,8 @@ jobs:
             src/rule_change_evaluation_report_v2_8.py \
             src/implementation_package_v2_9.py \
             src/implementation_package_report_v2_9.py \
+            src/merge_gate_v2_10.py \
+            src/merge_gate_report_v2_10.py \
             src/candidate_rule_queue_v2_7.py \
             src/rule_shadow_evaluation_v2_7.py \
             src/rule_shadow_evaluation_report_v2_7.py \
@@ -156,6 +161,8 @@ jobs:
             tests/test_rule_change_evaluation_report_v2_8.py \
             tests/test_implementation_package_v2_9.py \
             tests/test_implementation_package_report_v2_9.py \
+            tests/test_merge_gate_v2_10.py \
+            tests/test_merge_gate_report_v2_10.py \
             tests/test_candidate_rule_queue_v2_7.py \
             tests/test_rule_shadow_evaluation_v2_7.py \
             tests/test_rule_shadow_evaluation_report_v2_7.py \
