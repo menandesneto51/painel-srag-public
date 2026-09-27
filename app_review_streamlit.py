@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.3 — Revisão Local",
+    page_title="SRAG MT v2.4 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.3 — Revisão Local")
+st.title("SRAG MT v2.4 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -46,6 +46,7 @@ backtest_dir = CANDIDATE / "backtest"
 operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
+stability_dir = CANDIDATE / "operational_stability"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -72,6 +73,9 @@ domain_review_queues = read_csv(
 operational_persistence = read_csv(
     persistence_dir / "operational_persistence_v2_3.csv"
 )
+operational_stability = read_csv(
+    stability_dir / "operational_stability_v2_4.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -81,6 +85,7 @@ tabs = st.tabs([
     "Backtesting",
     "Revisão operacional v2.2",
     "Persistência v2.3",
+    "Estabilidade v2.4",
 ])
 
 with tabs[0]:
@@ -502,6 +507,83 @@ with tabs[6]:
         st.caption(
             "Governança v2.3: change_state_is_not_risk=true, "
             "persistence_is_not_severity=true e automatic_action_enabled=false."
+        )
+
+with tabs[7]:
+    st.subheader("Estabilidade do workflow — v2.4")
+    st.warning(
+        "Estabilidade, persistência e churn descrevem o workflow entre vintages. "
+        "Não representam risco, gravidade ou prioridade clínica."
+    )
+    if operational_stability is None:
+        show_missing(
+            "Estabilidade operacional v2.4",
+            stability_dir / "operational_stability_v2_4.csv",
+        )
+    else:
+        if "workflow_pattern" in operational_stability.columns:
+            counts = (
+                operational_stability["workflow_pattern"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("padrao")
+                .reset_index(name="municipios")
+            )
+            fig = px.bar(
+                counts,
+                x="padrao",
+                y="municipios",
+                title="Padrões de estabilidade do workflow",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        patterns = ["Todos"]
+        if "workflow_pattern" in operational_stability.columns:
+            patterns += sorted(
+                operational_stability["workflow_pattern"]
+                .dropna()
+                .astype(str)
+                .unique()
+                .tolist()
+            )
+        selected_pattern = st.selectbox(
+            "Filtrar padrão de workflow",
+            patterns,
+            key="operational_stability_filter",
+        )
+        view = operational_stability.copy()
+        if selected_pattern != "Todos":
+            view = view.loc[
+                view["workflow_pattern"].astype(str).eq(selected_pattern)
+            ]
+
+        cols = [
+            "codigo_ibge",
+            "municipio",
+            "current_review_queue",
+            "workflow_pattern",
+            "vintages_observed",
+            "nonroutine_cycles",
+            "current_nonroutine_run",
+            "longest_nonroutine_run",
+            "current_same_queue_run",
+            "queue_change_count",
+            "workflow_churn_rate",
+            "single_cycle_reversion_count",
+            "persistent_2plus_cycles",
+            "sustained_3plus_cycles",
+            "workflow_stability_is_not_risk",
+            "persistence_is_not_severity",
+            "automatic_action_enabled",
+        ]
+        st.dataframe(
+            view[[c for c in cols if c in view.columns]],
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.caption(
+            "Governança v2.4: estabilidade não é risco; persistência não é gravidade; "
+            "ação automática permanece desabilitada."
         )
 
 st.divider()
