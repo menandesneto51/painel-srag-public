@@ -488,3 +488,37 @@ O AGENTE-GATE-DE-MERGE deve preservar:
 - `automatic_merge_enabled=false`;
 - `automatic_deploy_enabled=false`;
 - `human_merge_required=true`.
+
+
+## 16. AGENTE-POS-MERGE
+
+Responsável por:
+
+- validar que a decisão humana de merge tem origem em gate v2.10 elegível;
+- verificar evidência explícita do merge;
+- registrar merged_commit_sha;
+- verificar CI pós-merge;
+- verificar smoke tests;
+- verificar sanity check epidemiológico;
+- verificar segurança/privacidade;
+- verificar prontidão de rollback;
+- classificar o estado pós-merge como verified_healthy, needs_investigation ou rollback_consideration.
+
+Não pode:
+
+- executar merge;
+- executar deploy;
+- executar rollback;
+- inferir que o merge ocorreu sem evidência explícita;
+- armazenar identificadores pessoais do revisor no dataset candidato.
+
+## Fluxo v2.11
+
+```text
+GATE-DE-MERGE
+  -> decisão humana de merge
+  -> merge executado externamente/manual
+  -> evidência do merge
+  -> POS-MERGE
+  -> verified_healthy | needs_investigation | rollback_consideration
+```
