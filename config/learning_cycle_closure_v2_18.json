@@ -1,0 +1,33 @@
+{
+  "model_id": "srag_mt_learning_cycle_closure_v2_18",
+  "version": "2.18.0-experimental",
+  "status": "under_review",
+  "eligible_postmortem_statuses": ["closed"],
+  "terminal_action_states": ["verified_closed", "cancelled"],
+  "blocking_action_states": [
+    "open",
+    "overdue",
+    "blocked",
+    "blocked_overdue",
+    "completed_pending_verification",
+    "verification_rejected"
+  ],
+  "review_statuses": ["passed", "failed", "not_applicable"],
+  "closure_decisions": [
+    "close_learning_cycle",
+    "keep_open",
+    "defer"
+  ],
+  "principles": {
+    "postmortem_closed_is_not_learning_cycle_closed": true,
+    "closure_is_not_epidemiological_effect": true,
+    "closure_does_not_change_source_records": true,
+    "human_closure_required": true,
+    "automatic_closure": false,
+    "automatic_issue_creation": false,
+    "automatic_rule_change": false,
+    "automatic_deploy": false,
+    "automatic_rollback": false,
+    "personal_identifier_storage": false
+  }
+}
