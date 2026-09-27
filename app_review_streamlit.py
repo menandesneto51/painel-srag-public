@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.4 — Revisão Local",
+    page_title="SRAG MT v2.5 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.4 — Revisão Local")
+st.title("SRAG MT v2.5 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -47,6 +47,7 @@ operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
 stability_dir = CANDIDATE / "operational_stability"
+decision_audit_dir = CANDIDATE / "decision_audit_v2_5"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -76,6 +77,12 @@ operational_persistence = read_csv(
 operational_stability = read_csv(
     stability_dir / "operational_stability_v2_4.csv"
 )
+human_decisions_v25 = read_csv(
+    decision_audit_dir / "human_decisions_validated_v2_5.csv"
+)
+follow_up_status_v25 = read_csv(
+    decision_audit_dir / "follow_up_status_v2_5.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -86,6 +93,7 @@ tabs = st.tabs([
     "Revisão operacional v2.2",
     "Persistência v2.3",
     "Estabilidade v2.4",
+    "Auditoria humana v2.5",
 ])
 
 with tabs[0]:
@@ -585,6 +593,119 @@ with tabs[7]:
             "Governança v2.4: estabilidade não é risco; persistência não é gravidade; "
             "ação automática permanece desabilitada."
         )
+
+with tabs[8]:
+    st.subheader("Auditoria de decisão humana e follow-up — v2.5")
+    st.warning(
+        "A v2.5 registra decisões humanas e acompanhamento de workflow. "
+        "Decisão registrada não é prova de execução externa, não é risco e não habilita ação automática."
+    )
+
+    c1, c2 = st.columns(2)
+    with c1:
+        if human_decisions_v25 is None:
+            show_missing(
+                "Decisões humanas validadas v2.5",
+                decision_audit_dir / "human_decisions_validated_v2_5.csv",
+            )
+        else:
+            st.metric("Decisões registradas", len(human_decisions_v25))
+            if "decision_status" in human_decisions_v25.columns:
+                counts = (
+                    human_decisions_v25["decision_status"]
+                    .astype("string")
+                    .value_counts(dropna=False)
+                    .rename_axis("decisao")
+                    .reset_index(name="registros")
+                )
+                fig = px.bar(
+                    counts,
+                    x="decisao",
+                    y="registros",
+                    title="Decisões humanas registradas",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+    with c2:
+        if follow_up_status_v25 is None:
+            show_missing(
+                "Estado de follow-up v2.5",
+                decision_audit_dir / "follow_up_status_v2_5.csv",
+            )
+        else:
+            if "follow_up_state" in follow_up_status_v25.columns:
+                counts = (
+                    follow_up_status_v25["follow_up_state"]
+                    .astype("string")
+                    .value_counts(dropna=False)
+                    .rename_axis("estado")
+                    .reset_index(name="registros")
+                )
+                fig = px.bar(
+                    counts,
+                    x="estado",
+                    y="registros",
+                    title="Estado dos follow-ups",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+    if human_decisions_v25 is not None:
+        st.markdown("### Decisões humanas")
+        decision_cols = [
+            "decision_record_id",
+            "codigo_ibge",
+            "municipio",
+            "snapshot_id",
+            "review_queue",
+            "decision_scope",
+            "action_id",
+            "reviewed_at",
+            "reviewer_role",
+            "decision_status",
+            "rationale",
+            "follow_up_required",
+            "follow_up_due_at",
+            "follow_up_owner_role",
+            "decision_is_not_proof_of_execution",
+            "automatic_execution_enabled",
+        ]
+        st.dataframe(
+            human_decisions_v25[
+                [c for c in decision_cols if c in human_decisions_v25.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    if follow_up_status_v25 is not None:
+        st.markdown("### Follow-up")
+        follow_cols = [
+            "decision_record_id",
+            "codigo_ibge",
+            "municipio",
+            "decision_status",
+            "follow_up_required",
+            "follow_up_due_at",
+            "follow_up_owner_role",
+            "latest_follow_up_event_status",
+            "latest_follow_up_event_at",
+            "follow_up_state",
+            "as_of",
+            "follow_up_state_is_not_risk",
+            "automatic_execution_enabled",
+        ]
+        st.dataframe(
+            follow_up_status_v25[
+                [c for c in follow_cols if c in follow_up_status_v25.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.5: decisão humana registrada, execução automática desabilitada, "
+        "sem decisão em nível de paciente e sem prescrição clínica."
+    )
 
 st.divider()
 st.caption(
