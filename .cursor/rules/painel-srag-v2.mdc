@@ -96,3 +96,19 @@ python -m unittest discover -s tests -v
 ## Entrega
 
 Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas estruturais para `main` sem revisão.
+
+
+## Operacional v2.2
+
+- Fila de revisão não é ranking de risco.
+- Não ordenar municípios por score composto.
+- Não habilitar execução automática de ações.
+- Não gerar decisão em nível de paciente.
+- Não gerar prescrição clínica.
+- Toda ação sugerida deve carregar evidência/gatilho e referência documental quando aplicável.
+- Comunicação de risco só pode ser sugerida após validação epidemiológica do cenário.
+- Ações assistenciais só podem usar pressão assistencial quando a fonte estiver explicitamente presente e com status de validação aceito.
+- Manter `human_review_required=true`.
+- Manter `automatic_execution=false`.
+- Manter `composite_score=false`.
+- Produtos v2.2 permanecem em `data_candidate/` até revisão humana e gate próprio.
