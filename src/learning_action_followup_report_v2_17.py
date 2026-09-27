@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import re
 
 import pandas as pd
+
+TZ_RE = re.compile(r"(?:Z|[+-]\\d{2}:\\d{2})$", re.I)
 
 
 def build_learning_action_followup_summary(
@@ -11,6 +14,7 @@ def build_learning_action_followup_summary(
 ) -> dict:
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "as_of": "",
         "actions": 0,
         "overdue": 0,
         "verified_closed": 0,
@@ -30,6 +34,7 @@ def build_learning_action_followup_summary(
 
     required = {
         "learning_action_record_id",
+        "as_of",
         "learning_action_type",
         "action_status",
         "verification_status",
@@ -48,6 +53,17 @@ def build_learning_action_followup_summary(
         raise ValueError(
             f"Follow-up v2.17 sem colunas: {sorted(missing)}"
         )
+
+    as_of_values = records["as_of"].dropna().astype(str).unique().tolist()
+    if len(as_of_values) != 1:
+        raise ValueError("Relatório v2.17 exige um único as_of.")
+    as_of = as_of_values[0].strip()
+    if not TZ_RE.search(as_of):
+        raise ValueError("as_of do relatório v2.17 exige timezone explícito.")
+    parsed_as_of = pd.to_datetime(as_of, errors="coerce", utc=True)
+    if pd.isna(parsed_as_of):
+        raise ValueError("as_of inválido no relatório v2.17.")
+    summary["as_of"] = parsed_as_of.isoformat()
 
     for col in (
         "tracking_is_not_execution",
@@ -105,6 +121,7 @@ def render_learning_action_followup_report(summary: dict) -> str:
         "",
         "> Conclusão de ação não é prova de efetividade epidemiológica. Fechamento verificado exige evidência e revisão humana.",
         "",
+        f"- Referência temporal (as_of): **{summary.get('as_of') or 'sem registros'}**",
         f"- Ações: **{summary['actions']}**",
         f"- Atrasadas: **{summary['overdue']}**",
         f"- Fechadas com verificação humana: **{summary['verified_closed']}**",
