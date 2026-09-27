@@ -276,6 +276,14 @@ def validate_learning_cycle_closure(
         rule_handoff_present = False
 
         if action_frame is not None and not action_frame.empty:
+            action_types = set(
+                action_frame["learning_action_type"].astype(str)
+            )
+            if action_types != {source["learning_action_type"]}:
+                raise ValueError(
+                    f"{pid}: learning_action_type v2.17 diverge do post-mortem v2.14."
+                )
+
             states = action_frame["follow_up_state"].astype(str).tolist()
             as_of_values = {
                 _timestamp(value, "action.as_of")
