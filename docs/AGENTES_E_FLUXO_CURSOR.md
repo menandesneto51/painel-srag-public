@@ -522,3 +522,50 @@ GATE-DE-MERGE
   -> POS-MERGE
   -> verified_healthy | needs_investigation | rollback_consideration
 ```
+
+
+## 17. AGENTE-POS-DEPLOY
+
+Responsável por:
+
+- validar que o deploy parte de pós-merge v2.11 verified_healthy;
+- conferir decisão humana explícita de deploy;
+- verificar evidência real do deploy;
+- confirmar deployed_commit_sha;
+- revisar CI pós-deploy, smoke test, health check e segurança/privacidade;
+- verificar prontidão de rollback;
+- registrar estado do deploy;
+- avaliar posteriormente o comportamento da implementação em janela observacional explícita;
+- documentar comportamento esperado, observado e evidências.
+
+Não pode:
+
+- executar deploy;
+- executar rollback;
+- alterar regra automaticamente;
+- tratar verificação de efeito como inferência causal epidemiológica;
+- inferir melhora/piora de desfecho epidemiológico a partir do deploy;
+- gerar decisão em nível de paciente;
+- armazenar identificadores pessoais do revisor.
+
+## Fluxo v2.12
+
+```text
+POS-MERGE
+  -> decisão humana de deploy
+  -> deploy executado externamente/manual
+  -> evidência do deploy
+  -> POS-DEPLOY
+  -> verificação técnica do ambiente
+  -> janela observacional
+  -> verificação humana de comportamento da implementação
+```
+
+O AGENTE-POS-DEPLOY deve preservar:
+
+- `deploy_decision_is_not_deploy_execution=true`;
+- `deployment_record_requires_actual_deploy_evidence=true`;
+- `effect_verification_is_not_causal_inference=true`;
+- `automatic_deploy_enabled=false`;
+- `automatic_rollback_enabled=false`;
+- `automatic_rule_change_enabled=false`.
