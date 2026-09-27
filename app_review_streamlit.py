@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.6 — Revisão Local",
+    page_title="SRAG MT v2.7 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.6 — Revisão Local")
+st.title("SRAG MT v2.7 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -47,8 +47,10 @@ operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
 stability_dir = CANDIDATE / "operational_stability"
+decision_audit_dir = CANDIDATE / "decision_audit_v2_5"
 concordance_dir = CANDIDATE / "human_workflow_concordance_v2_6"
 proposal_dir = CANDIDATE / "rule_change_proposals_v2_7"
+shadow_dir = CANDIDATE / "rule_shadow_evaluation_v2_7"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -78,11 +80,23 @@ operational_persistence = read_csv(
 operational_stability = read_csv(
     stability_dir / "operational_stability_v2_4.csv"
 )
+human_decisions_v25 = read_csv(
+    decision_audit_dir / "human_decisions_validated_v2_5.csv"
+)
+follow_up_status_v25 = read_csv(
+    decision_audit_dir / "follow_up_status_v2_5.csv"
+)
 follow_up_events_v25 = read_csv(
     decision_audit_dir / "follow_up_events_validated_v2_5.csv"
 )
 workflow_concordance_v26 = read_csv(
     concordance_dir / "human_workflow_concordance_v2_6.csv"
+)
+rule_change_proposals = read_csv(
+    proposal_dir / "rule_change_proposals_v2_7.csv"
+)
+rule_shadow_evaluation_v27 = read_csv(
+    shadow_dir / "rule_shadow_evaluation_v2_7.csv"
 )
 
 tabs = st.tabs([
@@ -96,6 +110,7 @@ tabs = st.tabs([
     "Estabilidade v2.4",
     "Auditoria humana v2.5",
     "Concordância workflow × decisão v2.6",
+    "Propostas e modo sombra v2.7",
 ])
 
 with tabs[0]:
