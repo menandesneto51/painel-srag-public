@@ -32,6 +32,25 @@ def read_csv(path: Path) -> pd.DataFrame | None:
     return pd.read_csv(path, dtype={"codigo_ibge": "string"})
 
 
+def read_latest_nested_csv(
+    root: Path,
+    filename: str,
+) -> tuple[pd.DataFrame | None, Path | None]:
+    if not root.exists():
+        return None, None
+    candidates = [
+        path for path in root.glob(f"*/{filename}")
+        if path.is_file()
+    ]
+    if not candidates:
+        return None, None
+    selected = max(candidates, key=lambda path: path.stat().st_mtime)
+    return (
+        pd.read_csv(selected, dtype={"codigo_ibge": "string"}),
+        selected,
+    )
+
+
 def show_missing(label: str, path: Path):
     st.info(f"{label} ainda não disponível: {path.relative_to(ROOT)}")
 
@@ -95,8 +114,9 @@ workflow_concordance_v26 = read_csv(
 rule_change_proposals = read_csv(
     proposal_dir / "rule_change_proposals_v2_7.csv"
 )
-rule_shadow_evaluation_v27 = read_csv(
-    shadow_dir / "rule_shadow_evaluation_v2_7.csv"
+rule_shadow_evaluation_v27, rule_shadow_source_v27 = read_latest_nested_csv(
+    shadow_dir,
+    "rule_shadow_evaluation_v2_7.csv",
 )
 
 tabs = st.tabs([
@@ -896,11 +916,26 @@ with tabs[10]:
     )
 
     if rule_shadow_evaluation_v27 is None:
-        show_missing(
-            "Avaliação de regra candidata em modo sombra v2.7",
-            shadow_dir / "rule_shadow_evaluation_v2_7.csv",
+        st.info(
+            "Avaliação de regra candidata em modo sombra v2.7 ainda não disponível em "
+            "data_candidate/rule_shadow_evaluation_v2_7/<proposal_id>/."
         )
     else:
+        if rule_shadow_source_v27 is not None:
+            st.caption(
+                "Resultado shadow carregado de: "
+                + str(rule_shadow_source_v27.relative_to(ROOT))
+            )
+        if "proposal_id" in rule_shadow_evaluation_v27.columns:
+            proposal_values = sorted(
+                rule_shadow_evaluation_v27["proposal_id"]
+                .dropna()
+                .astype(str)
+                .unique()
+                .tolist()
+            )
+            if proposal_values:
+                st.write("**Proposta em revisão:**", ", ".join(proposal_values))
         municipality_view = rule_shadow_evaluation_v27.drop_duplicates("codigo_ibge")
         c1, c2 = st.columns(2)
         with c1:
