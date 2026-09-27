@@ -222,3 +222,21 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Mudanças documentais podem usar not_applicable apenas para backtesting/revisão estatística.
 - Uma proposta aprovada segue somente para branch separada de implementação.
 - Nenhuma avaliação v2.8 promove alteração diretamente para main ou produção.
+
+
+## Avaliação formal de mudanças v2.8
+
+- approve_for_implementation_branch não é implementação.
+- Para mudança lógica/threshold/contexto, exigir proposal_status=ready_for_human_decision.
+- Exigir shadow_review_status=passed.
+- Exigir evidência shadow v2.7 da mesma proposal_id.
+- A evidência shadow deve manter shadow_only=true, automatic_activation=false e candidate_rule_activated=false.
+- Exigir case review, epidemiologia, backtest, estatística e documentação com status passed para mudanças lógicas.
+- Para mudança exclusivamente documental, shadow/backtest/estatística podem ser not_applicable conforme contrato.
+- Manter decision_is_not_implementation=true.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_threshold_change_enabled=false.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Registrar apenas reviewer_role; não armazenar identificador pessoal do revisor no dataset candidato.
+- A aprovação v2.8 autoriza somente branch separada de implementação.
