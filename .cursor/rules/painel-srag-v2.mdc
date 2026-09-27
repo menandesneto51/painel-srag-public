@@ -336,3 +336,27 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter automatic_rollback_enabled=false.
 - Manter automatic_rule_change_enabled=false.
 - Manter patient_level_decision_enabled=false.
+
+
+## Rollback humano v2.13
+
+- Rollback é sempre decisão humana separada de execução.
+- Somente deployment_state=rollback_consideration ou effect_state=unexpected_behavior_needs_review podem originar decisão v2.13.
+- Um efeito inesperado não é inferência causal epidemiológica.
+- Exigir rollback_target_commit_sha e rollback_plan_ref.
+- rollback_target_commit_sha deve diferir do commit atualmente implantado.
+- Somente approve_human_rollback pode originar registro de execução.
+- rolled_back_commit_sha deve corresponder exatamente ao alvo aprovado.
+- verified_restored exige CI, smoke test, health check, segurança/privacidade e sanity epidemiológico com status passed.
+- Exigir rollback_evidence_ref.
+- Não executar rollback automaticamente.
+- Não executar deploy automaticamente.
+- Não alterar regra automaticamente.
+- Não gerar decisão em nível de paciente.
+- Armazenar apenas reviewer_role.
+- Manter rollback_decision_is_not_rollback_execution=true.
+- Manter rollback_record_requires_actual_rollback_evidence=true.
+- Manter automatic_rollback_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter patient_level_decision_enabled=false.
