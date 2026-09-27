@@ -43,7 +43,8 @@ territorial_path = (
 )
 signals_dir = CANDIDATE / "signals"
 backtest_dir = CANDIDATE / "backtest"
-operational_dir = CANDIDATE / "operational_review"
+operational_dir = CANDIDATE / "operational_v2_2"
+legacy_operational_dir = CANDIDATE / "operational_review"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -56,7 +57,17 @@ baseline = read_csv(signals_dir / "baseline_seasonal.csv")
 backtest = read_csv(backtest_dir / "anomaly_threshold_backtest.csv")
 predictions = read_csv(backtest_dir / "anomaly_backtest_predictions.csv")
 virology = read_csv(CANDIDATE / "virology_municipal_weekly_mt_2026.csv")
-operational_queue = read_csv(operational_dir / "operational_review_queue_v2_2.csv")
+operational_queue = read_csv(operational_dir / "municipal_review_queue_v2_2.csv")
+if operational_queue is None:
+    operational_queue = read_csv(
+        legacy_operational_dir / "operational_review_queue_v2_2.csv"
+    )
+operational_actions = read_csv(
+    operational_dir / "operational_action_suggestions_v2_2.csv"
+)
+domain_review_queues = read_csv(
+    operational_dir / "domain_review_queues_v2_2.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -293,15 +304,16 @@ with tabs[4]:
             st.dataframe(predictions.head(1000), use_container_width=True, hide_index=True)
 
 with tabs[5]:
-    st.subheader("Fila de revisão operacional v2.2")
+    st.subheader("Revisão operacional v2.2")
     st.warning(
-        "A fila organiza o tipo de revisão técnica. Ela não é ranking de risco, "
-        "não representa gravidade clínica e não executa ações automaticamente."
+        "A v2.2 organiza revisão técnica e sugere itens para avaliação humana. "
+        "Não é ranking de risco, não prescreve conduta e não executa ações automaticamente."
     )
+
     if operational_queue is None:
         show_missing(
-            "Fila operacional v2.2",
-            operational_dir / "operational_review_queue_v2_2.csv",
+            "Fila municipal v2.2",
+            operational_dir / "municipal_review_queue_v2_2.csv",
         )
     else:
         if "review_queue" in operational_queue.columns:
@@ -330,7 +342,7 @@ with tabs[5]:
                 .tolist()
             )
         selected_queue = st.selectbox(
-            "Filtrar fila de revisão",
+            "Filtrar fila municipal",
             queues,
             key="operational_review_queue_filter",
         )
@@ -358,10 +370,62 @@ with tabs[5]:
             hide_index=True,
         )
 
-        st.caption(
-            "Governança v2.2: human_review_required=true, "
-            "automatic_execution_enabled=false e queue_is_not_risk_rank=true."
+    st.markdown("### Sugestões detalhadas para revisão humana")
+    if operational_actions is None:
+        show_missing(
+            "Sugestões operacionais v2.2",
+            operational_dir / "operational_action_suggestions_v2_2.csv",
         )
+    else:
+        domains = ["Todos"] + sorted(
+            operational_actions["domain"]
+            .dropna()
+            .astype(str)
+            .unique()
+            .tolist()
+        )
+        selected_domain = st.selectbox(
+            "Filtrar domínio",
+            domains,
+            key="operational_action_domain_filter",
+        )
+        action_view = operational_actions.copy()
+        if selected_domain != "Todos":
+            action_view = action_view.loc[
+                action_view["domain"].astype(str).eq(selected_domain)
+            ]
+        action_cols = [
+            "codigo_ibge",
+            "municipio",
+            "domain",
+            "title",
+            "suggested_review_owner",
+            "suggested_timeframe",
+            "action_text",
+            "signal_confidence",
+            "evidence_summary",
+            "suggestion_status",
+            "human_review_required",
+            "automatic_execution",
+        ]
+        st.dataframe(
+            action_view[[c for c in action_cols if c in action_view.columns]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    if domain_review_queues is not None and not domain_review_queues.empty:
+        st.markdown("### Filas por domínio/responsável")
+        st.dataframe(
+            domain_review_queues,
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.2: revisão humana obrigatória, execução automática desabilitada, "
+        "sem decisão em nível de paciente e sem score composto."
+    )
 
 st.divider()
 st.caption(
