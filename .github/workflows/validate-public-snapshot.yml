@@ -70,6 +70,7 @@ jobs:
             scripts/build_decision_audit_report_v2_5.py \
             scripts/build_human_workflow_concordance_v2_6.py \
             scripts/build_rule_change_proposals_v2_7.py \
+            scripts/evaluate_rule_change_shadow_v2_7.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -103,6 +104,8 @@ jobs:
             src/human_workflow_concordance_report_v2_6.py \
             src/rule_change_proposals_v2_7.py \
             src/rule_change_proposals_report_v2_7.py \
+            src/rule_shadow_evaluation_v2_7.py \
+            src/rule_shadow_evaluation_report_v2_7.py \
             src/operational_actions.py \
             src/operational_brief.py \
             src/state_review_report.py \
@@ -137,6 +140,8 @@ jobs:
             tests/test_human_workflow_concordance_report_v2_6.py \
             tests/test_rule_change_proposals_v2_7.py \
             tests/test_rule_change_proposals_report_v2_7.py \
+            tests/test_rule_shadow_evaluation_v2_7.py \
+            tests/test_rule_shadow_evaluation_report_v2_7.py \
             tests/test_review_app_structure.py \
             tests/test_operational_actions.py \
             tests/test_operational_brief.py \
