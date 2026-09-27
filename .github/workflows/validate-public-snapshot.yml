@@ -72,7 +72,6 @@ jobs:
             scripts/build_rule_change_proposals_v2_7.py \
             scripts/build_candidate_review_queue_v2_7.py \
             scripts/evaluate_rule_change_shadow_v2_7.py \
-            scripts/evaluate_rule_change_shadow_v2_7.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -107,8 +106,6 @@ jobs:
             src/rule_change_proposals_v2_7.py \
             src/rule_change_proposals_report_v2_7.py \
             src/candidate_rule_queue_v2_7.py \
-            src/rule_shadow_evaluation_v2_7.py \
-            src/rule_shadow_evaluation_report_v2_7.py \
             src/rule_shadow_evaluation_v2_7.py \
             src/rule_shadow_evaluation_report_v2_7.py \
             src/operational_actions.py \
@@ -146,8 +143,6 @@ jobs:
             tests/test_rule_change_proposals_v2_7.py \
             tests/test_rule_change_proposals_report_v2_7.py \
             tests/test_candidate_rule_queue_v2_7.py \
-            tests/test_rule_shadow_evaluation_v2_7.py \
-            tests/test_rule_shadow_evaluation_report_v2_7.py \
             tests/test_rule_shadow_evaluation_v2_7.py \
             tests/test_rule_shadow_evaluation_report_v2_7.py \
             tests/test_review_app_structure.py \
