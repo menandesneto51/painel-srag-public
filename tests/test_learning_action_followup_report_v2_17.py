@@ -13,6 +13,7 @@ class LearningActionFollowupReportV217Tests(unittest.TestCase):
     def frame(self):
         return pd.DataFrame([{
             "learning_action_record_id": "a1",
+            "as_of": "2026-10-22T12:00:00Z",
             "learning_action_type": "monitoring",
             "action_status": "completed",
             "verification_status": "verified",
@@ -40,6 +41,7 @@ class LearningActionFollowupReportV217Tests(unittest.TestCase):
         )
         self.assertIn("Conclusão de ação não é prova", report)
         self.assertIn("overdue representa atraso de workflow", report)
+        self.assertIn("2026-10-22T12:00:00+00:00", report)
 
 
 if __name__ == "__main__":
