@@ -740,3 +740,36 @@ O AGENTE-AUDITOR-DE-LINHAGEM deve preservar:
 - `ledger_does_not_trigger_actions=true`;
 - `automatic_action_enabled=false`;
 - `human_review_required=true`.
+
+
+## 21. AGENTE-OBSERVABILIDADE-DE-GOVERNANCA
+
+Responsável por:
+
+- consumir apenas ledger v2.15 validado;
+- calcular tempos entre etapas;
+- identificar estágio atual das propostas;
+- calcular idade desde o último evento com as_of explícito;
+- marcar estagnação experimental conforme configuração;
+- resumir backlog, estágios terminais e caminhos de rollback;
+- produzir relatório de fluxo para revisão humana.
+
+Não pode:
+
+- pontuar pessoas;
+- avaliar competência/produtividade;
+- ranquear municípios;
+- tratar stale como risco epidemiológico;
+- tratar threshold experimental como SLA da SES;
+- disparar ações ou notificações automaticamente;
+- alterar thresholds automaticamente.
+
+## Fluxo v2.16
+
+```text
+ledger v2.15
+  -> OBSERVABILIDADE-DE-GOVERNANCA
+  -> métricas de fluxo
+  -> flags experimentais de estagnação
+  -> revisão humana do processo
+```
