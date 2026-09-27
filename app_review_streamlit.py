@@ -1022,7 +1022,7 @@ with tabs[11]:
             evaluation_dir / "rule_change_evaluations_validated_v2_8.csv",
         )
     else:
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.metric("Avaliações", len(rule_change_evaluations_v28))
         with c2:
@@ -1043,6 +1043,17 @@ with tabs[11]:
                     .sum()
                 )
                 st.metric("Adiadas", int(deferred))
+
+        with c4:
+            if "shadow_evidence_present" in rule_change_evaluations_v28.columns:
+                shadow_count = (
+                    rule_change_evaluations_v28["shadow_evidence_present"]
+                    .astype(str)
+                    .str.lower()
+                    .isin({"true", "1", "yes", "sim"})
+                    .sum()
+                )
+                st.metric("Com evidência shadow", int(shadow_count))
 
         if "final_decision" in rule_change_evaluations_v28.columns:
             counts = (
@@ -1069,6 +1080,11 @@ with tabs[11]:
             "reviewer_role",
             "case_review_status",
             "epidemiology_review_status",
+            "shadow_review_status",
+            "shadow_evidence_present",
+            "shadow_candidate_rule_version",
+            "shadow_queue_change_fraction",
+            "shadow_review_is_not_activation",
             "backtest_status",
             "statistical_review_status",
             "documentation_status",
@@ -1092,8 +1108,9 @@ with tabs[11]:
         )
 
     st.caption(
-        "Governança v2.8: decisão ≠ implementação. Mudança aprovada segue para branch "
-        "separada, novos testes e nova revisão humana antes de merge/deploy."
+        "Governança v2.8: decisão ≠ implementação. Mudança lógica só pode ser aprovada "
+        "com proposta elegível + evidência shadow v2.7 + backtest/revisões completos; "
+        "merge/deploy automáticos permanecem desabilitados."
     )
 
 st.divider()
