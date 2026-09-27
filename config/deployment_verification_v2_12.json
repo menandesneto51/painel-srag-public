@@ -2,9 +2,6 @@
   "model_id": "srag_mt_deployment_verification_v2_12",
   "version": "2.12.0-experimental",
   "status": "under_review",
-  "allowed_post_merge_states": [
-    "verified_healthy"
-  ],
   "deploy_decisions": [
     "approve_human_deploy",
     "reject_deploy",
@@ -36,11 +33,13 @@
     "automatic_rollback": false,
     "automatic_rule_change": false,
     "patient_level_decision": false,
-    "personal_identifier_storage": false
+    "personal_identifier_storage": false,
+    "release_gate_required": true
   },
   "rollback_readiness_statuses": [
     "ready",
     "blocked",
     "not_applicable"
-  ]
+  ],
+  "allowed_release_gate_decision": "eligible_for_human_deploy"
 }
