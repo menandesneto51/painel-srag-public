@@ -367,3 +367,29 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter automatic_deploy_enabled=false.
 - Manter automatic_rule_change_enabled=false.
 - Manter patient_level_decision_enabled=false.
+
+
+## Post-mortem e aprendizado v2.14
+
+- Post-mortem não é prova causal.
+- Aprendizado não é mudança aplicada.
+- Fontes válidas: verificação de efeito v2.12 e rollback v2.13 validados.
+- Registrar comportamento esperado, observado, fatores contribuintes, salvaguardas, lições, ações e evidências.
+- Não transformar fatores contribuintes em causalidade epidemiológica automática.
+- Se reenter_rule_review=true, exigir learning_action_type=rule_review.
+- Se reenter_rule_review=true, exigir rule_review_scope e rule_review_reason.
+- Retorno ao ciclo de regra exige revisão humana explícita.
+- Não criar issue automaticamente.
+- Não alterar regra ou threshold automaticamente.
+- Não executar deploy automaticamente.
+- Não executar rollback automaticamente.
+- Não gerar decisão em nível de paciente.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais.
+- Manter postmortem_is_not_causal_proof=true.
+- Manter learning_is_not_rule_change=true.
+- Manter rule_reentry_requires_human_review=true.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_issue_creation_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter patient_level_decision_enabled=false.
