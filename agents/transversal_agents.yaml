@@ -22,6 +22,8 @@ rules:
 domain_specialists:
   - "LAB_INTELLIGENCE_SPECIALIST"
 
+  - "SURVEILLANCE_SYSTEM_SPECIALIST"
+  - "HEALTH_EQUITY_SPECIALIST"
 orchestration_services:
   - "SPECIALIST_ORCHESTRATOR"
   - "GENOMIC_INTELLIGENCE_SPECIALIST"
@@ -32,3 +34,6 @@ orchestration_services:
 decision_services:
   - "RISK_COMMUNICATION_SPECIALIST"
   - "INTERVENTION_EVALUATOR"
+
+core_runtime_specialists:
+  - "EPIDEMIOLOGIST"
