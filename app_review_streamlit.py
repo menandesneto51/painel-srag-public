@@ -47,6 +47,7 @@ operational_dir = CANDIDATE / "operational_v2_2"
 legacy_operational_dir = CANDIDATE / "operational_review"
 persistence_dir = CANDIDATE / "operational_persistence"
 stability_dir = CANDIDATE / "operational_stability"
+decision_dir = CANDIDATE / "decision_audit_v2_5"
 decision_audit_dir = CANDIDATE / "decision_audit_v2_5"
 
 territorial = read_csv(territorial_path)
@@ -76,6 +77,15 @@ operational_persistence = read_csv(
 )
 operational_stability = read_csv(
     stability_dir / "operational_stability_v2_4.csv"
+)
+human_decisions = read_csv(
+    decision_dir / "human_decisions_validated_v2_5.csv"
+)
+follow_up_status = read_csv(
+    decision_dir / "follow_up_status_v2_5.csv"
+)
+follow_up_events = read_csv(
+    decision_dir / "follow_up_events_validated_v2_5.csv"
 )
 human_decisions_v25 = read_csv(
     decision_audit_dir / "human_decisions_validated_v2_5.csv"
@@ -705,6 +715,137 @@ with tabs[8]:
     st.caption(
         "Governança v2.5: decisão humana registrada, execução automática desabilitada, "
         "sem decisão em nível de paciente e sem prescrição clínica."
+    )
+
+with tabs[8]:
+    st.subheader("Decisões humanas e follow-up — v2.5")
+    st.warning(
+        "Esta aba exibe registros humanos auditáveis. Uma decisão registrada não prova "
+        "que a ação externa foi executada, e o estado de follow-up não é classe de risco."
+    )
+
+    if human_decisions is None:
+        show_missing(
+            "Decisões humanas validadas v2.5",
+            decision_dir / "human_decisions_validated_v2_5.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Decisões", len(human_decisions))
+        with c2:
+            st.metric(
+                "Municípios com decisão",
+                human_decisions["codigo_ibge"].nunique(),
+            )
+        with c3:
+            if "follow_up_required" in human_decisions.columns:
+                required = (
+                    human_decisions["follow_up_required"]
+                    .astype(str)
+                    .str.lower()
+                    .isin({"true", "1", "yes", "sim"})
+                    .sum()
+                )
+                st.metric("Follow-ups requeridos", int(required))
+
+        if "decision_status" in human_decisions.columns:
+            counts = (
+                human_decisions["decision_status"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("decisao")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="decisao",
+                y="registros",
+                title="Decisões humanas registradas",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        decision_cols = [
+            "decision_record_id",
+            "codigo_ibge",
+            "municipio",
+            "snapshot_id",
+            "review_queue",
+            "decision_scope",
+            "action_id",
+            "reviewed_at",
+            "reviewer_role",
+            "decision_status",
+            "rationale",
+            "follow_up_required",
+            "follow_up_due_at",
+            "follow_up_owner_role",
+            "decision_is_not_proof_of_execution",
+        ]
+        st.dataframe(
+            human_decisions[
+                [c for c in decision_cols if c in human_decisions.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Estado do follow-up")
+    if follow_up_status is None:
+        show_missing(
+            "Estado de follow-up v2.5",
+            decision_dir / "follow_up_status_v2_5.csv",
+        )
+    else:
+        if "follow_up_state" in follow_up_status.columns:
+            counts = (
+                follow_up_status["follow_up_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="registros",
+                title="Follow-up por estado",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        follow_cols = [
+            "decision_record_id",
+            "codigo_ibge",
+            "municipio",
+            "decision_status",
+            "follow_up_required",
+            "follow_up_due_at",
+            "follow_up_owner_role",
+            "latest_follow_up_event_status",
+            "latest_follow_up_event_at",
+            "follow_up_state",
+            "as_of",
+            "follow_up_state_is_not_risk",
+        ]
+        st.dataframe(
+            follow_up_status[
+                [c for c in follow_cols if c in follow_up_status.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    if follow_up_events is not None and not follow_up_events.empty:
+        with st.expander("Eventos de follow-up registrados"):
+            st.dataframe(
+                follow_up_events,
+                use_container_width=True,
+                hide_index=True,
+            )
+
+    st.caption(
+        "Governança v2.5: apenas papel do revisor é armazenado; execução automática, "
+        "decisão em nível de paciente e prescrição clínica permanecem desabilitadas."
     )
 
 st.divider()
