@@ -442,7 +442,7 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 
 - v2.17 só pode consumir post-mortem v2.14 validado com status in_review/closed e learning_action_type diferente de none.
 - Cada ação deve possuir postmortem_record_id, action_sequence, action_description, owner_role, created_at, due_at, action_status e status_updated_at.
-- Armazenar apenas papéis para responsável e verificador; não armazenar nome, CPF, CNS, matrícula, e-mail, telefone ou identificador pessoal.
+- Armazenar apenas papéis para responsável e verificador; owner_role/verifier_role devem ser slugs técnicos minúsculos sem espaços. Rejeitar nome, CPF, CNS, e-mail, telefone ou outro identificador pessoal também dentro dos textos/evidências persistidos.
 - Todos os timestamps devem possuir timezone explícito.
 - due_at deve ser posterior a created_at.
 - status_updated_at não pode estar no futuro em relação a as_of.
@@ -480,7 +480,7 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - close_learning_cycle exige closure_evidence_refs.
 - Para learning_action_type=rule_review, exigir rule_handoff_review_status=passed e governance_handoff_ref presente em ação verified_closed.
 - O snapshot de ações v2.17 deve possuir as_of único por post-mortem e não pode ser anterior a evaluated_at.
-- Armazenar apenas reviewer_role; não armazenar identificadores pessoais.
+- Armazenar apenas reviewer_role como slug técnico minúsculo sem espaços; rejeitar identificadores pessoais também em rationale/evidências persistidos.
 - O fechamento não prova efetividade ou causalidade epidemiológica.
 - O registro v2.18 não altera post-mortem, ações, regra, threshold, deploy ou rollback.
 - Não fechar ciclo automaticamente.
