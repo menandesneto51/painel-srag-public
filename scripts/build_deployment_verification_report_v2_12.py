@@ -26,22 +26,47 @@ def read_optional(path: Path) -> pd.DataFrame | None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Gera relatório estadual de deploy e efeito v2.12."
+        description="Gera relatório estadual de release, deploy e efeito v2.12."
+    )
+    parser.add_argument(
+        "--release-gate",
+        type=Path,
+        default=(
+            ROOT
+            / "data_candidate"
+            / "release_deploy_gate_v2_12"
+            / "release_deploy_gate_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--decisions",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "human_deploy_decisions_validated_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "human_deploy_decisions_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--deployments",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "deployment_records_validated_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "deployment_records_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--effects",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "effect_verification_validated_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "effect_verification_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--out-dir",
@@ -50,12 +75,16 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    release_gate = read_optional(args.release_gate)
     decisions = read_optional(args.decisions)
     deployments = read_optional(args.deployments)
     effects = read_optional(args.effects)
 
     summary = build_deployment_verification_summary(
-        decisions, deployments, effects
+        release_gate,
+        decisions,
+        deployments,
+        effects,
     )
     report = render_deployment_verification_markdown(summary)
 
