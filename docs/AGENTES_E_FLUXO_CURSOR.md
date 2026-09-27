@@ -401,3 +401,49 @@ A aprovação v2.8 deve preservar:
 - `automatic_threshold_change_enabled=false`;
 - `automatic_merge_enabled=false`;
 - `automatic_deploy_enabled=false`.
+
+
+## 14. AGENTE-IMPLEMENTADOR-CONTROLADO
+
+Responsável por:
+
+- receber apenas pacotes v2.9 validados;
+- conferir proposta e avaliação v2.8 de origem;
+- revisar arquivos-alvo;
+- revisar testes requeridos;
+- revisar critérios de aceitação;
+- revisar plano de rollback;
+- preparar instruções para implementação em branch separada.
+
+Não pode:
+
+- criar branch automaticamente;
+- editar código automaticamente;
+- gerar commit automaticamente;
+- fazer merge;
+- fazer deploy;
+- acessar caminhos protegidos;
+- implementar proposta não aprovada na v2.8.
+
+## Fluxo v2.9
+
+```text
+AVALIADOR-DE-MUDANCAS
+  -> decisão humana v2.8
+  -> pacote v2.9
+  -> IMPLEMENTADOR-CONTROLADO
+  -> criação manual da branch
+  -> implementação
+  -> testes / backtest / revisão
+  -> gate de merge separado
+```
+
+O AGENTE-IMPLEMENTADOR-CONTROLADO deve preservar:
+
+- `package_is_not_implementation=true`;
+- `manual_branch_required=true`;
+- `automatic_branch_creation_enabled=false`;
+- `automatic_code_edit_enabled=false`;
+- `automatic_commit_enabled=false`;
+- `automatic_merge_enabled=false`;
+- `automatic_deploy_enabled=false`.
