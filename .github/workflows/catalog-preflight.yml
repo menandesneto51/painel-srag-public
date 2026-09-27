@@ -1,0 +1,38 @@
+name: SES Data Catalog launcher
+
+on:
+  pull_request:
+    paths:
+      - "scripts/catalogo_ses.py"
+      - "scripts/catalogo-ses.ps1"
+      - ".cursor/**"
+      - "agents/ses_data_catalog.yaml"
+      - "docs/SES_DATA_CATALOG_SETUP.md"
+      - "tests/test_catalogo_ses_launcher.py"
+      - ".github/workflows/catalog-preflight.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/catalogo_ses.py"
+      - "scripts/catalogo-ses.ps1"
+      - ".cursor/**"
+      - "agents/ses_data_catalog.yaml"
+      - "docs/SES_DATA_CATALOG_SETUP.md"
+      - "tests/test_catalogo_ses_launcher.py"
+      - ".github/workflows/catalog-preflight.yml"
+
+jobs:
+  launcher:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Self-test
+        run: python scripts/catalogo_ses.py --self-test
+      - name: Unit tests
+        run: python -m unittest tests/test_catalogo_ses_launcher.py
