@@ -55,6 +55,8 @@ jobs:
             scripts/build_territorial_review_cards.py \
             scripts/sanitize_healthcare_pressure.py \
             scripts/build_operational_review.py \
+            scripts/create_human_review_template.py \
+            scripts/validate_human_review_decisions.py \
             scripts/build_operational_actions.py \
             scripts/build_state_operational_brief.py \
             scripts/run_v2_2_pipeline.py \
@@ -80,6 +82,7 @@ jobs:
             src/territorial_intelligence.py \
             src/territorial_review_cards.py \
             src/healthcare_pressure_bridge.py \
+            src/human_review_decisions.py \
             src/operational_review.py \
             src/operational_actions.py \
             src/operational_brief.py \
@@ -105,6 +108,7 @@ jobs:
             tests/test_territorial_intelligence.py \
             tests/test_territorial_review_cards.py \
             tests/test_healthcare_pressure_bridge.py \
+            tests/test_human_review_decisions.py \
             tests/test_operational_review.py \
             tests/test_operational_actions.py \
             tests/test_operational_brief.py \
