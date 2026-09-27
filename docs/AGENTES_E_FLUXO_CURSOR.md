@@ -773,3 +773,51 @@ ledger v2.15
   -> flags experimentais de estagnação
   -> revisão humana do processo
 ```
+
+## 22. AGENTE-FOLLOWUP-DE-APRENDIZADO
+
+Responsável por:
+
+- consumir somente post-mortems v2.14 elegíveis e validados;
+- estruturar ações de acompanhamento por postmortem_record_id e action_sequence;
+- verificar presença de papel responsável, prazo e timestamps com timezone;
+- identificar ações abertas, atrasadas, bloqueadas, concluídas e canceladas;
+- verificar evidência declarada para ações concluídas;
+- identificar ações concluídas ainda pendentes de verificação humana;
+- conferir se rule_review concluída possui governance_handoff_ref;
+- produzir síntese para revisão humana no Cursor.
+
+Não pode:
+
+- executar a ação de acompanhamento;
+- marcar ação como concluída em nome do humano;
+- verificar ou rejeitar evidência em nome do humano;
+- criar issue, PR ou ticket automaticamente;
+- criar governance_handoff_ref automaticamente;
+- alterar regra ou threshold;
+- inferir efetividade epidemiológica a partir de conclusão;
+- interpretar atraso como risco epidemiológico;
+- armazenar identificadores pessoais.
+
+## Fluxo v2.17
+
+```text
+post-mortem v2.14
+  -> FOLLOWUP-DE-APRENDIZADO
+  -> ação estruturada + prazo + papel responsável
+  -> conclusão declarada + evidência
+  -> verificação humana
+  -> verified_closed | verification_rejected
+  -> opcional: handoff humano para governança de regra
+```
+
+O AGENTE-FOLLOWUP-DE-APRENDIZADO deve preservar:
+
+- `tracking_is_not_execution=true`;
+- `completion_is_not_effectiveness_proof=true`;
+- `verification_is_not_epidemiological_effect=true`;
+- `overdue_is_not_risk=true`;
+- `human_verification_required=true`;
+- `automatic_execution_enabled=false`;
+- `automatic_issue_creation_enabled=false`;
+- `automatic_rule_change_enabled=false`.
