@@ -101,6 +101,7 @@ jobs:
             scripts/create_postmortem_template_v2_14.py \
             scripts/validate_postmortem_v2_14.py \
             scripts/build_postmortem_report_v2_14.py \
+            scripts/build_change_lifecycle_ledger_v2_15.py \
             scripts/build_candidate_review_queue_v2_7.py \
             scripts/evaluate_rule_change_shadow_v2_7.py \
             scripts/build_quality_metrics.py \
@@ -151,6 +152,8 @@ jobs:
             src/rollback_report_v2_13.py \
             src/postmortem_learning_v2_14.py \
             src/postmortem_report_v2_14.py \
+            src/change_lifecycle_ledger_v2_15.py \
+            src/change_lifecycle_report_v2_15.py \
             src/candidate_rule_queue_v2_7.py \
             src/rule_shadow_evaluation_v2_7.py \
             src/rule_shadow_evaluation_report_v2_7.py \
@@ -203,6 +206,8 @@ jobs:
             tests/test_rollback_report_v2_13.py \
             tests/test_postmortem_learning_v2_14.py \
             tests/test_postmortem_report_v2_14.py \
+            tests/test_change_lifecycle_ledger_v2_15.py \
+            tests/test_change_lifecycle_report_v2_15.py \
             tests/test_candidate_rule_queue_v2_7.py \
             tests/test_rule_shadow_evaluation_v2_7.py \
             tests/test_rule_shadow_evaluation_report_v2_7.py \
