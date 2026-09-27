@@ -332,3 +332,23 @@ GOVERNANCA-DE-REGRAS
   -> aprovação humana
   -> implementação em branch separada
 ```
+
+
+## Modo sombra v2.7 — extensão do AGENTE-GOVERNANCA-DE-REGRAS
+
+O AGENTE-GOVERNANCA-DE-REGRAS também deve:
+
+- validar proposta_id e status da proposta;
+- comparar fila atual e fila candidata sem ativação;
+- quantificar municípios que mudariam de fila;
+- avaliar mudança de concordância com decisões humanas sem tratar isso como acurácia epidemiológica;
+- identificar transições inesperadas;
+- exigir retorno à revisão humana após o shadow test.
+
+Não pode:
+
+- ativar a regra candidata;
+- atualizar threshold automaticamente;
+- transformar concordância em score de revisor;
+- ranquear municípios;
+- aprovar proposta automaticamente.
