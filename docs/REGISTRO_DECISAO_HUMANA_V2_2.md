@@ -1,3 +1,5 @@
+> **SUPERSEDED:** este fluxo v2.2 é mantido apenas por compatibilidade histórica. O caminho canônico para novas execuções é a v2.5 documentada em `docs/AUDITORIA_DECISAO_HUMANA_V2_5.md` e `docs/CURSOR_V2_5_EXECUCAO.md`.
+
 # Registro de Decisão Humana — v2.2
 
 ## Finalidade
