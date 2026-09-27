@@ -22,6 +22,7 @@ REQUIRED_POST_MERGE_COLUMNS = {
     "recorded_at",
     "reviewer_role",
     "merged_commit_sha",
+    "merge_evidence_ref",
     "post_merge_ci_status",
     "smoke_test_status",
     "epidemiology_sanity_status",
@@ -343,6 +344,8 @@ def validate_post_merge_records(
             )
         if _blank(row.get("reviewer_role")):
             raise ValueError("reviewer_role não pode ser vazio.")
+        if _blank(row.get("merge_evidence_ref")):
+            raise ValueError("merge_evidence_ref não pode ser vazio.")
         if _blank(row.get("verification_notes")):
             raise ValueError("verification_notes não pode ser vazio.")
 
@@ -408,6 +411,7 @@ def validate_post_merge_records(
         "implementation_commit_sha",
         "merged_commit_sha",
         "merge_result_mode",
+        "merge_evidence_ref",
         "recorded_at",
         "reviewer_role",
         "post_merge_ci_status",
