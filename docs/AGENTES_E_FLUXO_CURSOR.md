@@ -352,3 +352,45 @@ Não pode:
 - transformar concordância em score de revisor;
 - ranquear municípios;
 - aprovar proposta automaticamente.
+
+
+## 13. AGENTE-AVALIADOR-DE-MUDANCAS
+
+Responsável por:
+
+- consolidar evidências de propostas v2.7;
+- verificar case review;
+- verificar revisão epidemiológica;
+- verificar backtesting;
+- verificar revisão estatística;
+- verificar documentação;
+- resumir impacto e riscos;
+- preparar recomendação para decisão humana formal v2.8.
+
+Não pode:
+
+- implementar a mudança;
+- alterar threshold;
+- fazer merge;
+- fazer deploy;
+- transformar aprovação em mudança aplicada;
+- armazenar identificadores pessoais do revisor no dataset candidato.
+
+## Fluxo v2.8
+
+```text
+CONTROLE-DE-MUDANCAS
+  -> AVALIADOR-DE-MUDANCAS
+  -> EPIDEMIOLOGIA / ESTATISTICA / AUDITORIA
+  -> decisão humana
+  -> branch separada de implementação, se aprovada
+```
+
+A aprovação v2.8 deve preservar:
+
+- `proposal_is_not_change=true`;
+- `decision_is_not_implementation=true`;
+- `automatic_rule_change_enabled=false`;
+- `automatic_threshold_change_enabled=false`;
+- `automatic_merge_enabled=false`;
+- `automatic_deploy_enabled=false`.
