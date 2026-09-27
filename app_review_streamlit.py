@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.11 — Revisão Local",
+    page_title="SRAG MT v2.12 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.11 — Revisão Local")
+st.title("SRAG MT v2.12 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -74,6 +74,7 @@ evaluation_dir = CANDIDATE / "rule_change_evaluation_v2_8"
 implementation_dir = CANDIDATE / "implementation_package_v2_9"
 merge_gate_dir = CANDIDATE / "merge_gate_v2_10"
 human_merge_dir = CANDIDATE / "human_merge_v2_11"
+deployment_dir = CANDIDATE / "deployment_v2_12"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -137,6 +138,15 @@ human_merge_decisions_v211 = read_csv(
 post_merge_records_v211 = read_csv(
     human_merge_dir / "post_merge_records_validated_v2_11.csv"
 )
+human_deploy_decisions_v212 = read_csv(
+    deployment_dir / "human_deploy_decisions_validated_v2_12.csv"
+)
+deployment_records_v212 = read_csv(
+    deployment_dir / "deployment_records_validated_v2_12.csv"
+)
+effect_verification_v212 = read_csv(
+    deployment_dir / "effect_verification_validated_v2_12.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -154,6 +164,7 @@ tabs = st.tabs([
     "Pacotes de implementação v2.9",
     "Gate de merge v2.10",
     "Merge humano e pós-merge v2.11",
+    "Deploy e efeito v2.12",
 ])
 
 with tabs[0]:
@@ -1407,6 +1418,171 @@ with tabs[14]:
     st.caption(
         "Governança v2.11: decisão de merge ≠ execução; pós-merge exige evidência real; "
         "deploy e rollback automáticos permanecem desabilitados."
+    )
+
+with tabs[15]:
+    st.subheader("Deploy humano e verificação de efeito — v2.12")
+    st.warning(
+        "Aprovar deploy não executa o deploy. O registro de deploy exige evidência real, "
+        "e a verificação de efeito avalia comportamento da implementação sem inferência causal epidemiológica."
+    )
+
+    if human_deploy_decisions_v212 is None:
+        show_missing(
+            "Decisões humanas de deploy v2.12",
+            deployment_dir / "human_deploy_decisions_validated_v2_12.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Decisões de deploy", len(human_deploy_decisions_v212))
+        with c2:
+            approved = (
+                human_deploy_decisions_v212["deploy_decision"]
+                .astype(str)
+                .eq("approve_human_deploy")
+                .sum()
+                if "deploy_decision" in human_deploy_decisions_v212.columns
+                else 0
+            )
+            st.metric("Aprovações humanas", int(approved))
+        with c3:
+            deferred = (
+                human_deploy_decisions_v212["deploy_decision"]
+                .astype(str)
+                .eq("defer_deploy")
+                .sum()
+                if "deploy_decision" in human_deploy_decisions_v212.columns
+                else 0
+            )
+            st.metric("Adiadas", int(deferred))
+
+        deploy_decision_cols = [
+            "deploy_decision_record_id",
+            "post_merge_record_id",
+            "implementation_package_id",
+            "merged_commit_sha",
+            "decided_at",
+            "reviewer_role",
+            "deploy_decision",
+            "decision_rationale",
+            "deploy_decision_is_not_deploy_execution",
+            "automatic_deploy_enabled",
+            "automatic_rollback_enabled",
+            "human_deploy_required",
+        ]
+        st.dataframe(
+            human_deploy_decisions_v212[
+                [c for c in deploy_decision_cols if c in human_deploy_decisions_v212.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Registro de deploy")
+    if deployment_records_v212 is None:
+        show_missing(
+            "Registros de deploy v2.12",
+            deployment_dir / "deployment_records_validated_v2_12.csv",
+        )
+    else:
+        if "deployment_state" in deployment_records_v212.columns:
+            counts = (
+                deployment_records_v212["deployment_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="registros",
+                title="Estados de deploy",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        deployment_cols = [
+            "deployment_record_id",
+            "deploy_decision_record_id",
+            "implementation_package_id",
+            "environment",
+            "merged_commit_sha",
+            "deployed_commit_sha",
+            "deployed_at",
+            "reviewer_role",
+            "deploy_evidence_ref",
+            "post_deploy_ci_status",
+            "smoke_test_status",
+            "health_check_status",
+            "security_privacy_check_status",
+            "rollback_readiness_status",
+            "deployment_state",
+            "deployment_notes",
+            "automatic_deploy_enabled",
+            "automatic_rollback_enabled",
+            "deployment_is_not_effect_verification",
+        ]
+        st.dataframe(
+            deployment_records_v212[
+                [c for c in deployment_cols if c in deployment_records_v212.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.markdown("### Verificação pós-deploy")
+    if effect_verification_v212 is None:
+        show_missing(
+            "Verificação de efeito v2.12",
+            deployment_dir / "effect_verification_validated_v2_12.csv",
+        )
+    else:
+        if "effect_state" in effect_verification_v212.columns:
+            counts = (
+                effect_verification_v212["effect_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="registros",
+                title="Estados da verificação de efeito",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        effect_cols = [
+            "effect_verification_record_id",
+            "deployment_record_id",
+            "implementation_package_id",
+            "deployed_commit_sha",
+            "measured_at",
+            "reviewer_role",
+            "observation_window_start",
+            "observation_window_end",
+            "effect_state",
+            "expected_behavior_summary",
+            "observed_behavior_summary",
+            "evidence_refs",
+            "effect_review_notes",
+            "effect_verification_is_not_causal_inference",
+            "automatic_rule_change_enabled",
+            "automatic_rollback_enabled",
+        ]
+        st.dataframe(
+            effect_verification_v212[
+                [c for c in effect_cols if c in effect_verification_v212.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.12: decisão de deploy ≠ execução; deploy exige evidência; "
+        "verificação de efeito não é inferência causal; rollback e alteração de regra automáticos permanecem desabilitados."
     )
 
 st.divider()
