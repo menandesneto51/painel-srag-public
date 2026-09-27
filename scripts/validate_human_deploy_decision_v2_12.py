@@ -20,13 +20,18 @@ from src.deployment_verification_v2_12 import (
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Valida decisões humanas de deploy v2.12."
+        description="Valida decisões humanas de deploy v2.12 contra o release gate."
     )
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument(
-        "--post-merge",
+        "--release-gate",
         type=Path,
-        default=ROOT / "data_candidate" / "human_merge_v2_11" / "post_merge_validated_v2_11.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "release_deploy_gate_v2_12"
+            / "release_deploy_gate_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--config",
@@ -36,21 +41,26 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "human_deploy_decisions_validated_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "human_deploy_decisions_validated_v2_12.csv"
+        ),
     )
     args = parser.parse_args()
 
-    for path in (args.input, args.post_merge, args.config):
+    for path in (args.input, args.release_gate, args.config):
         if not path.exists():
             raise FileNotFoundError(path)
 
     decisions = pd.read_csv(args.input)
-    post_merge = pd.read_csv(args.post_merge)
+    release_gate = pd.read_csv(args.release_gate)
     cfg = load_deployment_config(args.config)
 
     out = validate_human_deploy_decisions(
         decisions,
-        post_merge,
+        release_gate,
         cfg,
     )
 
@@ -59,9 +69,16 @@ def main() -> int:
 
     summary = {
         "records": int(len(out)),
-        "approved": int((out["deploy_decision"] == "approve_human_deploy").sum()),
-        "rejected": int((out["deploy_decision"] == "reject_deploy").sum()),
-        "deferred": int((out["deploy_decision"] == "defer_deploy").sum()),
+        "approved": int(
+            (out["deploy_decision"] == "approve_human_deploy").sum()
+        ),
+        "rejected": int(
+            (out["deploy_decision"] == "reject_deploy").sum()
+        ),
+        "deferred": int(
+            (out["deploy_decision"] == "defer_deploy").sum()
+        ),
+        "release_gate_required": True,
         "deploy_decision_is_not_deploy_execution": True,
         "automatic_deploy_enabled": False,
         "automatic_rollback_enabled": False,
