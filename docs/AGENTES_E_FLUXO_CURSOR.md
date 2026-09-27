@@ -697,3 +697,46 @@ O AGENTE-APRENDIZADO-INSTITUCIONAL deve preservar:
 - `rule_reentry_requires_human_review=true`;
 - `automatic_rule_change_enabled=false`;
 - `automatic_issue_creation_enabled=false`.
+
+
+## 20. AGENTE-AUDITOR-DE-LINHAGEM
+
+Responsável por:
+
+- construir o ledger v2.15 a partir dos artefatos v2.7–v2.13;
+- verificar parent-child;
+- verificar transições permitidas;
+- verificar cronologia;
+- verificar proposal_id e implementation_package_id;
+- verificar continuidade de commit;
+- verificar continuidade de ambiente;
+- identificar eventos órfãos ou cadeias incompletas;
+- produzir relatório de integridade da cadeia de mudança.
+
+Não pode:
+
+- executar mudança;
+- criar deploy;
+- criar rollback;
+- alterar evento histórico;
+- fabricar evento ausente;
+- corrigir lineage automaticamente;
+- pontuar revisores;
+- armazenar identificadores pessoais.
+
+## Fluxo v2.15
+
+```text
+artefatos v2.7–v2.13
+  -> AUDITOR-DE-LINHAGEM
+  -> ledger v2.15
+  -> relatório de integridade
+  -> revisão humana quando houver quebra
+```
+
+O AGENTE-AUDITOR-DE-LINHAGEM deve preservar:
+
+- `ledger_is_not_execution=true`;
+- `ledger_does_not_trigger_actions=true`;
+- `automatic_action_enabled=false`;
+- `human_review_required=true`.
