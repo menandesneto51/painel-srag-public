@@ -119,6 +119,27 @@ def _timestamp(value: object, field: str) -> pd.Timestamp:
     return parsed
 
 
+def _role_value(value: object, field: str) -> str:
+    if _blank(value):
+        raise ValueError(f"{field} não pode ser vazio.")
+    text = str(value).strip()
+    if not ROLE_RE.fullmatch(text):
+        raise ValueError(
+            f"{field} deve ser slug técnico de papel, sem nome pessoal ou espaços."
+        )
+    return text
+
+
+def _reject_pii_text(value: object, field: str) -> str:
+    text = "" if _blank(value) else str(value).strip()
+    for label, pattern in PII_PATTERNS:
+        if pattern.search(text):
+            raise ValueError(
+                f"{field} contém possível identificador pessoal ({label})."
+            )
+    return text
+
+
 def _closure_record_id(postmortem_record_id: str, evaluated_at: str) -> str:
     basis = f"{postmortem_record_id}|{evaluated_at}"
     return "learning_closure_" + hashlib.sha256(
@@ -245,18 +266,21 @@ def validate_learning_cycle_closure(
             raise ValueError(
                 "evaluated_at não pode ser anterior ao post-mortem."
             )
-        if _blank(row["reviewer_role"]):
-            raise ValueError("reviewer_role não pode ser vazio.")
-        if _blank(row["decision_rationale"]):
+        reviewer_role = _role_value(
+            row["reviewer_role"], "reviewer_role"
+        )
+        decision_rationale = _reject_pii_text(
+            row["decision_rationale"], "decision_rationale"
+        )
+        if not decision_rationale:
             raise ValueError("decision_rationale não pode ser vazio.")
 
         coverage = str(row["action_coverage_review_status"]).strip()
         evidence = str(row["evidence_review_status"]).strip()
         handoff_review = str(row["rule_handoff_review_status"]).strip()
         decision = str(row["closure_decision"]).strip()
-        closure_evidence = (
-            "" if _blank(row["closure_evidence_refs"])
-            else str(row["closure_evidence_refs"]).strip()
+        closure_evidence = _reject_pii_text(
+            row["closure_evidence_refs"], "closure_evidence_refs"
         )
 
         for label, value in (
@@ -373,7 +397,7 @@ def validate_learning_cycle_closure(
             "learning_action_type": source["learning_action_type"],
             "reenter_rule_review": source["reenter_rule_review"],
             "evaluated_at": evaluated_at.isoformat(),
-            "reviewer_role": str(row["reviewer_role"]).strip(),
+            "reviewer_role": reviewer_role,
             "action_count": action_count,
             "terminal_action_count": sum(
                 state in terminal_states for state in states
@@ -390,7 +414,7 @@ def validate_learning_cycle_closure(
             "evidence_review_status": evidence,
             "rule_handoff_review_status": handoff_review,
             "closure_decision": decision,
-            "decision_rationale": str(row["decision_rationale"]).strip(),
+            "decision_rationale": decision_rationale,
             "closure_evidence_refs": closure_evidence,
             "learning_cycle_state": final_state,
             "postmortem_closed_is_not_learning_cycle_closed": True,
