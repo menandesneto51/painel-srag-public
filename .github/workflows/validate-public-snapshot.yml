@@ -106,6 +106,9 @@ jobs:
             scripts/create_learning_action_followup_template_v2_17.py \
             scripts/validate_learning_action_followup_v2_17.py \
             scripts/build_learning_action_followup_report_v2_17.py \
+            scripts/create_learning_cycle_closure_template_v2_18.py \
+            scripts/validate_learning_cycle_closure_v2_18.py \
+            scripts/build_learning_cycle_closure_report_v2_18.py \
             scripts/build_candidate_review_queue_v2_7.py \
             scripts/evaluate_rule_change_shadow_v2_7.py \
             scripts/build_quality_metrics.py \
@@ -162,6 +165,8 @@ jobs:
             src/governance_observability_report_v2_16.py \
             src/learning_action_followup_v2_17.py \
             src/learning_action_followup_report_v2_17.py \
+            src/learning_cycle_closure_v2_18.py \
+            src/learning_cycle_closure_report_v2_18.py \
             src/candidate_rule_queue_v2_7.py \
             src/rule_shadow_evaluation_v2_7.py \
             src/rule_shadow_evaluation_report_v2_7.py \
@@ -220,6 +225,8 @@ jobs:
             tests/test_governance_observability_report_v2_16.py \
             tests/test_learning_action_followup_v2_17.py \
             tests/test_learning_action_followup_report_v2_17.py \
+            tests/test_learning_cycle_closure_v2_18.py \
+            tests/test_learning_cycle_closure_report_v2_18.py \
             tests/test_candidate_rule_queue_v2_7.py \
             tests/test_rule_shadow_evaluation_v2_7.py \
             tests/test_rule_shadow_evaluation_report_v2_7.py \
