@@ -315,10 +315,15 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 
 ## Deploy humano e verificação de efeito v2.12
 
+- Release gate pré-deploy é obrigatório.
+- Somente pós-merge v2.11 com post_merge_state=verified_healthy e rollback_readiness_status=ready pode entrar no release gate.
+- release_commit_sha deve ser exatamente o merged_commit_sha verificado.
+- target_environment deve ser hml ou prd.
+- eligible_for_human_deploy não é deploy executado.
+- Somente release gate com final_release_decision=eligible_for_human_deploy pode seguir para decisão humana de deploy.
 - Decisão humana de deploy não é execução do deploy.
-- Somente pós-merge v2.11 com post_merge_state=verified_healthy pode seguir para decisão de deploy.
+- O deploy real deve usar exatamente o release_commit_sha e target_environment autorizados.
 - Registro de deploy exige deploy_evidence_ref e deployed_commit_sha.
-- deployed_commit_sha deve corresponder ao merged_commit_sha de origem.
 - verified_healthy exige CI pós-deploy, smoke test, health check e segurança/privacidade com status passed.
 - verified_healthy exige rollback_readiness_status=ready.
 - Deploy registrado não é verificação de efeito.
@@ -329,6 +334,8 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Não executar rollback automaticamente.
 - Não gerar decisão em nível de paciente.
 - Armazenar apenas reviewer_role; não armazenar identificadores pessoais do revisor.
+- Manter deploy_eligibility_is_not_deploy=true.
+- Manter release_gate_required=true.
 - Manter deploy_decision_is_not_deploy_execution=true.
 - Manter deployment_record_requires_actual_deploy_evidence=true.
 - Manter effect_verification_is_not_causal_inference=true.
