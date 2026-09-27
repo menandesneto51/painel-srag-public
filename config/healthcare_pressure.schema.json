@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Healthcare Pressure Optional Input",
+  "description": "Contrato mínimo institucional opcional para pressão assistencial. Não versionar dados restritos reais neste repositório.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "codigo_ibge",
+      "reference_week",
+      "pressure_status",
+      "validation_status",
+      "source_scope"
+    ],
+    "properties": {
+      "codigo_ibge": {
+        "type": "string",
+        "pattern": "^51[0-9]{5}$"
+      },
+      "reference_week": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 53
+      },
+      "pressure_status": {
+        "type": "string",
+        "description": "Classe institucional validada externamente; não é definida por este repositório."
+      },
+      "validation_status": {
+        "type": "string",
+        "enum": ["validated", "under_review", "blocked"]
+      },
+      "source_scope": {
+        "type": "string",
+        "enum": ["institutional", "public_aggregate"]
+      },
+      "pressure_evidence": {
+        "type": ["string", "null"],
+        "description": "Resumo não identificável da evidência utilizada."
+      }
+    },
+    "additionalProperties": true
+  }
+}
