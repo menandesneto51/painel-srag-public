@@ -10,7 +10,7 @@ Executar sobre `postmortem_validated_v2_14.csv` validado.
 python scripts/create_learning_action_followup_template_v2_17.py
 ~~~
 
-Preencher o template no ambiente local/institucional, usando apenas papéis para responsável/verificador.
+Preencher o template no ambiente local/institucional, usando apenas slugs técnicos de papel (ex.: `epidemiologia`, `revisao_epidemiologica`) para responsável/verificador. Não inserir nomes, CPF, CNS, e-mail, telefone ou outros identificadores em campos textuais/evidências.
 
 Validar com instante explícito:
 
