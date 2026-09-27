@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.1 — Revisão Local",
+    page_title="SRAG MT v2.2 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.1 — Revisão Local")
+st.title("SRAG MT v2.2 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
