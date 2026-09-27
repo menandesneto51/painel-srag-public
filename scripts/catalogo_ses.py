@@ -196,6 +196,8 @@ def main() -> int:
         "automatic_new_source_authorization": False,
         "project_context": args.context,
         "engine": str(engine),
+        "preflight_decision": evidence.get("preflight_decision"),
+        "catalog_health": evidence.get("catalog_health"),
         "evidence": evidence,
         "policy": {
             "new_source_requires_human_and_data_governance_review": True,
