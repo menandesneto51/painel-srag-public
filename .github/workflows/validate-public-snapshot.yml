@@ -37,6 +37,7 @@ jobs:
         run: |
           python -m py_compile \
             app_publico_streamlit.py \
+            app_review_streamlit.py \
             public_data_validation.py \
             scripts/validate_public_data.py \
             scripts/enforce_publication_policy.py \
