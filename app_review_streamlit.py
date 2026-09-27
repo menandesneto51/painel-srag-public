@@ -2266,6 +2266,7 @@ with tabs[20]:
             "governance_handoff_ref",
             "follow_up_state",
             "overdue",
+            "as_of",
             "completion_is_not_effectiveness_proof",
             "verification_is_not_epidemiological_effect",
             "overdue_is_not_risk",
