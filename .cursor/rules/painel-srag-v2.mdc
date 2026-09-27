@@ -467,3 +467,32 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter automatic_issue_creation_enabled=false.
 - Manter automatic_rule_change_enabled=false.
 - Manter personal_identifier_storage=false.
+
+## Encerramento do ciclo de aprendizado v2.18
+
+- postmortem_status=closed não equivale a ciclo de aprendizado encerrado.
+- v2.18 só pode consumir post-mortem v2.14 fechado e ações v2.17 validadas.
+- learning_action_type das ações v2.17 deve corresponder ao post-mortem v2.14.
+- close_learning_cycle exige ao menos uma ação v2.17.
+- close_learning_cycle exige todas as ações em verified_closed ou cancelled.
+- close_learning_cycle exige action_coverage_review_status=passed.
+- close_learning_cycle exige evidence_review_status=passed.
+- close_learning_cycle exige closure_evidence_refs.
+- Para learning_action_type=rule_review, exigir rule_handoff_review_status=passed e governance_handoff_ref presente em ação verified_closed.
+- O snapshot de ações v2.17 deve possuir as_of único por post-mortem e não pode ser anterior a evaluated_at.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais.
+- O fechamento não prova efetividade ou causalidade epidemiológica.
+- O registro v2.18 não altera post-mortem, ações, regra, threshold, deploy ou rollback.
+- Não fechar ciclo automaticamente.
+- Não criar issue automaticamente.
+- Não alterar regra automaticamente.
+- Manter postmortem_closed_is_not_learning_cycle_closed=true.
+- Manter closure_is_not_epidemiological_effect=true.
+- Manter closure_does_not_change_source_records=true.
+- Manter human_closure_required=true.
+- Manter automatic_closure_enabled=false.
+- Manter automatic_issue_creation_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter personal_identifier_storage=false.
