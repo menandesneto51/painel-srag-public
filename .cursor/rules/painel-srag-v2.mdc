@@ -417,3 +417,23 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter ledger_does_not_trigger_actions=true.
 - Manter automatic_action_enabled=false.
 - Manter human_review_required=true.
+
+
+## Observabilidade de governança v2.16
+
+- Métricas v2.16 descrevem o processo, não desempenho individual.
+- Não calcular score de revisor.
+- Não ranquear revisores.
+- Não ranquear municípios.
+- stale_experimental não é risco epidemiológico.
+- Thresholds v2.16 são experimentais e não constituem SLA institucional.
+- Cálculos de idade/estagnação devem usar as_of explícito com timezone.
+- Não disparar notificação ou ação automaticamente a partir de stale_experimental.
+- Não alterar threshold automaticamente.
+- Manter process_metrics_are_not_performance_scores=true.
+- Manter reviewer_score_enabled=false.
+- Manter municipality_rank_enabled=false.
+- Manter stale_flag_is_not_risk=true.
+- Manter thresholds_are_institutional_sla=false.
+- Manter automatic_action_enabled=false.
+- Manter human_review_required=true.
