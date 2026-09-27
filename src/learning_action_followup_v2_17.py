@@ -126,6 +126,27 @@ def _timestamp(
     return parsed
 
 
+def _role_value(value: object, field: str) -> str:
+    if _blank(value):
+        raise ValueError(f"{field} não pode ser vazio.")
+    text = str(value).strip()
+    if not ROLE_RE.fullmatch(text):
+        raise ValueError(
+            f"{field} deve ser slug técnico de papel, sem nome pessoal ou espaços."
+        )
+    return text
+
+
+def _reject_pii_text(value: object, field: str) -> str:
+    text = "" if _blank(value) else str(value).strip()
+    for label, pattern in PII_PATTERNS:
+        if pattern.search(text):
+            raise ValueError(
+                f"{field} contém possível identificador pessoal ({label})."
+            )
+    return text
+
+
 def _action_record_id(postmortem_record_id: str, sequence: int) -> str:
     basis = f"{postmortem_record_id}|{sequence}"
     return "learning_action_" + hashlib.sha256(
@@ -250,10 +271,12 @@ def validate_learning_action_followup(
             )
         source = sources[postmortem_id]
 
-        if _blank(row["action_description"]):
+        action_description = _reject_pii_text(
+            row["action_description"], "action_description"
+        )
+        if not action_description:
             raise ValueError("action_description não pode ser vazio.")
-        if _blank(row["owner_role"]):
-            raise ValueError("owner_role não pode ser vazio.")
+        owner_role = _role_value(row["owner_role"], "owner_role")
 
         status = str(row["action_status"]).strip()
         verification = str(row["verification_status"]).strip()
@@ -295,29 +318,24 @@ def validate_learning_action_followup(
             row["verified_at"], "verified_at", required=False
         )
 
-        evidence = (
-            "" if _blank(row["completion_evidence_refs"])
-            else str(row["completion_evidence_refs"]).strip()
+        evidence = _reject_pii_text(
+            row["completion_evidence_refs"], "completion_evidence_refs"
         )
         verifier_role = (
             "" if _blank(row["verifier_role"])
-            else str(row["verifier_role"]).strip()
+            else _role_value(row["verifier_role"], "verifier_role")
         )
-        verification_notes = (
-            "" if _blank(row["verification_notes"])
-            else str(row["verification_notes"]).strip()
+        verification_notes = _reject_pii_text(
+            row["verification_notes"], "verification_notes"
         )
-        blocking_reason = (
-            "" if _blank(row["blocking_reason"])
-            else str(row["blocking_reason"]).strip()
+        blocking_reason = _reject_pii_text(
+            row["blocking_reason"], "blocking_reason"
         )
-        cancellation_rationale = (
-            "" if _blank(row["cancellation_rationale"])
-            else str(row["cancellation_rationale"]).strip()
+        cancellation_rationale = _reject_pii_text(
+            row["cancellation_rationale"], "cancellation_rationale"
         )
-        handoff_ref = (
-            "" if _blank(row["governance_handoff_ref"])
-            else str(row["governance_handoff_ref"]).strip()
+        handoff_ref = _reject_pii_text(
+            row["governance_handoff_ref"], "governance_handoff_ref"
         )
 
         if status == "completed":
@@ -444,8 +462,8 @@ def validate_learning_action_followup(
             "rule_review_scope": source["rule_review_scope"],
             "rule_review_reason": source["rule_review_reason"],
             "action_sequence": int(row["action_sequence"]),
-            "action_description": str(row["action_description"]).strip(),
-            "owner_role": str(row["owner_role"]).strip(),
+            "action_description": action_description,
+            "owner_role": owner_role,
             "created_at": created_at.isoformat(),
             "due_at": due_at.isoformat(),
             "action_status": status,
