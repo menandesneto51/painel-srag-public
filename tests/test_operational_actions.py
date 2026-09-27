@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 import pandas as pd
 
 from src.operational_actions import (
     build_operational_action_suggestions,
+    load_action_matrix,
     summarize_action_suggestions,
 )
 
@@ -99,6 +103,31 @@ class OperationalActionTests(unittest.TestCase):
             territorial, cards, MATRIX
         )
         self.assertIn("RAS-01", set(out["action_id"]))
+
+    def test_unknown_source_reference_is_rejected(self):
+        config = {
+            "principles": {
+                "automatic_execution": False,
+                "human_review_required": True,
+                "clinical_prescription": False,
+                "composite_score": False,
+            },
+            "sources": {},
+            "actions": [{
+                "action_id": "X-01",
+                "domain": "surveillance",
+                "title": "Teste",
+                "suggested_review_owner": "vigilancia",
+                "suggested_timeframe": "revisao",
+                "action_text": "Revisar.",
+                "source_refs": ["missing_source"],
+            }],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "matrix.json"
+            path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                load_action_matrix(path)
 
     def test_summary_counts_municipalities(self):
         out = build_operational_action_suggestions(
