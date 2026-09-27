@@ -33,6 +33,8 @@ Preencher:
 - case_review_refs
 - epidemiology_review_status
 - epidemiology_review_refs
+- shadow_review_status
+- shadow_review_refs
 - backtest_status
 - backtest_refs
 - statistical_review_status
@@ -71,6 +73,7 @@ Para mudanças de lógica, `approve_for_implementation_branch` só é válido qu
 
 - case review = passed
 - epidemiology review = passed
+- shadow review = passed, com evidência v2.7 da mesma proposal_id
 - backtest = passed
 - statistical review = passed
 - documentation = passed
@@ -97,3 +100,21 @@ Executar:
 - personal_identifier_storage=false
 
 Uma decisão aprovada autoriza apenas a criação/preparação de uma branch separada.
+
+
+## Gate adicional de elegibilidade
+
+Para `approve_for_implementation_branch` em mudança lógica:
+
+- proposal_status=ready_for_human_decision
+- shadow_review_status=passed
+- arquivo `rule_shadow_evaluation_summary_v2_7.json` da mesma proposal_id presente
+- shadow_only=true
+- automatic_activation=false
+- candidate_rule_activated=false
+
+O validador v2.8 lê a evidência shadow em:
+
+`data_candidate/rule_shadow_evaluation_v2_7/<proposal_id>/`
+
+Sem essa evidência, a aprovação é bloqueada.
