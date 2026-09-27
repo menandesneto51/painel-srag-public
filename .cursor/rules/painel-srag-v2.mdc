@@ -112,3 +112,21 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter `automatic_execution=false`.
 - Manter `composite_score=false`.
 - Produtos v2.2 permanecem em `data_candidate/` até revisão humana e gate próprio.
+
+
+## Decisão e follow-up v2.5
+
+- Decisão registrada por humano não é prova de execução externa.
+- Follow-up registrado não é classe de risco.
+- Toda decisão deve estar vinculada a snapshot_id, fila de origem e, quando aplicável, action_id existente.
+- Não aceitar action_id inventado ou fila divergente da origem.
+- Exigir rationale não vazio.
+- Se follow_up_required=true, exigir prazo posterior à decisão e papel responsável.
+- Armazenar apenas reviewer_role; não armazenar nome, CPF, matrícula, e-mail ou outro identificador pessoal no dataset candidato.
+- Manter automatic_execution_enabled=false.
+- Manter patient_level_decision_enabled=false.
+- Manter clinical_prescription_enabled=false.
+- Manter decision_is_not_proof_of_execution=true.
+- Manter follow_up_state_is_not_risk=true.
+- O estado overdue deve ser calculado com as_of explícito e reprodutível.
+- Produtos v2.5 permanecem em data_candidate/ e não são promovidos automaticamente ao painel público.
