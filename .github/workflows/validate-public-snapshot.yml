@@ -55,6 +55,9 @@ jobs:
             scripts/build_territorial_review_cards.py \
             scripts/sanitize_healthcare_pressure.py \
             scripts/build_operational_review.py \
+            scripts/build_operational_actions.py \
+            scripts/build_state_operational_brief.py \
+            scripts/run_v2_2_pipeline.py \
             scripts/build_quality_metrics.py \
             scripts/build_public_snapshot_v2.py \
             scripts/build_associations.py \
@@ -78,6 +81,8 @@ jobs:
             src/territorial_review_cards.py \
             src/healthcare_pressure_bridge.py \
             src/operational_review.py \
+            src/operational_actions.py \
+            src/operational_brief.py \
             src/state_review_report.py \
             src/vintage_backtest.py \
             src/virology.py \
@@ -101,6 +106,9 @@ jobs:
             tests/test_territorial_review_cards.py \
             tests/test_healthcare_pressure_bridge.py \
             tests/test_operational_review.py \
+            tests/test_operational_actions.py \
+            tests/test_operational_brief.py \
+            tests/test_operational_v2_2_integration.py \
             tests/test_vintage_backtest.py \
             tests/test_virology.py
 
