@@ -289,3 +289,25 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter automatic_deploy_enabled=false.
 - Manter human_merge_required=true.
 - Manter human_review_required=true.
+
+
+## Merge humano e pós-merge v2.11
+
+- Decisão humana de merge não é execução do merge.
+- Somente gate v2.10 com final_gate_decision=eligible_for_human_merge pode receber decisão v2.11.
+- Pós-merge só pode existir após decisão approve_human_merge.
+- Exigir merge_evidence_ref e merged_commit_sha.
+- verified_healthy exige CI pós-merge, smoke test, sanity epidemiológico e segurança/privacidade com status passed.
+- verified_healthy exige rollback_readiness_status=ready.
+- Não executar merge automaticamente.
+- Não executar deploy automaticamente.
+- Não executar rollback automaticamente.
+- Armazenar apenas reviewer_role; não armazenar identificadores pessoais do revisor.
+- Manter merge_decision_is_not_merge_execution=true.
+- Manter post_merge_record_requires_actual_merge_evidence=true.
+- Manter post_merge_record_is_not_deploy=true.
+- Manter automatic_merge_enabled=false.
+- Manter automatic_deploy_enabled=false.
+- Manter automatic_rollback_enabled=false.
+- Manter human_merge_required=true.
+- Manter human_post_merge_verification_required=true.
