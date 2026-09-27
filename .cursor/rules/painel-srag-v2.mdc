@@ -190,3 +190,20 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Não usar proposta para ranquear municípios.
 - Manter automatic_rule_change_enabled=false.
 - Manter automatic_threshold_change_enabled=false.
+
+
+## Propostas e modo sombra v2.7
+
+- Proposta de mudança não é mudança aplicada.
+- Regra candidata deve ser avaliada em modo sombra antes de qualquer ativação.
+- O avaliador não deve reescrever automaticamente JSON/YAML/configuração de produção.
+- Manter shadow_only=true.
+- Manter automatic_activation=false.
+- Manter automatic_rule_change=false.
+- Manter reviewer_scoring=false.
+- Manter municipality_ranking=false.
+- Decisão humana continua não sendo padrão-ouro epidemiológico.
+- workflow_agreement_improved não significa maior acurácia epidemiológica.
+- workflow_agreement_worsened não significa automaticamente pior regra epidemiológica.
+- Toda mudança após shadow exige análise de casos, backtesting adequado, revisão epidemiológica/estatística/documental e aprovação humana.
+- Produtos v2.7 permanecem em data_candidate/ e não promovem regras automaticamente.
