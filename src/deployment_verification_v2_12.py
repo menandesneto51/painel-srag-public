@@ -225,6 +225,7 @@ def validate_deployment_records(
     lookup = decisions.set_index("deploy_decision_record_id")
 
     verification = set(config["verification_statuses"])
+    rollback_statuses = set(config["rollback_readiness_statuses"])
     deployment_states = set(config["deployment_states"])
 
     data = records.copy()
@@ -288,6 +289,12 @@ def validate_deployment_records(
             if _blank(row.get(field)):
                 raise ValueError(f"{field} não pode ser vazio.")
 
+        rollback_status = str(row["rollback_readiness_status"]).strip()
+        if rollback_status not in rollback_statuses:
+            raise ValueError(
+                f"rollback_readiness_status inválido: {rollback_status}"
+            )
+
         if state == "verified_healthy":
             failed = [
                 field for field in (
@@ -302,7 +309,7 @@ def validate_deployment_records(
                 raise ValueError(
                     f"{decision_id}: verified_healthy bloqueado; checks não aprovados: {failed}"
                 )
-            if str(row["rollback_readiness_status"]).strip() != "ready":
+            if rollback_status != "ready":
                 raise ValueError(
                     "verified_healthy exige rollback_readiness_status=ready."
                 )
