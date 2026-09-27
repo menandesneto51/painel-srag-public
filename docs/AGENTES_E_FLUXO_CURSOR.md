@@ -655,3 +655,45 @@ O AGENTE-RELEASE-GATE deve preservar:
 - `automatic_deploy_enabled=false`;
 - `automatic_rollback_enabled=false`;
 - `human_deploy_required=true`.
+
+
+## 19. AGENTE-APRENDIZADO-INSTITUCIONAL
+
+Responsável por:
+
+- consolidar post-mortems após mudanças mantidas, revertidas ou ainda em investigação;
+- separar comportamento esperado de comportamento observado;
+- registrar fatores contribuintes sem convertê-los automaticamente em causalidade;
+- identificar salvaguardas que funcionaram e que precisam melhorar;
+- registrar lições aprendidas e ações de acompanhamento;
+- identificar quando um tema deve retornar ao ciclo humano de revisão de regra;
+- preservar rastreabilidade para proposta, implementação, deploy e rollback de origem.
+
+Não pode:
+
+- alterar regra ou threshold;
+- criar issue automaticamente;
+- executar deploy ou rollback;
+- inferir causalidade epidemiológica automaticamente;
+- transformar aprendizado em ação operacional automática;
+- gerar decisão em nível de paciente;
+- armazenar identificadores pessoais do revisor.
+
+## Fluxo v2.14
+
+```text
+POS-DEPLOY / ROLLBACK
+  -> post-mortem humano
+  -> APRENDIZADO-INSTITUCIONAL
+  -> documentação / monitoramento / testes / runbook / data quality
+  -> opcional: retorno humano ao ciclo de revisão de regra
+  -> GOVERNANCA-DE-REGRAS
+```
+
+O AGENTE-APRENDIZADO-INSTITUCIONAL deve preservar:
+
+- `postmortem_is_not_causal_proof=true`;
+- `learning_is_not_rule_change=true`;
+- `rule_reentry_requires_human_review=true`;
+- `automatic_rule_change_enabled=false`;
+- `automatic_issue_creation_enabled=false`.
