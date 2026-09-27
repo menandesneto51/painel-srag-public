@@ -11,42 +11,58 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Gera template de decisão humana de deploy v2.12."
+        description="Gera template de decisão humana de deploy v2.12 a partir do release gate."
     )
     parser.add_argument(
-        "--post-merge",
+        "--release-gate",
         type=Path,
-        default=ROOT / "data_candidate" / "human_merge_v2_11" / "post_merge_validated_v2_11.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "release_deploy_gate_v2_12"
+            / "release_deploy_gate_validated_v2_12.csv"
+        ),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT / "data_candidate" / "deployment_v2_12" / "human_deploy_decision_template_v2_12.csv",
+        default=(
+            ROOT
+            / "data_candidate"
+            / "deployment_v2_12"
+            / "human_deploy_decision_template_v2_12.csv"
+        ),
     )
     args = parser.parse_args()
 
-    if not args.post_merge.exists():
-        raise FileNotFoundError(args.post_merge)
+    if not args.release_gate.exists():
+        raise FileNotFoundError(args.release_gate)
 
-    post = pd.read_csv(args.post_merge)
+    gate = pd.read_csv(args.release_gate)
     required = {
+        "release_gate_record_id",
         "post_merge_record_id",
         "implementation_package_id",
-        "merged_commit_sha",
-        "post_merge_state",
+        "release_commit_sha",
+        "target_environment",
+        "final_release_decision",
     }
-    missing = required.difference(post.columns)
+    missing = required.difference(gate.columns)
     if missing:
-        raise ValueError(f"Pós-merge v2.11 sem colunas: {sorted(missing)}")
+        raise ValueError(f"Release gate v2.12 sem colunas: {sorted(missing)}")
 
-    eligible = post.loc[
-        post["post_merge_state"].astype(str).eq("verified_healthy")
+    eligible = gate.loc[
+        gate["final_release_decision"]
+        .astype(str)
+        .eq("eligible_for_human_deploy")
     ].copy()
 
     template = eligible[[
+        "release_gate_record_id",
         "post_merge_record_id",
         "implementation_package_id",
-        "merged_commit_sha",
+        "release_commit_sha",
+        "target_environment",
     ]].copy()
     template["decided_at"] = ""
     template["reviewer_role"] = ""
