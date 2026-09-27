@@ -95,6 +95,9 @@ def build_operational_action_suggestions(
 
     t = territorial.copy()
     r = review_cards.copy()
+    for optional_col in ("evidence_summary", "review_notes"):
+        if optional_col not in r.columns:
+            r[optional_col] = ""
     for frame in (t, r):
         frame["codigo_ibge"] = (
             frame["codigo_ibge"]
