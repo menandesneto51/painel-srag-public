@@ -528,7 +528,8 @@ GATE-DE-MERGE
 
 Responsável por:
 
-- validar que o deploy parte de pós-merge v2.11 verified_healthy;
+- validar que o deploy parte de release gate v2.12 elegível, originado de pós-merge v2.11 verified_healthy;
+- conferir que commit e ambiente do deploy correspondem exatamente ao release gate;
 - conferir decisão humana explícita de deploy;
 - verificar evidência real do deploy;
 - confirmar deployed_commit_sha;
@@ -552,6 +553,7 @@ Não pode:
 
 ```text
 POS-MERGE
+  -> RELEASE-GATE
   -> decisão humana de deploy
   -> deploy executado externamente/manual
   -> evidência do deploy
@@ -612,3 +614,44 @@ O AGENTE-ROLLBACK deve preservar:
 - `rollback_record_requires_actual_rollback_evidence=true`;
 - `automatic_rollback_enabled=false`;
 - `automatic_rule_change_enabled=false`.
+
+
+## 19. AGENTE-RELEASE-GATE
+
+Responsável por:
+
+- receber apenas pós-merge v2.11 verified_healthy;
+- conferir rollback readiness;
+- validar release_commit_sha contra o merged_commit_sha verificado;
+- validar target_environment;
+- verificar CI pré-deploy;
+- verificar segurança/privacidade;
+- verificar readiness de monitoramento;
+- verificar plano de rollback;
+- verificar janela de mudança;
+- emitir somente eligible_for_human_deploy, blocked ou defer.
+
+Não pode:
+
+- executar deploy;
+- alterar commit candidato;
+- trocar ambiente autorizado;
+- executar rollback;
+- alterar regra;
+- transformar elegibilidade em deploy executado.
+
+## Fluxo do release gate
+
+```text
+POS-MERGE
+  -> RELEASE-GATE
+  -> eligible_for_human_deploy | blocked | defer
+  -> decisão humana explícita de deploy
+```
+
+O AGENTE-RELEASE-GATE deve preservar:
+
+- `deploy_eligibility_is_not_deploy=true`;
+- `automatic_deploy_enabled=false`;
+- `automatic_rollback_enabled=false`;
+- `human_deploy_required=true`.
