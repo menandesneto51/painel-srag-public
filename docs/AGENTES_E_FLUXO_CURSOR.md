@@ -176,3 +176,43 @@ Somente após aprovação humana alterar:
 ## Prompt operacional para Cursor
 
 > Trabalhe no Painel SRAG Público v2 seguindo integralmente `.cursor/rules/painel-srag-v2.mdc`. Execute o P0 sem alterar silenciosamente nenhum dado. Reconstrua primeiro a referência populacional oficial do IBGE 2026 por código municipal; depois reconstrua os agregados SRAG 2026 a partir do SIVEP-Gripe, mantendo proveniência e data de extração. Recalcule incidências, gere relatório de diferenças contra o snapshot legado e só então avalie o score territorial. Preserve a separação entre camada interna e camada pública. Não publique microdados. Rode os agentes DATA-QA, EPIDEMIOLOGIA, TERRITORIAL, ESTATISTICA, FORECAST, PRIVACIDADE e DOCUMENTACAO, registrando bloqueios e evidências. Não mude publication_status para validated enquanto houver erro nos gates.
+
+
+## 9. AGENTE-OPERACIONAL
+
+Responsável por:
+
+- transformar evidências já validadas em filas de revisão;
+- aplicar a matriz de ações sugeridas;
+- preservar responsáveis e janelas sugeridas;
+- gerar briefing estadual;
+- verificar que nenhuma ação seja executada automaticamente.
+
+Não pode:
+
+- criar score de risco oculto;
+- ordenar municípios como melhor/pior ou alto/baixo sem modelo validado;
+- prescrever conduta clínica;
+- tomar decisão em nível de paciente;
+- enviar comunicação externa automaticamente;
+- promover artefato para a camada pública.
+
+Saídas esperadas:
+
+- fila municipal de revisão;
+- sugestões por domínio;
+- briefing estadual;
+- registro de bloqueios e pendências para decisão humana.
+
+## Fluxo v2.2
+
+```text
+DATA-QA
+  -> EPIDEMIOLOGIA
+  -> TERRITORIAL
+  -> ESTATISTICA
+  -> PRIVACIDADE
+  -> OPERACIONAL
+  -> DOCUMENTACAO
+  -> revisão humana
+```
