@@ -106,6 +106,13 @@ def main() -> int:
         excluded_dominant_agents=virology_cfg["dominant_agent_excludes"],
     )
 
+    municipality_count = int(out["codigo_ibge"].nunique())
+    if municipality_count != 142 or len(out) != 142:
+        raise ValueError(
+            f"Inteligência territorial deve conter exatamente 142 municípios; "
+            f"rows={len(out)} unique={municipality_count}."
+        )
+
     args.out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = args.out_dir / "territorial_intelligence_v2_1.csv"
     meta_path = args.out_dir / "territorial_intelligence_v2_1.metadata.json"
@@ -117,7 +124,7 @@ def main() -> int:
         "version": cfg["version"],
         "status": cfg["status"],
         "stable_week": int(stable_week),
-        "municipalities": int(out["codigo_ibge"].nunique()),
+        "municipalities": municipality_count,
         "rows": int(len(out)),
         "virology_available": virology is not None and not virology.empty,
         "healthcare_pressure_available": pressure is not None and not pressure.empty,
