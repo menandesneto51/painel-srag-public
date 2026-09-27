@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.7 — Revisão Local",
+    page_title="SRAG MT v2.8 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.7 — Revisão Local")
+st.title("SRAG MT v2.8 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -70,6 +70,7 @@ decision_audit_dir = CANDIDATE / "decision_audit_v2_5"
 concordance_dir = CANDIDATE / "human_workflow_concordance_v2_6"
 proposal_dir = CANDIDATE / "rule_change_proposals_v2_7"
 shadow_dir = CANDIDATE / "rule_shadow_evaluation_v2_7"
+evaluation_dir = CANDIDATE / "rule_change_evaluation_v2_8"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -118,6 +119,9 @@ rule_shadow_evaluation_v27, rule_shadow_source_v27 = read_latest_nested_csv(
     shadow_dir,
     "rule_shadow_evaluation_v2_7.csv",
 )
+rule_change_evaluations_v28 = read_csv(
+    evaluation_dir / "rule_change_evaluations_validated_v2_8.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -131,6 +135,7 @@ tabs = st.tabs([
     "Auditoria humana v2.5",
     "Concordância workflow × decisão v2.6",
     "Propostas e modo sombra v2.7",
+    "Avaliação formal v2.8",
 ])
 
 with tabs[0]:
@@ -1002,6 +1007,93 @@ with tabs[10]:
     st.caption(
         "Governança v2.7: proposta ≠ mudança; alterações de lógica/threshold exigem "
         "revisão de casos, backtesting, revisão epidemiológica/estatística e aprovação humana."
+    )
+
+with tabs[11]:
+    st.subheader("Avaliação formal de propostas — v2.8")
+    st.warning(
+        "Aprovação v2.8 autoriza apenas preparação de branch de implementação. "
+        "Ela não altera regra, threshold, main ou produção automaticamente."
+    )
+
+    if rule_change_evaluations_v28 is None:
+        show_missing(
+            "Avaliações formais v2.8",
+            evaluation_dir / "rule_change_evaluations_validated_v2_8.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Avaliações", len(rule_change_evaluations_v28))
+        with c2:
+            if "final_decision" in rule_change_evaluations_v28.columns:
+                approved = (
+                    rule_change_evaluations_v28["final_decision"]
+                    .astype(str)
+                    .eq("approve_for_implementation_branch")
+                    .sum()
+                )
+                st.metric("Aprovadas para branch", int(approved))
+        with c3:
+            if "final_decision" in rule_change_evaluations_v28.columns:
+                deferred = (
+                    rule_change_evaluations_v28["final_decision"]
+                    .astype(str)
+                    .eq("defer")
+                    .sum()
+                )
+                st.metric("Adiadas", int(deferred))
+
+        if "final_decision" in rule_change_evaluations_v28.columns:
+            counts = (
+                rule_change_evaluations_v28["final_decision"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("decisao")
+                .reset_index(name="avaliacoes")
+            )
+            fig = px.bar(
+                counts,
+                x="decisao",
+                y="avaliacoes",
+                title="Decisões formais sobre propostas",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        display_cols = [
+            "evaluation_record_id",
+            "proposal_id",
+            "proposal_type",
+            "source_proposal_status",
+            "evaluated_at",
+            "reviewer_role",
+            "case_review_status",
+            "epidemiology_review_status",
+            "backtest_status",
+            "statistical_review_status",
+            "documentation_status",
+            "impact_summary",
+            "risk_summary",
+            "final_decision",
+            "decision_rationale",
+            "decision_is_not_implementation",
+            "automatic_rule_change_enabled",
+            "automatic_threshold_change_enabled",
+            "automatic_merge_enabled",
+            "automatic_deploy_enabled",
+            "human_approval_required",
+        ]
+        st.dataframe(
+            rule_change_evaluations_v28[
+                [c for c in display_cols if c in rule_change_evaluations_v28.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.8: decisão ≠ implementação. Mudança aprovada segue para branch "
+        "separada, novos testes e nova revisão humana antes de merge/deploy."
     )
 
 st.divider()
