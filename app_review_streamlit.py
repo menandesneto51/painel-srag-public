@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.9 — Revisão Local",
+    page_title="SRAG MT v2.10 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.9 — Revisão Local")
+st.title("SRAG MT v2.10 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -72,6 +72,7 @@ proposal_dir = CANDIDATE / "rule_change_proposals_v2_7"
 shadow_dir = CANDIDATE / "rule_shadow_evaluation_v2_7"
 evaluation_dir = CANDIDATE / "rule_change_evaluation_v2_8"
 implementation_dir = CANDIDATE / "implementation_package_v2_9"
+merge_gate_dir = CANDIDATE / "merge_gate_v2_10"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -126,6 +127,9 @@ rule_change_evaluations_v28 = read_csv(
 implementation_packages_v29 = read_csv(
     implementation_dir / "implementation_packages_validated_v2_9.csv"
 )
+merge_gate_records_v210 = read_csv(
+    merge_gate_dir / "merge_gate_validated_v2_10.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -141,6 +145,7 @@ tabs = st.tabs([
     "Propostas e modo sombra v2.7",
     "Avaliação formal v2.8",
     "Pacotes de implementação v2.9",
+    "Gate de merge v2.10",
 ])
 
 with tabs[0]:
@@ -1179,6 +1184,99 @@ with tabs[12]:
     st.caption(
         "Governança v2.9: branch manual obrigatória; criação de branch, edição, commit, "
         "merge e deploy automáticos permanecem desabilitados."
+    )
+
+with tabs[13]:
+    st.subheader("Gate de implementação e merge — v2.10")
+    st.warning(
+        "Elegível para merge humano não significa merge executado. "
+        "Commit, merge e deploy automáticos permanecem desabilitados."
+    )
+
+    if merge_gate_records_v210 is None:
+        show_missing(
+            "Gate de merge v2.10",
+            merge_gate_dir / "merge_gate_validated_v2_10.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Registros", len(merge_gate_records_v210))
+        with c2:
+            if "final_gate_decision" in merge_gate_records_v210.columns:
+                eligible = (
+                    merge_gate_records_v210["final_gate_decision"]
+                    .astype(str)
+                    .eq("eligible_for_human_merge")
+                    .sum()
+                )
+                st.metric("Elegíveis para merge humano", int(eligible))
+        with c3:
+            if "final_gate_decision" in merge_gate_records_v210.columns:
+                blocked = (
+                    merge_gate_records_v210["final_gate_decision"]
+                    .astype(str)
+                    .eq("blocked")
+                    .sum()
+                )
+                st.metric("Bloqueados", int(blocked))
+
+        if "final_gate_decision" in merge_gate_records_v210.columns:
+            counts = (
+                merge_gate_records_v210["final_gate_decision"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("decisao")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="decisao",
+                y="registros",
+                title="Decisões do gate v2.10",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        display_cols = [
+            "merge_gate_record_id",
+            "implementation_package_id",
+            "proposal_id",
+            "proposal_type",
+            "source_branch",
+            "implementation_branch",
+            "source_commit_sha",
+            "implementation_commit_sha",
+            "changed_paths",
+            "authorized_target_paths",
+            "diff_review_status",
+            "scope_review_status",
+            "ci_status",
+            "regression_tests_status",
+            "backtest_status",
+            "epidemiology_revalidation_status",
+            "statistical_revalidation_status",
+            "security_privacy_review_status",
+            "acceptance_criteria_status",
+            "rollback_verification_status",
+            "final_gate_decision",
+            "gate_rationale",
+            "merge_eligibility_is_not_merge",
+            "automatic_commit_enabled",
+            "automatic_merge_enabled",
+            "automatic_deploy_enabled",
+            "human_merge_required",
+        ]
+        st.dataframe(
+            merge_gate_records_v210[
+                [c for c in display_cols if c in merge_gate_records_v210.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.10: o gate apenas declara elegibilidade. "
+        "Merge e deploy continuam sendo decisões e ações humanas separadas."
     )
 
 st.divider()
