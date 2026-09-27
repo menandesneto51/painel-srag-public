@@ -175,3 +175,18 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter municipality_rank_enabled=false.
 - Manter automatic_rule_change_enabled=false.
 - Manter automatic_execution_enabled=false.
+
+
+## Propostas de mudança v2.7
+
+- Proposta de mudança não é mudança aplicada.
+- Não alterar regra automaticamente.
+- Não alterar threshold automaticamente.
+- Não aplicar proposta diretamente em config de produção.
+- Toda proposta deve manter proposal_is_not_change=true.
+- Toda proposta deve manter human_approval_required=true.
+- Mudanças de lógica/threshold exigem revisão de casos, backtesting, revisão epidemiológica, revisão estatística quando aplicável, documentação e aprovação humana.
+- Não usar proposta para pontuar revisores.
+- Não usar proposta para ranquear municípios.
+- Manter automatic_rule_change_enabled=false.
+- Manter automatic_threshold_change_enabled=false.
