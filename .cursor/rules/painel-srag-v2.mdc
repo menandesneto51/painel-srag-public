@@ -437,3 +437,33 @@ Trabalhar em branch/PR. Não promover diretamente alterações epidemiológicas 
 - Manter thresholds_are_institutional_sla=false.
 - Manter automatic_action_enabled=false.
 - Manter human_review_required=true.
+
+## Follow-up de aprendizado v2.17
+
+- v2.17 só pode consumir post-mortem v2.14 validado com status in_review/closed e learning_action_type diferente de none.
+- Cada ação deve possuir postmortem_record_id, action_sequence, action_description, owner_role, created_at, due_at, action_status e status_updated_at.
+- Armazenar apenas papéis para responsável e verificador; não armazenar nome, CPF, CNS, matrícula, e-mail, telefone ou identificador pessoal.
+- Todos os timestamps devem possuir timezone explícito.
+- due_at deve ser posterior a created_at.
+- status_updated_at não pode estar no futuro em relação a as_of.
+- action_status=completed exige completed_at e completion_evidence_refs.
+- Ação concluída deve ter verification_status pending, verified ou rejected.
+- verified/rejected exige verified_at, verifier_role e verification_notes.
+- verified_closed significa evidência conferida por humano; não significa efetividade epidemiológica.
+- blocked exige blocking_reason.
+- cancelled exige cancellation_rationale e verification_status=not_applicable.
+- overdue deve ser derivado com as_of explícito e representa atraso de workflow, não risco epidemiológico.
+- learning_action_type=rule_review concluída exige governance_handoff_ref.
+- governance_handoff_ref documenta handoff humano; não cria issue, PR, regra ou threshold.
+- Não executar ação automaticamente.
+- Não criar issue automaticamente.
+- Não alterar regra ou threshold automaticamente.
+- Manter tracking_is_not_execution=true.
+- Manter completion_is_not_effectiveness_proof=true.
+- Manter verification_is_not_epidemiological_effect=true.
+- Manter overdue_is_not_risk=true.
+- Manter human_verification_required=true.
+- Manter automatic_execution_enabled=false.
+- Manter automatic_issue_creation_enabled=false.
+- Manter automatic_rule_change_enabled=false.
+- Manter personal_identifier_storage=false.
