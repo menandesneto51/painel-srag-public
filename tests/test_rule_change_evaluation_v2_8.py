@@ -3,7 +3,12 @@ import unittest
 
 import pandas as pd
 
-from src.rule_change_evaluation_v2_8 import validate_rule_change_evaluations
+from pathlib import Path
+
+from src.rule_change_evaluation_v2_8 import (
+    load_evaluation_config,
+    validate_rule_change_evaluations,
+)
 
 
 CONFIG = {
@@ -54,6 +59,15 @@ class RuleChangeEvaluationV28Tests(unittest.TestCase):
             "final_decision": decision,
             "decision_rationale": "Evidências suficientes para branch de implementação.",
         }])
+
+    def test_repository_config_is_valid(self):
+        root = Path(__file__).resolve().parents[1]
+        cfg = load_evaluation_config(
+            root / "config" / "rule_change_evaluation_v2_8.json"
+        )
+        self.assertFalse(cfg["principles"]["automatic_rule_change"])
+        self.assertFalse(cfg["principles"]["automatic_merge"])
+        self.assertTrue(cfg["principles"]["human_approval_required"])
 
     def test_approval_requires_all_logic_reviews_passed(self):
         out = validate_rule_change_evaluations(
