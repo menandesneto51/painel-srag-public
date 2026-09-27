@@ -1,0 +1,28 @@
+{
+  "model_id": "srag_mt_operational_stability_v2_4",
+  "version": "2.4.0-experimental",
+  "status": "under_review",
+  "routine_queue": "routine_monitoring",
+  "window_vintages": 4,
+  "persistence_threshold_cycles": 2,
+  "sustained_threshold_cycles": 3,
+  "principles": {
+    "workflow_stability_is_not_risk": true,
+    "persistence_is_not_severity": true,
+    "transience_is_not_reassurance": true,
+    "no_ranking": true,
+    "no_automatic_action": true,
+    "human_review_required": true
+  },
+  "patterns": [
+    "insufficient_history",
+    "routine_stable",
+    "newly_entered_review",
+    "single_cycle_reversion",
+    "persistent_same_queue",
+    "persistent_nonroutine_changed_queue",
+    "recently_returned_to_routine",
+    "oscillating_workflow",
+    "mixed_workflow_history"
+  ]
+}
