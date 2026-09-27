@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parent
 CANDIDATE = ROOT / "data_candidate"
 
 st.set_page_config(
-    page_title="SRAG MT v2.17 — Revisão Local",
+    page_title="SRAG MT v2.18 — Revisão Local",
     layout="wide",
 )
 
-st.title("SRAG MT v2.17 — Revisão Local")
+st.title("SRAG MT v2.18 — Revisão Local")
 st.error(
     "AMBIENTE DE REVISÃO. Os artefatos exibidos são candidatos/experimentais e "
     "não estão validados para publicação ou alerta operacional."
@@ -81,6 +81,7 @@ postmortem_dir = CANDIDATE / "postmortem_v2_14"
 ledger_dir = CANDIDATE / "change_lifecycle_v2_15"
 governance_observability_dir = CANDIDATE / "governance_observability_v2_16"
 learning_action_followup_dir = CANDIDATE / "learning_action_followup_v2_17"
+learning_cycle_closure_dir = CANDIDATE / "learning_cycle_closure_v2_18"
 
 territorial = read_csv(territorial_path)
 review_cards = read_csv(
@@ -177,6 +178,9 @@ governance_transitions_v216 = read_csv(
 learning_action_followup_v217 = read_csv(
     learning_action_followup_dir / "learning_action_followup_validated_v2_17.csv"
 )
+learning_cycle_closure_v218 = read_csv(
+    learning_cycle_closure_dir / "learning_cycle_closure_validated_v2_18.csv"
+)
 
 tabs = st.tabs([
     "Inteligência territorial",
@@ -200,6 +204,7 @@ tabs = st.tabs([
     "Ledger de mudanças v2.15",
     "Observabilidade de governança v2.16",
     "Follow-up de aprendizado v2.17",
+    "Encerramento do aprendizado v2.18",
 ])
 
 with tabs[0]:
@@ -2280,6 +2285,102 @@ with tabs[20]:
         "Governança v2.17: tracking ≠ execução; completed ≠ efetividade; "
         "verified_closed ≠ efeito causal; overdue ≠ risco; rule_review concluída exige handoff humano; "
         "execução, criação de issue e alteração de regra automáticas permanecem desabilitadas."
+    )
+
+
+with tabs[21]:
+    st.subheader("Gate humano de encerramento do ciclo de aprendizado — v2.18")
+    st.warning(
+        "Post-mortem fechado não significa ciclo de aprendizado encerrado. "
+        "O fechamento v2.18 exige ações resolvidas e revisão humana, e não representa efeito epidemiológico."
+    )
+
+    if learning_cycle_closure_v218 is None:
+        show_missing(
+            "Encerramento do ciclo de aprendizado v2.18",
+            learning_cycle_closure_dir / "learning_cycle_closure_validated_v2_18.csv",
+        )
+    else:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Avaliações", len(learning_cycle_closure_v218))
+        with c2:
+            closed = (
+                learning_cycle_closure_v218["learning_cycle_state"]
+                .astype(str)
+                .eq("learning_cycle_closed_human")
+                .sum()
+                if "learning_cycle_state" in learning_cycle_closure_v218.columns
+                else 0
+            )
+            st.metric("Ciclos fechados", int(closed))
+        with c3:
+            open_count = (
+                learning_cycle_closure_v218["learning_cycle_state"]
+                .astype(str)
+                .eq("learning_cycle_open")
+                .sum()
+                if "learning_cycle_state" in learning_cycle_closure_v218.columns
+                else 0
+            )
+            st.metric("Mantidos abertos", int(open_count))
+
+        if "learning_cycle_state" in learning_cycle_closure_v218.columns:
+            counts = (
+                learning_cycle_closure_v218["learning_cycle_state"]
+                .astype("string")
+                .value_counts(dropna=False)
+                .rename_axis("estado")
+                .reset_index(name="registros")
+            )
+            fig = px.bar(
+                counts,
+                x="estado",
+                y="registros",
+                title="Estados do ciclo de aprendizado",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        display_cols = [
+            "learning_closure_record_id",
+            "postmortem_record_id",
+            "implementation_package_id",
+            "learning_action_type",
+            "reenter_rule_review",
+            "evaluated_at",
+            "reviewer_role",
+            "action_count",
+            "terminal_action_count",
+            "all_actions_terminal",
+            "blocking_action_states",
+            "action_snapshot_as_of",
+            "rule_handoff_present",
+            "action_coverage_review_status",
+            "evidence_review_status",
+            "rule_handoff_review_status",
+            "closure_decision",
+            "decision_rationale",
+            "closure_evidence_refs",
+            "learning_cycle_state",
+            "postmortem_closed_is_not_learning_cycle_closed",
+            "closure_is_not_epidemiological_effect",
+            "closure_does_not_change_source_records",
+            "automatic_closure_enabled",
+            "automatic_issue_creation_enabled",
+            "automatic_rule_change_enabled",
+        ]
+        st.dataframe(
+            learning_cycle_closure_v218[
+                [c for c in display_cols if c in learning_cycle_closure_v218.columns]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "Governança v2.18: post-mortem closed ≠ learning cycle closed; "
+        "fechamento ≠ efeito epidemiológico; o gate não altera artefatos de origem; "
+        "fechamento, criação de issue e mudança de regra automáticos permanecem desabilitados."
     )
 
 st.divider()
