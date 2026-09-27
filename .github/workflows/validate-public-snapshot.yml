@@ -132,6 +132,7 @@ jobs:
             tests/test_decision_audit_report_v2_5.py \
             tests/test_human_workflow_concordance_v2_6.py \
             tests/test_human_workflow_concordance_report_v2_6.py \
+            tests/test_review_app_structure.py \
             tests/test_operational_actions.py \
             tests/test_operational_brief.py \
             tests/test_operational_v2_2_integration.py \
