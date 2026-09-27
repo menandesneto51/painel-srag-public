@@ -29,6 +29,11 @@ def main() -> int:
         default=ROOT / "data_candidate" / "rule_change_proposals_v2_7" / "rule_change_proposals_v2_7.csv",
     )
     parser.add_argument(
+        "--shadow-root",
+        type=Path,
+        default=ROOT / "data_candidate" / "rule_shadow_evaluation_v2_7",
+    )
+    parser.add_argument(
         "--config",
         type=Path,
         default=ROOT / "config" / "rule_change_evaluation_v2_8.json",
@@ -48,10 +53,25 @@ def main() -> int:
     proposals = pd.read_csv(args.proposals)
     config = load_evaluation_config(args.config)
 
+    shadow_rows = []
+    for proposal_id in evaluations["proposal_id"].astype(str).unique().tolist():
+        meta_path = (
+            args.shadow_root
+            / proposal_id
+            / "rule_shadow_evaluation_summary_v2_7.json"
+        )
+        if not meta_path.exists():
+            continue
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        meta["proposal_id"] = proposal_id
+        shadow_rows.append(meta)
+    shadow_evidence = pd.DataFrame(shadow_rows) if shadow_rows else None
+
     validated = validate_rule_change_evaluations(
         evaluations,
         proposals,
         config,
+        shadow_evidence=shadow_evidence,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     validated.to_csv(args.output, index=False, encoding="utf-8")
@@ -68,6 +88,7 @@ def main() -> int:
         "automatic_merge_enabled": False,
         "automatic_deploy_enabled": False,
         "decision_is_not_implementation": True,
+        "shadow_review_is_not_activation": True,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
