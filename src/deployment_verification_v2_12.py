@@ -10,7 +10,7 @@ import pandas as pd
 
 
 REQUIRED_DEPLOY_DECISION_COLUMNS = {
-    "post_merge_record_id",
+    "release_gate_record_id",
     "decided_at",
     "reviewer_role",
     "deploy_decision",
@@ -56,6 +56,7 @@ def load_deployment_config(path: Path) -> dict:
         "effect_verification_is_not_causal_inference",
         "human_deploy_required",
         "human_effect_review_required",
+        "release_gate_required",
     ):
         if principles.get(key) is not True:
             raise ValueError(f"{key} deve ser true.")
@@ -92,7 +93,7 @@ def _record_id(prefix: str, *values: object) -> str:
 
 def validate_human_deploy_decisions(
     decisions: pd.DataFrame,
-    post_merge_records: pd.DataFrame,
+    release_gate_records: pd.DataFrame,
     config: dict,
 ) -> pd.DataFrame:
     missing = REQUIRED_DEPLOY_DECISION_COLUMNS.difference(decisions.columns)
@@ -102,26 +103,29 @@ def validate_human_deploy_decisions(
         )
 
     required_source = {
+        "release_gate_record_id",
         "post_merge_record_id",
         "implementation_package_id",
-        "merged_commit_sha",
-        "post_merge_state",
-        "post_merge_record_is_not_deploy",
+        "release_commit_sha",
+        "target_environment",
+        "final_release_decision",
+        "deploy_eligibility_is_not_deploy",
         "automatic_deploy_enabled",
         "automatic_rollback_enabled",
+        "human_deploy_required",
     }
-    missing_source = required_source.difference(post_merge_records.columns)
+    missing_source = required_source.difference(release_gate_records.columns)
     if missing_source:
         raise ValueError(
-            f"Pós-merge v2.11 sem colunas: {sorted(missing_source)}"
+            f"Release gate v2.12 sem colunas: {sorted(missing_source)}"
         )
 
-    source = post_merge_records.copy()
-    if source["post_merge_record_id"].duplicated().any():
-        raise ValueError("post_merge_record_id duplicado.")
-    lookup = source.set_index("post_merge_record_id")
+    source = release_gate_records.copy()
+    if source["release_gate_record_id"].duplicated().any():
+        raise ValueError("release_gate_record_id duplicado.")
+    lookup = source.set_index("release_gate_record_id")
 
-    allowed_source_states = set(config["allowed_post_merge_states"])
+    allowed_gate_decision = str(config["allowed_release_gate_decision"])
     allowed_decisions = set(config["deploy_decisions"])
 
     data = decisions.copy()
@@ -132,28 +136,32 @@ def validate_human_deploy_decisions(
 
     rows = []
     for row in data.to_dict(orient="records"):
-        source_id = str(row["post_merge_record_id"]).strip()
-        if source_id not in lookup.index:
+        gate_id = str(row["release_gate_record_id"]).strip()
+        if gate_id not in lookup.index:
             raise ValueError(
-                f"post_merge_record_id inexistente: {source_id}"
+                f"release_gate_record_id inexistente: {gate_id}"
             )
-        origin = lookup.loc[source_id]
+        origin = lookup.loc[gate_id]
 
-        if str(origin["post_merge_state"]).strip() not in allowed_source_states:
+        if str(origin["final_release_decision"]).strip() != allowed_gate_decision:
             raise ValueError(
-                f"{source_id}: pós-merge não está apto para decisão de deploy."
+                f"{gate_id}: release gate não está elegível para decisão de deploy."
             )
-        if not bool(origin["post_merge_record_is_not_deploy"]):
+        if not bool(origin["deploy_eligibility_is_not_deploy"]):
             raise ValueError(
-                f"{source_id}: registro pós-merge deve permanecer distinto de deploy."
+                f"{gate_id}: elegibilidade deve permanecer distinta de deploy."
             )
         if bool(origin["automatic_deploy_enabled"]):
             raise ValueError(
-                f"{source_id}: deploy automático não pode estar habilitado."
+                f"{gate_id}: deploy automático não pode estar habilitado."
             )
         if bool(origin["automatic_rollback_enabled"]):
             raise ValueError(
-                f"{source_id}: rollback automático não pode estar habilitado."
+                f"{gate_id}: rollback automático não pode estar habilitado."
+            )
+        if not bool(origin["human_deploy_required"]):
+            raise ValueError(
+                f"{gate_id}: deploy humano deve permanecer obrigatório."
             )
 
         decision = str(row["deploy_decision"]).strip()
@@ -164,20 +172,30 @@ def validate_human_deploy_decisions(
         if _blank(row.get("decision_rationale")):
             raise ValueError("decision_rationale não pode ser vazio.")
 
-        merged_sha = _sha(origin["merged_commit_sha"], "merged_commit_sha")
+        release_sha = _sha(
+            origin["release_commit_sha"],
+            "release_commit_sha",
+        )
+        environment = str(origin["target_environment"]).strip().lower()
 
         normalized = dict(row)
+        normalized["post_merge_record_id"] = str(
+            origin["post_merge_record_id"]
+        )
         normalized["implementation_package_id"] = str(
             origin["implementation_package_id"]
         )
-        normalized["merged_commit_sha"] = merged_sha
+        normalized["release_commit_sha"] = release_sha
+        normalized["merged_commit_sha"] = release_sha
+        normalized["target_environment"] = environment
         normalized["deploy_decision_record_id"] = _record_id(
             "deploydec_",
-            source_id,
+            gate_id,
             normalized["decided_at"],
             decision,
         )
         normalized["deploy_decision_is_not_deploy_execution"] = True
+        normalized["release_gate_required"] = True
         normalized["automatic_deploy_enabled"] = False
         normalized["automatic_rollback_enabled"] = False
         normalized["human_deploy_required"] = True
@@ -189,7 +207,7 @@ def validate_human_deploy_decisions(
     if out["deploy_decision_record_id"].duplicated().any():
         raise ValueError("deploy_decision_record_id duplicado.")
     return out.sort_values(
-        ["decided_at", "post_merge_record_id"]
+        ["decided_at", "release_gate_record_id"]
     ).reset_index(drop=True)
 
 
@@ -206,10 +224,13 @@ def validate_deployment_records(
 
     required_decision = {
         "deploy_decision_record_id",
+        "release_gate_record_id",
         "implementation_package_id",
-        "merged_commit_sha",
+        "release_commit_sha",
+        "target_environment",
         "deploy_decision",
         "deploy_decision_is_not_deploy_execution",
+        "release_gate_required",
         "automatic_deploy_enabled",
         "automatic_rollback_enabled",
     }
@@ -251,6 +272,10 @@ def validate_deployment_records(
             raise ValueError(
                 f"{decision_id}: decisão deve permanecer distinta de execução."
             )
+        if not bool(origin["release_gate_required"]):
+            raise ValueError(
+                f"{decision_id}: decisão não preserva release gate obrigatório."
+            )
         if bool(origin["automatic_deploy_enabled"]):
             raise ValueError("Deploy automático não pode estar habilitado.")
         if bool(origin["automatic_rollback_enabled"]):
@@ -259,10 +284,19 @@ def validate_deployment_records(
         deployed_sha = _sha(
             row["deployed_commit_sha"], "deployed_commit_sha"
         )
-        merged_sha = _sha(origin["merged_commit_sha"], "merged_commit_sha")
-        if deployed_sha != merged_sha:
+        release_sha = _sha(
+            origin["release_commit_sha"], "release_commit_sha"
+        )
+        if deployed_sha != release_sha:
             raise ValueError(
-                f"{decision_id}: deployed_commit_sha deve corresponder ao merged_commit_sha."
+                f"{decision_id}: deployed_commit_sha deve corresponder ao release_commit_sha autorizado."
+            )
+
+        environment = str(row["environment"]).strip().lower()
+        target_environment = str(origin["target_environment"]).strip().lower()
+        if environment != target_environment:
+            raise ValueError(
+                f"{decision_id}: environment deve corresponder ao target_environment autorizado."
             )
 
         for field in (
@@ -281,7 +315,6 @@ def validate_deployment_records(
 
         for field in (
             "reviewer_role",
-            "environment",
             "deploy_evidence_ref",
             "rollback_readiness_status",
             "deployment_notes",
@@ -315,19 +348,25 @@ def validate_deployment_records(
                 )
 
         normalized = dict(row)
+        normalized["environment"] = environment
+        normalized["release_gate_record_id"] = str(
+            origin["release_gate_record_id"]
+        )
         normalized["implementation_package_id"] = str(
             origin["implementation_package_id"]
         )
-        normalized["merged_commit_sha"] = merged_sha
+        normalized["release_commit_sha"] = release_sha
+        normalized["merged_commit_sha"] = release_sha
         normalized["deployed_commit_sha"] = deployed_sha
         normalized["deployment_record_id"] = _record_id(
             "deploy_",
             decision_id,
             deployed_sha,
             normalized["deployed_at"],
-            normalized["environment"],
+            environment,
         )
         normalized["deployment_record_requires_actual_deploy_evidence"] = True
+        normalized["release_gate_required"] = True
         normalized["automatic_deploy_enabled"] = False
         normalized["automatic_rollback_enabled"] = False
         normalized["deployment_is_not_effect_verification"] = True
